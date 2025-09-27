@@ -1,0 +1,24 @@
+{
+  "configurations" : [
+    {
+      "id" : "EF048C31-5DE5-41A4-A518-67B84C57B90E",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "AlphaEqtTests",
+        "name" : "AlphaEqtTests"
+      }
+    }
+  ],
+  "version" : 1
+}
