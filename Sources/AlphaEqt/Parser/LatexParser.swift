@@ -1,23 +1,57 @@
+//
+//  LatexParser.swift
+//  AlphaEqt
+//
+//  Created by Alpha Ng on 2/10/2025.
+//
 import Foundation
 
-/// Parses a sequence of Tokens into ASTNode objects for basic math.
-/// Extendable for more complex LaTeX constructs.
-public class LatexParser {
-    public init() {}
+// Import command handlers from separate files
+// Each handler should be defined as: func handle<Text|Sqrt|Frac|...>Command(tokens: ArraySlice<Token>, idx: inout Int) -> ASTNode?
+// For example, Text.swift contains handleTextCommand
 
-    /// Parses an array of Token objects into ASTNode objects.
-    /// Ignores whitespace and EOF tokens.
+public class LatexParser {
+    public typealias CommandHandler = (ArraySlice<Token>, inout Int) -> ASTNode?
+
+    private var commandHandlers: [String: CommandHandler] = [:]
+
+    public init() {
+        // Register built-in commands with their handlers
+        commandHandlers["\\text"] = handleTextCommand
+        // Example: commandHandlers["\\sqrt"] = handleSqrtCommand
+        // Add more as needed
+    }
+
+    /// Main parse function
     public func parse(tokens: [Token]) -> [ASTNode] {
         var nodes: [ASTNode] = []
-        for token in tokens {
-            guard shouldParseToken(token) else { continue }
+        var i = 0
+        let tokenCount = tokens.count
+        while i < tokenCount {
+            let token = tokens[i]
+            guard shouldParseToken(token) else { i += 1; continue }
+
+            // Command handler dispatch
+            if token.kind == .command, let handler = commandHandlers[token.text] {
+                let slice = tokens[i..<tokenCount]
+                var relIdx = 0 // index relative to slice
+                if let node = handler(slice, &relIdx) {
+                    nodes.append(node)
+                }
+                i += relIdx
+                continue
+            }
+
             let nodeType = mapTokenKindToASTNodeType(token)
             let node = ASTNode(
                 type: nodeType,
                 text: token.text,
-                originalText: token.text
+                location: token.sourceLocation,
+                originalText: token.text,
+                childNodes: nil
             )
             nodes.append(node)
+            i += 1
         }
         return nodes
     }
@@ -51,10 +85,14 @@ public class LatexParser {
         case .rightParen, .rightBracket, .rightBrace, .customDelimiterRight:
             return .close
         case .command:
-            // You may want to handle commands later, e.g. \frac, \sqrt
             return .textord
         default:
             return .mathord // fallback for any other kind
         }
+    }
+
+    /// Register a new command handler externally
+    public func registerCommand(_ name: String, handler: @escaping CommandHandler) {
+        commandHandlers[name] = handler
     }
 }

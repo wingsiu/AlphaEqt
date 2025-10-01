@@ -97,22 +97,28 @@ public struct SourceLocation {
     }
 }
 
+extension SourceLocation: CustomStringConvertible {
+    public var description: String {
+        "line \(line), col \(column), offset \(offset), length \(length)"
+    }
+}
+
 /// Base class for all AST nodes in the KaTeX-style AST.
 /// Subclasses will represent specific node types (e.g. MathOrdNode, FracNode).
 public class ASTNode: CustomStringConvertible {
     public let type: ASTNodeType           // The node's type
-    public var parentNode: ASTNode?        // Reference to parent node in the AST tree (optional)
+    public weak var parentNode: ASTNode?        // Reference to parent node in the AST tree (optional)
     public var location: SourceLocation?   // Location in the original source (optional)
     public var mode: MathMode              // Math or text mode
     public var sourceFormat: MathFormat    // Input format (LaTeX, MathML, etc.)
     public var originalText: String?       // The original source string for this node (optional)
-
+    
     // CHANGE 1: Added `text` property for simple node types (mathord, bin, rel, etc).
     public var text: String?               // Value for symbol/operator (optional, used for simple nodes)
-
+    
     /// All child nodes of this node; subclasses override this for their specific children.
-    public var childNodes: [ASTNode] { return [] }
-
+    public var childNodes: [ASTNode]?
+    
     /// Initializes a base AST node.
     /// Use subclasses for nodes with additional fields/children.
     /// - Parameters:
@@ -129,7 +135,8 @@ public class ASTNode: CustomStringConvertible {
                 sourceFormat: MathFormat = .latex,
                 parentNode: ASTNode? = nil,
                 location: SourceLocation? = nil,
-                originalText: String? = nil) {
+                originalText: String? = nil,
+                childNodes: [ASTNode]? = nil) {
         self.type = type
         self.text = text                  // CHANGE 3: Initialize text
         self.mode = mode
@@ -137,24 +144,21 @@ public class ASTNode: CustomStringConvertible {
         self.parentNode = parentNode
         self.location = location
         self.originalText = originalText
+        self.childNodes = childNodes
     }
-
+    
     /// Debug-friendly string description for printing the node and its children.
     public var description: String {
-        var desc = "<\(type.rawValue)"
-        if let txt = text {               // CHANGE 4: Show text in description
-            desc += " '\(txt)'"
+        var fields: [String] = ["\"type\": \"\(type)\""]
+        if let text = text, !text.isEmpty {
+            fields.append("\"text\": \"\(text)\"")
         }
-        if let loc = location {
-            desc += " @ line \(loc.line), col \(loc.column), offset \(loc.offset)"
+        if let children = childNodes, !children.isEmpty {
+            fields.append("\"body\": [\n  \(children.map { $0.description }.joined(separator: ",\n  "))\n]")
         }
-        if let orig = originalText {
-            desc += " from '\(orig)'"
+        if let location = location {
+            fields.append("\"location\": \"\(location.description)\"")
         }
-        desc += ">"
-        if !childNodes.isEmpty {
-            desc += "\nChildren:\n" + childNodes.map { $0.description }.joined(separator: "\n")
-        }
-        return desc
+        return "{ " + fields.joined(separator: ", ") + " }"
     }
 }

@@ -4,12 +4,12 @@ This checklist tracks the implementation progress of planned KaTeX-style AST nod
 
 ## Node Types
 
-- [ ] `mathord` – Ordinary math symbols, letters, numbers (`x`, `2`)
-- [ ] `textord` – Text symbols/words in math mode (`\text{foo}`)
-- [ ] `bin` – Binary operators (`+`, `-`, `*`)
-- [ ] `rel` – Relation operators (`=`, `<`, `\leq`)
-- [ ] `open` – Opening delimiters (`(`, `[`)
-- [ ] `close` – Closing delimiters (`)`, `]`)
+- [✅ ] `mathord` – Ordinary math symbols, letters, numbers (`x`, `2`)
+- [✅] `textord` – Text symbols/words in math mode (`\text{foo}`)
+- [✅ ] `bin` – Binary operators (`+`, `-`, `*`)
+- [✅ ] `rel` – Relation operators (`=`, `<`, `\leq`)
+- [✅] `open` – Opening delimiters (`(`, `[`)
+- [✅] `close` – Closing delimiters (`)`, `]`)
 - [ ] `punct` – Punctuation in math (`;`, `,`)
 - [ ] `accent` – Accents (`\hat{x}`, `\overline{x}`)
 - [ ] `supsub` – Superscript/subscript (`x^2`, `x_1`, `x_1^2`)
