@@ -94,6 +94,58 @@ final class LexerTests: XCTestCase {
         XCTAssertEqual(tokens[4].text, "\\right|")
         XCTAssertEqual(tokens.last?.kind, .eof)
     }
+    
+    func testCommentSkipped() {
+        let lexer = Lexer(input: "x % this is a comment\ny")
+        let tokens = lexer.lexAll()
+        let tokenTexts = tokens.map { $0.text }
+        // Should skip everything after '%' until newline
+        XCTAssertTrue(tokenTexts.contains("x"))
+        XCTAssertFalse(tokenTexts.contains("%"))
+        XCTAssertTrue(tokenTexts.contains("y"))
+    }
+
+    func testActiveChar() {
+        let lexer = Lexer(input: "x~y")
+        let tokens = lexer.lexAll()
+        for token in tokens {
+            print("token: \(token.text), kind: \(token.kind)")
+        }
+        // Should recognize '~' as active character
+        XCTAssertTrue(tokens.contains { $0.kind == .activeChar && $0.text == "~" })
+    }
+
+    func testGroupingCharacters() {
+        let lexer = Lexer(input: "{x}")
+        let tokens = lexer.lexAll()
+        // Should recognize '{' and '}' as left/right brace
+        XCTAssertTrue(tokens.contains { $0.kind == .leftBrace && $0.text == "{" })
+        XCTAssertTrue(tokens.contains { $0.kind == .rightBrace && $0.text == "}" })
+    }
+
+    func testCommandToken() {
+        let lexer = Lexer(input: "\\left(")
+        let tokens = lexer.lexAll()
+        // Should recognize custom delimiter
+        XCTAssertTrue(tokens.contains { $0.kind == .customDelimiterLeft && $0.text == "\\left(" })
+    }
+
+    func testIdentifierAndNumber() {
+        let lexer = Lexer(input: "abc 123")
+        let tokens = lexer.lexAll()
+        XCTAssertTrue(tokens.contains { $0.kind == .identifier && $0.text == "abc" })
+        XCTAssertTrue(tokens.contains { $0.kind == .number && $0.text == "123" })
+    }
+
+    func testOperatorToken() {
+        let lexer = Lexer(input: "+ - * / ^ = _")
+        let tokens = lexer.lexAll()
+        let ops = ["+", "-", "*", "/", "^", "=", "_"]
+        for op in ops {
+            XCTAssertTrue(tokens.contains { $0.kind == .operatorSymbol && $0.text == op })
+        }
+    }
+
 }
 
 final class AccentUtilsTests: XCTestCase {
@@ -143,3 +195,4 @@ final class AccentUtilsTests: XCTestCase {
         XCTAssertEqual(result, "x")
     }
 }
+

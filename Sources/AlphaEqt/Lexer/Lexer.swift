@@ -1,28 +1,49 @@
-//
-//  Lexer.swift
-//  AlphaEqt
-//
-//  Created by Alpha Ng on 27/9/2025.
-//
-
 import Foundation
 
 @available(macOS 13.0, *)
 public class Lexer {
     public let input: String
 
+    // Catcode definitions (similar to TeX/KaTeX)
+    public enum Catcode: Int, Sendable {
+        case escape = 0
+        case beginGroup = 1
+        case endGroup = 2
+        case mathShift = 3
+        case alignmentTab = 4
+        case endOfLine = 5
+        case parameter = 6
+        case superscript = 7
+        case subscriptChar = 8
+        case ignored = 9
+        case space = 10
+        case letter = 11
+        case other = 12
+        case active = 13
+        case comment = 14
+        case invalid = 15
+    }
+
+    public static let catcodes: [Character: Catcode] = [
+        "%": .comment,
+        "~": .active,
+        "{": .beginGroup,
+        "}": .endGroup,
+        "\\": .escape
+        // Add more if needed
+    ]
+
     // Patterns (unchanged)
     static let spacePattern = #"[ \r\n\t]+"#
-    static let controlWordPattern = #"\\[a-zA-Z@]+"#         // matches \left, \right
-    static let controlSymbolPattern = #"\\[^a-zA-Z@]"#       // matches \{, \}, \|, etc
+    static let controlWordPattern = #"\\[a-zA-Z@]+"#
+    static let controlSymbolPattern = #"\\[^a-zA-Z@]"#
     static let controlWordWhitespacePattern = #"\\([a-zA-Z@]+)([ \r\n\t]*)"#
     static let controlSpacePattern = #"\\(\n|[ \r\t]+\n?)[ \r\t]*"#
     static let identifierPattern = #"[A-Za-z]+"#
     static let numberPattern = #"\d+"#
     static let operatorPattern = #"[+\-*/^_=]"#
-    static let delimiterPattern = #"[{}()\[\]|]"#
-
-    // Token pattern for Swift Regex
+    //static let delimiterPattern = #"[{}()\[\]|]"#
+    static let delimiterPattern = #"[{}()\[\]|~]"#
     static let tokenPattern = [
         spacePattern,
         controlWordWhitespacePattern,
@@ -48,7 +69,19 @@ public class Lexer {
             if let match = input[currentIndex...].firstMatch(of: regex) {
                 let tokenText = String(match.0)
                 let range = input.range(of: tokenText, range: currentIndex..<input.endIndex)!
-                rawTokens.append(Token(kind: classifyToken(tokenText), text: tokenText, range: range))
+                // Check catcode for first character
+                let catcode = Self.catcodes[tokenText.first ?? " "] ?? .other
+                // If comment, skip to end of line
+                if catcode == .comment {
+                    if let nlIndex = input[currentIndex...].firstIndex(of: "\n") {
+                        currentIndex = input.index(after: nlIndex)
+                    } else {
+                        // End of input
+                        break
+                    }
+                    continue
+                }
+                rawTokens.append(Token(kind: classifyToken(tokenText, catcode: catcode), text: tokenText, range: range))
                 currentIndex = range.upperBound
             } else {
                 break
@@ -59,7 +92,6 @@ public class Lexer {
         var tokens: [Token] = []
         var i = 0
         while i < rawTokens.count {
-            // Combine [command: "left"] + [leftBrace|leftParen|leftBracket|operatorSymbol]
             if rawTokens[i].kind == .command && rawTokens[i].text == "\\left" && (i + 1) < rawTokens.count {
                 let next = rawTokens[i + 1]
                 let delimMap: [TokenKind: String] = [
@@ -75,7 +107,6 @@ public class Lexer {
                     continue
                 }
             }
-            // Combine [command: "right"] + [rightBrace|rightParen|rightBracket|operatorSymbol]
             if rawTokens[i].kind == .command && rawTokens[i].text == "\\right" && (i + 1) < rawTokens.count {
                 let next = rawTokens[i + 1]
                 let delimMap: [TokenKind: String] = [
@@ -107,19 +138,35 @@ public class Lexer {
         return tokens
     }
 
-    private func classifyToken(_ text: String) -> TokenKind {
+    // Now pass catcode to classifyToken for advanced logic
+    private func classifyToken(_ text: String, catcode: Catcode) -> TokenKind {
+        switch catcode {
+        case .comment:
+            return .comment
+        case .active:
+            return .activeChar
+        case .beginGroup:
+            return .leftBrace
+        case .endGroup:
+            return .rightBrace
+        case .escape:
+            if text == "\\left" { return .command }
+            if text == "\\right" { return .command }
+            if text == "\\{" { return .leftBrace }
+            if text == "\\}" { return .rightBrace }
+            if text == "\\|" { return .operatorSymbol }
+            return .command
+        default:
+            break
+        }
         if text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             return .whitespace
         }
-        if text == "\\left" { return .command }
-        if text == "\\right" { return .command }
-        if text == "\\{" { return .leftBrace }
-        if text == "\\}" { return .rightBrace }
         if text == "(" { return .leftParen }
         if text == ")" { return .rightParen }
         if text == "[" { return .leftBracket }
         if text == "]" { return .rightBracket }
-        if text == "|" || text == "\\|" { return .operatorSymbol }
+        if text == "|" { return .operatorSymbol }
         if text.range(of: #"^[A-Za-z]+$"#, options: .regularExpression) != nil {
             return .identifier
         }

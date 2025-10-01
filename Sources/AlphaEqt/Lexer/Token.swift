@@ -17,10 +17,17 @@ public enum TokenKind {
     case verbatim 
     case eof
     case error
+    case comment        // <-- Add this!
+    case activeChar     // <-- Add if handling ~ as active character
+
 }
 
 public struct Token {
     public let kind: TokenKind
     public let text: String
-    public let range: Range<String.Index>
+    public let sourceLocation: SourceLocation   // <-- use your struct
+
+    // Optionally, keep 'range' for backward compatibility if needed
 }
+
+
