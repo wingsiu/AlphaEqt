@@ -42,7 +42,6 @@ public class Lexer {
     static let identifierPattern = #"[A-Za-z]+"#
     static let numberPattern = #"\d+"#
     static let operatorPattern = #"[+\-*/^_=]"#
-    //static let delimiterPattern = #"[{}()\[\]|]"#
     static let delimiterPattern = #"[{}()\[\]|~]"#
     static let tokenPattern = [
         spacePattern,
@@ -65,6 +64,8 @@ public class Lexer {
         let regex = try! Regex(Self.tokenPattern)
 
         var currentIndex = input.startIndex
+        var lineNumber = 1
+        var columnNumber = 1
         while currentIndex < input.endIndex {
             if let match = input[currentIndex...].firstMatch(of: regex) {
                 let tokenText = String(match.0)
@@ -81,7 +82,19 @@ public class Lexer {
                     }
                     continue
                 }
-                rawTokens.append(Token(kind: classifyToken(tokenText, catcode: catcode), text: tokenText, range: range))
+                let offset = input.distance(from: input.startIndex, to: range.lowerBound)
+                let length = input.distance(from: range.lowerBound, to: range.upperBound)
+                // Count lines before current token
+                let substring = input[input.startIndex..<range.lowerBound]
+                lineNumber = substring.reduce(1) { $1 == "\n" ? $0 + 1 : $0 }
+                if let lastNewline = substring.lastIndex(of: "\n") {
+                    columnNumber = input.distance(from: lastNewline, to: range.lowerBound)
+                } else {
+                    columnNumber = offset + 1
+                }
+                let sourceLocation = SourceLocation(line: lineNumber, column: columnNumber, offset: offset, length: length)
+
+                rawTokens.append(Token(kind: classifyToken(tokenText, catcode: catcode), text: tokenText, sourceLocation: sourceLocation))
                 currentIndex = range.upperBound
             } else {
                 break
@@ -101,8 +114,15 @@ public class Lexer {
                     .operatorSymbol: "\\left|"
                 ]
                 if let combinedText = delimMap[next.kind] {
-                    let combinedRange = rawTokens[i].range.lowerBound..<next.range.upperBound
-                    tokens.append(Token(kind: .customDelimiterLeft, text: combinedText, range: combinedRange))
+                    let combinedLoc = rawTokens[i].sourceLocation
+                    let combinedEnd = next.sourceLocation
+                    let combinedSourceLocation = SourceLocation(
+                        line: combinedLoc.line,
+                        column: combinedLoc.column,
+                        offset: combinedLoc.offset,
+                        length: (combinedEnd.offset + combinedEnd.length) - combinedLoc.offset
+                    )
+                    tokens.append(Token(kind: .customDelimiterLeft, text: combinedText, sourceLocation: combinedSourceLocation))
                     i += 2
                     continue
                 }
@@ -116,8 +136,15 @@ public class Lexer {
                     .operatorSymbol: "\\right|"
                 ]
                 if let combinedText = delimMap[next.kind] {
-                    let combinedRange = rawTokens[i].range.lowerBound..<next.range.upperBound
-                    tokens.append(Token(kind: .customDelimiterRight, text: combinedText, range: combinedRange))
+                    let combinedLoc = rawTokens[i].sourceLocation
+                    let combinedEnd = next.sourceLocation
+                    let combinedSourceLocation = SourceLocation(
+                        line: combinedLoc.line,
+                        column: combinedLoc.column,
+                        offset: combinedLoc.offset,
+                        length: (combinedEnd.offset + combinedEnd.length) - combinedLoc.offset
+                    )
+                    tokens.append(Token(kind: .customDelimiterRight, text: combinedText, sourceLocation: combinedSourceLocation))
                     i += 2
                     continue
                 }
@@ -126,7 +153,8 @@ public class Lexer {
             i += 1
         }
 
-        tokens.append(Token(kind: .eof, text: "EOF", range: input.endIndex..<input.endIndex))
+        let eofLocation = SourceLocation(line: lineNumber, column: columnNumber, offset: input.count, length: 0)
+        tokens.append(Token(kind: .eof, text: "EOF", sourceLocation: eofLocation))
         return tokens
     }
 
