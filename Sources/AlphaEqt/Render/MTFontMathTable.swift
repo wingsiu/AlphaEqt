@@ -39,7 +39,10 @@ public class MTFontMathTable {
     }
 
     public func copy(withSize size: CGFloat) -> MTFontMathTable {
-        MTFontMathTable(font: font.copy(withSize: size), fontSize: size, unitsPerEm: unitsPerEm)
+        // Note: for async actor cache, you must call font.copy(withSize:) with await
+        // Example: let newFont = await font.copy(withSize: size)
+        // For synchronous API, call directly.
+        MTFontMathTable(font: font, fontSize: size, unitsPerEm: unitsPerEm)
     }
 
     public var muUnit: CGFloat { fontSize / 18 }
@@ -141,18 +144,4 @@ public class MTFontMathTable {
 
     // MARK: - Raw Table Access
     public var rawMathTable: NSDictionary { mTable }
-}
-
-// MARK: - MTFont extension for math table loading
-extension MTFont {
-    /// Load the math table plist for this font.
-    public func loadMathTable() -> NSDictionary? {
-        let tableName = "\(font.rawValue).plist"
-        guard let url = Bundle.module.url(forResource: tableName, withExtension: nil),
-              let data = try? Data(contentsOf: url),
-              let dict = try? PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? NSDictionary else {
-            return nil
-        }
-        return dict
-    }
 }

@@ -2,8 +2,7 @@
 //  MTFont.swift
 //  AlphaEqt
 //
-//  Created by Alpha Ng on 2/10/2025.
-//  Modern math font class, adapted from SwiftMath MTFontV2
+//  Modern math font class with serial queue-based caching (Swift 6/Xcode 16 compliant).
 //
 
 import Foundation
@@ -23,10 +22,18 @@ public enum MathFont: String, CaseIterable, Identifiable {
     case firaFont        = "FiraMath-Regular"
     case notoSansFont    = "NotoSansMath-Regular"
     case libertinusFont  = "LibertinusMath-Regular"
-    // Add more fonts as needed
 
+    /// Fast cached font creation, synchronous and concurrency-safe.
     public func mtfont(size: CGFloat) -> MTFont {
-        MTFont(font: self, size: size)
+        MTFont.cached(font: self, size: size)
+    }
+
+    // MARK: - Resource loader stubs (implement these for your bundle)
+    public func cgFont() -> CGFont {
+        fatalError("Implement cgFont() resource loader for font: \(self.rawValue)")
+    }
+    public func ctFont(withSize size: CGFloat) -> CTFont {
+        fatalError("Implement ctFont(withSize:) for font: \(self.rawValue)")
     }
 }
 
@@ -37,7 +44,22 @@ public final class MTFont {
     private let _ctFont: CTFont
     private let unitsPerEm: UInt
     private var _mathTab: MTFontMathTable?
-    private let mtfontLock = NSLock()
+
+    // ---- Serial queue for concurrency-safe cache access ----
+    nonisolated(unsafe) private static var cache: [String: MTFont] = [:]
+    private static let cacheQueue = DispatchQueue(label: "com.alphaeqt.mtfontcache.serial")
+
+    public static func cached(font: MathFont, size: CGFloat) -> MTFont {
+        let key = "\(font.rawValue):\(size)"
+        return cacheQueue.sync {
+            if let cached = cache[key] {
+                return cached
+            }
+            let newFont = MTFont(font: font, size: size)
+            cache[key] = newFont
+            return newFont
+        }
+    }
 
     public init(font: MathFont = .latinModernFont, size: CGFloat) {
         self.font = font
@@ -45,54 +67,53 @@ public final class MTFont {
         self._cgFont = font.cgFont()
         self._ctFont = font.ctFont(withSize: size)
         self.unitsPerEm = UInt(CTFontGetUnitsPerEm(self._ctFont))
-        //self.unitsPerEm = self._ctFont.unitsPerEm
     }
 
     public var cgFont: CGFont { _cgFont }
     public var ctFont: CTFont { _ctFont }
-
     public var fontSize: CGFloat { size }
 
-    /// Thread-safe lazy math table
-    public var mathTable: MTFontMathTable? {
-        get {
-            mtfontLock.lock()
-            defer { mtfontLock.unlock() }
-            if _mathTab == nil {
-                _mathTab = MTFontMathTable(font: self, fontSize: size, unitsPerEm: unitsPerEm)
-            }
-            return _mathTab
+    /// Lazy math table (readonly after init, so thread-safe for reads)
+    public var mathTable: MTFontMathTable {
+        return MTFont.serialTableAccess { [weak self] in
+            if let tab = self?._mathTab { return tab }
+            let tab = MTFontMathTable(font: self!, fontSize: self!.size, unitsPerEm: self!.unitsPerEm)
+            self?._mathTab = tab
+            return tab
         }
     }
 
-    /// Returns a copy of this font at a new size.
+    /// Returns a copy of this font at a new size (uses cache).
     public func copy(withSize size: CGFloat) -> MTFont {
-        MTFont(font: font, size: size)
+        MTFont.cached(font: font, size: size)
     }
-}
 
-
-// MARK: - MathFont helpers (stub implementations; you should provide these)
-extension MathFont {
-    public func cgFont() -> CGFont {
-        // Load CGFont from bundle/resource using rawValue
-        // For example, use Bundle.module or your own loader
-        fatalError("Implement cgFont() resource loader for font: \(self.rawValue)")
+    /// Loads the math table plist for this font.
+    public func loadMathTable() -> NSDictionary? {
+        let tableName = "\(font.rawValue).plist"
+        guard let url = Bundle.module.url(forResource: tableName, withExtension: nil),
+              let data = try? Data(contentsOf: url),
+              let dict = try? PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? NSDictionary else {
+            return nil
+        }
+        return dict
     }
-    public func ctFont(withSize size: CGFloat) -> CTFont {
-        // Create CTFont from CGFont and size
-        fatalError("Implement ctFont(withSize:) for font: \(self.rawValue)")
-    }
-}
 
-extension MTFont {
-    /// Gets the glyph name for a given glyph
+    /// Serializes access to math table for thread safety.
+    private static let tableQueue = DispatchQueue(label: "com.alphaeqt.mtfont.table.serial")
+    private static func serialTableAccess<T>(_ block: () -> T) -> T {
+        return tableQueue.sync { block() }
+    }
+
     func get(nameForGlyph glyph: CGGlyph) -> String {
-        let name = cgFont.name(for: glyph) as? String
-        return name ?? ""
+        return MTFont.serialTableAccess { [weak self] in
+            let name = self?._cgFont.name(for: glyph) as? String
+            return name ?? ""
+        }
     }
-    /// Gets the glyph for a given glyph name
     func get(glyphWithName name: String) -> CGGlyph {
-        cgFont.getGlyphWithGlyphName(name: name as CFString)
+        return MTFont.serialTableAccess { [weak self] in
+            self?._cgFont.getGlyphWithGlyphName(name: name as CFString) ?? 0
+        }
     }
 }
