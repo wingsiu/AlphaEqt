@@ -22,13 +22,38 @@ public class LatexParser {
         commandHandlers["\\scriptstyle"] = handleSizingCommand
         commandHandlers["\\scriptscriptstyle"] = handleSizingCommand
         // Large operator commands
-        let largeOps = ["\\sum", "\\prod", "\\coprod", "\\int", "\\iint", "\\iiint",
+        let largeOps = ["\\sum", "\\prod", "\\coprod", "\\int", "\\iint", "\\iiint", "\\iiiint",
                         "\\oint", "\\bigcap", "\\bigcup", "\\bigvee", "\\bigwedge",
                         "\\bigodot", "\\bigoplus", "\\bigotimes", "\\bigsqcup", "\\biguplus",
                         "\\lim", "\\limsup", "\\liminf", "\\max", "\\min",
-                        "\\sup", "\\inf", "\\det", "\\gcd", "\\Pr"]
+                        "\\sup", "\\inf", "\\det", "\\gcd", "\\Pr",
+                        "\\sin", "\\cos", "\\tan", "\\csc", "\\sec", "\\cot",
+                        "\\arcsin", "\\arccos", "\\arctan", "\\arccot", "\\arcsec", "\\arccsc",
+                        "\\sinh", "\\cosh", "\\tanh", "\\coth", "\\sech", "\\csch",
+                        "\\arcsinh", "\\arccosh", "\\arctanh", "\\arccoth", "\\arcsech", "\\arccsch",
+                        "\\log", "\\lg", "\\ln", "\\exp",
+                        "\\arg", "\\ker", "\\deg", "\\dim", "\\hom", "\\mod"]
         for op in largeOps {
             commandHandlers[op] = handleLargeOpCommand
+        }
+        // Greek letters + math symbols (Symbols.swift)
+        for cmd in allSymbolCommands {
+            commandHandlers[cmd] = handleSymbolCommand
+        }
+        // Spacing commands
+        let spacingCmds = ["\\quad", "\\qquad", "\\,", "\\;", "\\!"]
+        for cmd in spacingCmds {
+            commandHandlers[cmd] = handleSpacingCommand
+        }
+        // Font commands — consume braced arg, parse content inline
+        let fontCmds = ["\\mathbf", "\\mathrm", "\\mathit", "\\mathsf",
+                        "\\mathtt", "\\mathcal", "\\mathbb", "\\mathfrak",
+                        "\\mathbfit", "\\bm", "\\boldsymbol",
+                        "\\rm", "\\bf", "\\cal", "\\mit", "\\frak", "\\Bbb",
+                        "\\textsf", "\\texttt", "\\textit", "\\textbf",
+                        "\\mathnormal", "\\boldsymbol"]
+        for cmd in fontCmds {
+            commandHandlers[cmd] = handleFontCommand
         }
     }
 
@@ -165,6 +190,8 @@ public class LatexParser {
                 return .bin
             case "=", "<", ">":
                 return .rel
+            case ".", ",":
+                return .mathord
             default:
                 return .bin
             }

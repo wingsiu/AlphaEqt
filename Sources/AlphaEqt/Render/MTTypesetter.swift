@@ -37,12 +37,23 @@ private func concurrentRender(
 fileprivate func mathItalicize(_ text: String) -> String {
     var result = ""
     for ch in text {
+        guard let scalar = ch.unicodeScalars.first?.value else {
+            result.append(ch)
+            continue
+        }
         if ch >= "a", ch <= "z" {
-            let offset = ch.unicodeScalars.first!.value - 0x61
+            let offset = scalar - 0x61
             result.append(Character(UnicodeScalar(0x1D44E + offset)!))
         } else if ch >= "A", ch <= "Z" {
-            let offset = ch.unicodeScalars.first!.value - 0x41
+            let offset = scalar - 0x41
             result.append(Character(UnicodeScalar(0x1D434 + offset)!))
+        } else if scalar >= 0x03B1, scalar <= 0x03C9 {
+            // Greek lowercase α–ω → math italic (U+1D6FC–U+1D714)
+            // Variant forms (ϕ, ϑ, etc.) use pre-styled codepoints from
+            // the symbol table and are NOT in this range, so they pass
+            // through unchanged.
+            let offset = scalar - 0x03B1
+            result.append(Character(UnicodeScalar(0x1D6FC + offset)!))
         } else {
             result.append(ch)
         }
@@ -201,6 +212,7 @@ public class Typesetter: @unchecked Sendable {
         case .op:     return renderLargeOp(node)
         case .sqrt:   return renderRadical(node, hasDegree: false)
         case .root:   return renderRadical(node, hasDegree: true)
+        case .spacing: return renderSpacing(node)
         default:      return renderTextNode(node)
         }
     }
@@ -726,6 +738,29 @@ public class Typesetter: @unchecked Sendable {
             }
         }
         return radical
+    }
+
+    // MARK: - Spacing commands
+
+    /// Renders explicit spacing commands (\quad, \qquad, \,, \;, \!).
+    /// Returns an invisible kern display with the appropriate width.
+    private func renderSpacing(_ node: ASTNode) -> MTDisplay? {
+        let spaceType = node.text ?? ""
+        let width: CGFloat
+        switch spaceType {
+        case "quad":    width = font.size                   // 1 em
+        case "qquad":   width = font.size * 2               // 2 em
+        case "thin":    width = 3 * font.mathTable.muUnit   // 3 mu
+        case "thick":   width = 5 * font.mathTable.muUnit   // 5 mu
+        case "negative":width = -3 * font.mathTable.muUnit  // -3 mu (\!)
+        default:        width = 0
+        }
+        let d = MTDisplay()
+        d.width = width
+        d.ascent = 0
+        d.descent = 0
+        d.range = node.indexRange
+        return d
     }
 
     // MARK: - Inter-element spacing

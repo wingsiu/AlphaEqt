@@ -44,7 +44,7 @@ public class Lexer {
     // Single-letter identifiers for math mode (mc^2 → m, c, ^, 2)
     // Commands like \text still work via \\[a-zA-Z@]+
     static let tokenPattern: NSRegularExpression = {
-        let pattern = #"([ \r\n\t]+|\\([a-zA-Z@]+)([ \r\n\t]*)|\\[a-zA-Z@]+|\\[^a-zA-Z@]|\\(\n|[ \r\t]+\n?)[ \r\t]*|[A-Za-z]|\d+|[+\-*/^_=]|[{}()\[\]|~])"#
+        let pattern = #"([ \r\n\t]+|\\([a-zA-Z@]+)([ \r\n\t]*)|\\[a-zA-Z@]+|\\[^a-zA-Z@]|\\(\n|[ \r\t]+\n?)[ \r\t]*|[A-Za-z]|\d+|[+\-*/^_=.,]|[{}()\[\]|~]|[^\x00-\x7F])"#
         return try! NSRegularExpression(pattern: pattern, options: [])
     }()
 
@@ -67,7 +67,7 @@ public class Lexer {
             lastEnd = matchRange.upperBound
 
             guard let range = Range(matchRange, in: input) else { continue }
-            let tokenText = String(input[range])
+            var tokenText = String(input[range])
 
             // Determine catcode from first character
             let catcode = Self.catcodes[tokenText.first ?? " "] ?? .other
@@ -75,6 +75,14 @@ public class Lexer {
             // Handle comments - skip until end of line
             if catcode == .comment {
                 continue
+            }
+
+            // Strip trailing whitespace from command tokens: the regex
+            // \\\\[a-zA-Z@]+([ \\r\\n\\t]*) captures the trailing space
+            // into the token, which breaks handler lookups (e.g. "\alpha "
+            // does not match "\alpha" in the commandHandlers dictionary).
+            if catcode == .escape && tokenText.hasPrefix("\\") {
+                tokenText = tokenText.trimmingCharacters(in: .whitespacesAndNewlines)
             }
 
             let offset = input.distance(from: input.startIndex, to: range.lowerBound)
@@ -197,8 +205,12 @@ public class Lexer {
         if text.range(of: #"^\d+$"#, options: .regularExpression) != nil {
             return .number
         }
-        if text.range(of: #"^[+\-*/^_=]$"#, options: .regularExpression) != nil {
+        if text.range(of: #"^[+\-*/^_=.,]$"#, options: .regularExpression) != nil {
             return .operatorSymbol
+        }
+        // Non-ASCII characters (emoji, Chinese, etc.) → mathord identifiers
+        if let first = text.unicodeScalars.first, first.value > 0x7F {
+            return .identifier
         }
         return .error
     }
