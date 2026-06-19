@@ -1,0 +1,11 @@
+{
+  "": {
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/DemoApp.build/master.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/AlphaEqt/Demo/Sources/DemoApp/DemoApp.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/DemoApp.build/DemoApp.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/DemoApp.build/DemoApp.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/DemoApp.build/DemoApp~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/DemoApp.build/DemoApp.swiftdeps"
+  }
+}

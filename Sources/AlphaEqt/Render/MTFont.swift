@@ -13,31 +13,43 @@ public enum MathFont: String, CaseIterable, Identifiable {
     public var id: Self { self }
 
     case latinModernFont = "latinmodern-math"
-    case kpMathLightFont = "KpMath-Light"
-    case kpMathSansFont  = "KpMath-Sans"
-    case xitsFont        = "xits-math"
-    case termesFont      = "texgyretermes-math"
-    case asanaFont       = "Asana-Math"
-    case eulerFont       = "Euler-Math"
-    case firaFont        = "FiraMath-Regular"
-    case notoSansFont    = "NotoSansMath-Regular"
-    case libertinusFont  = "LibertinusMath-Regular"
+    case xitsFont = "xits-math"
 
-    /// Fast cached font creation, synchronous and concurrency-safe.
+    /// Fast cached font creation, concurrency-safe.
     public func mtfont(size: CGFloat) -> MTFont {
         MTFont.cached(font: self, size: size)
     }
 
-    // MARK: - Resource loader stubs (implement these for your bundle)
-    public func cgFont() -> CGFont {
-        fatalError("Implement cgFont() resource loader for font: \(self.rawValue)")
+    /// Returns the URL for this font's .otf resource in the module bundle.
+    private var resourceURL: URL? {
+        Bundle.module.url(forResource: self.rawValue, withExtension: "otf")
     }
+
+    public func cgFont() -> CGFont {
+        guard let url = resourceURL,
+              let data = try? Data(contentsOf: url) as CFData,
+              let provider = CGDataProvider(data: data),
+              let cgFont = CGFont(provider) else {
+            // Fallback: use system font
+            return CTFontCopyGraphicsFont(CTFontCreateUIFontForLanguage(.system, 0, nil)!, nil)
+        }
+        return cgFont
+    }
+
     public func ctFont(withSize size: CGFloat) -> CTFont {
-        fatalError("Implement ctFont(withSize:) for font: \(self.rawValue)")
+        guard let url = resourceURL,
+              let data = try? Data(contentsOf: url) as CFData,
+              let provider = CGDataProvider(data: data),
+              let cgFont = CGFont(provider) else {
+            return CTFontCreateUIFontForLanguage(.system, size, nil)!
+        }
+        return CTFontCreateWithGraphicsFont(cgFont, size, nil, nil)
     }
 }
 
-public final class MTFont {
+/// Thread-safe: all properties are `let` constants, the font cache is serial-queue guarded,
+/// and the math table is lazily initialized under a serial lock.
+public final class MTFont: @unchecked Sendable {
     public let font: MathFont
     public let size: CGFloat
     private let _cgFont: CGFont
@@ -45,7 +57,6 @@ public final class MTFont {
     private let unitsPerEm: UInt
     private var _mathTab: MTFontMathTable?
 
-    // ---- Serial queue for concurrency-safe cache access ----
     nonisolated(unsafe) private static var cache: [String: MTFont] = [:]
     private static let cacheQueue = DispatchQueue(label: "com.alphaeqt.mtfontcache.serial")
 
@@ -73,22 +84,20 @@ public final class MTFont {
     public var ctFont: CTFont { _ctFont }
     public var fontSize: CGFloat { size }
 
-    /// Lazy math table (readonly after init, so thread-safe for reads)
     public var mathTable: MTFontMathTable {
         return MTFont.serialTableAccess { [weak self] in
-            if let tab = self?._mathTab { return tab }
-            let tab = MTFontMathTable(font: self!, fontSize: self!.size, unitsPerEm: self!.unitsPerEm)
-            self?._mathTab = tab
+            guard let self = self else { fatalError() }
+            if let tab = self._mathTab { return tab }
+            let tab = MTFontMathTable(font: self, fontSize: self.size, unitsPerEm: self.unitsPerEm)
+            self._mathTab = tab
             return tab
         }
     }
 
-    /// Returns a copy of this font at a new size (uses cache).
     public func copy(withSize size: CGFloat) -> MTFont {
         MTFont.cached(font: font, size: size)
     }
 
-    /// Loads the math table plist for this font.
     public func loadMathTable() -> NSDictionary? {
         let tableName = "\(font.rawValue).plist"
         guard let url = Bundle.module.url(forResource: tableName, withExtension: nil),
@@ -99,7 +108,6 @@ public final class MTFont {
         return dict
     }
 
-    /// Serializes access to math table for thread safety.
     private static let tableQueue = DispatchQueue(label: "com.alphaeqt.mtfont.table.serial")
     private static func serialTableAccess<T>(_ block: () -> T) -> T {
         return tableQueue.sync { block() }

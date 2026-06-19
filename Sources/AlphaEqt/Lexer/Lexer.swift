@@ -1,6 +1,14 @@
+//
+//  Lexer.swift
+//  AlphaEqt
+//
+//  Tokenizer for LaTeX math input. Does NOT require macOS 13+.
+//
+
 import Foundation
 
-@available(macOS 13.0, *)
+/// A simple lexer/tokenizer for LaTeX math expressions.
+/// Uses NSRegularExpression for broad platform compatibility (iOS 15+, macOS 12+).
 public class Lexer {
     public let input: String
 
@@ -30,78 +38,64 @@ public class Lexer {
         "{": .beginGroup,
         "}": .endGroup,
         "\\": .escape
-        // Add more if needed
     ]
 
-    // Patterns (unchanged)
-    static let spacePattern = #"[ \r\n\t]+"#
-    static let controlWordPattern = #"\\[a-zA-Z@]+"#
-    static let controlSymbolPattern = #"\\[^a-zA-Z@]"#
-    static let controlWordWhitespacePattern = #"\\([a-zA-Z@]+)([ \r\n\t]*)"#
-    static let controlSpacePattern = #"\\(\n|[ \r\t]+\n?)[ \r\t]*"#
-    static let identifierPattern = #"[A-Za-z]+"#
-    static let numberPattern = #"\d+"#
-    static let operatorPattern = #"[+\-*/^_=]"#
-    static let delimiterPattern = #"[{}()\[\]|~]"#
-    static let tokenPattern = [
-        spacePattern,
-        controlWordWhitespacePattern,
-        controlWordPattern,
-        controlSymbolPattern,
-        controlSpacePattern,
-        identifierPattern,
-        numberPattern,
-        operatorPattern,
-        delimiterPattern
-    ].joined(separator: "|")
+    // Combined token pattern as NSRegularExpression
+    // Single-letter identifiers for math mode (mc^2 → m, c, ^, 2)
+    // Commands like \text still work via \\[a-zA-Z@]+
+    static let tokenPattern: NSRegularExpression = {
+        let pattern = #"([ \r\n\t]+|\\([a-zA-Z@]+)([ \r\n\t]*)|\\[a-zA-Z@]+|\\[^a-zA-Z@]|\\(\n|[ \r\t]+\n?)[ \r\t]*|[A-Za-z]|\d+|[+\-*/^_=]|[{}()\[\]|~])"#
+        return try! NSRegularExpression(pattern: pattern, options: [])
+    }()
 
     public init(input: String) {
         self.input = input
     }
 
     public func tokenize() -> [Token] {
+        let nsRange = NSRange(location: 0, length: input.utf16.count)
+        let matches = Self.tokenPattern.matches(in: input, options: [], range: nsRange)
         var rawTokens: [Token] = []
-        let regex = try! Regex(Self.tokenPattern)
+        var lastEnd = 0
 
-        var currentIndex = input.startIndex
-        var lineNumber = 1
-        var columnNumber = 1
-        while currentIndex < input.endIndex {
-            if let match = input[currentIndex...].firstMatch(of: regex) {
-                let tokenText = String(match.0)
-                let range = input.range(of: tokenText, range: currentIndex..<input.endIndex)!
-                // Check catcode for first character
-                let catcode = Self.catcodes[tokenText.first ?? " "] ?? .other
-                // If comment, skip to end of line
-                if catcode == .comment {
-                    if let nlIndex = input[currentIndex...].firstIndex(of: "\n") {
-                        currentIndex = input.index(after: nlIndex)
-                    } else {
-                        // End of input
-                        break
-                    }
-                    continue
-                }
-                let offset = input.distance(from: input.startIndex, to: range.lowerBound)
-                let length = input.distance(from: range.lowerBound, to: range.upperBound)
-                // Count lines before current token
-                let substring = input[input.startIndex..<range.lowerBound]
-                lineNumber = substring.reduce(1) { $1 == "\n" ? $0 + 1 : $0 }
-                if let lastNewline = substring.lastIndex(of: "\n") {
-                    columnNumber = input.distance(from: lastNewline, to: range.lowerBound)
-                } else {
-                    columnNumber = offset + 1
-                }
-                let sourceLocation = SourceLocation(line: lineNumber, column: columnNumber, offset: offset, length: length)
-
-                rawTokens.append(Token(kind: classifyToken(tokenText, catcode: catcode), text: tokenText, sourceLocation: sourceLocation))
-                currentIndex = range.upperBound
-            } else {
-                break
+        for match in matches {
+            let matchRange = match.range
+            // If there's a gap (non-matching characters), skip them
+            if matchRange.location > lastEnd {
+                // Skip unrecognized characters (they'll be treated as individual symbols)
             }
+            lastEnd = matchRange.upperBound
+
+            guard let range = Range(matchRange, in: input) else { continue }
+            let tokenText = String(input[range])
+
+            // Determine catcode from first character
+            let catcode = Self.catcodes[tokenText.first ?? " "] ?? .other
+
+            // Handle comments - skip until end of line
+            if catcode == .comment {
+                continue
+            }
+
+            let offset = input.distance(from: input.startIndex, to: range.lowerBound)
+            let length = input.distance(from: range.lowerBound, to: range.upperBound)
+
+            // Compute line/column
+            let substring = input[input.startIndex..<range.lowerBound]
+            let lineNumber = substring.reduce(1) { $1 == "\n" ? $0 + 1 : $0 }
+            let columnNumber: Int
+            if let lastNewline = substring.lastIndex(of: "\n") {
+                columnNumber = input.distance(from: lastNewline, to: range.lowerBound)
+            } else {
+                columnNumber = offset + 1
+            }
+
+            let sourceLocation = SourceLocation(line: lineNumber, column: columnNumber, offset: offset, length: length)
+            let kind = classifyToken(tokenText, catcode: catcode)
+            rawTokens.append(Token(kind: kind, text: tokenText, sourceLocation: sourceLocation))
         }
 
-        // Custom delimiter combining logic (unchanged)
+        // Combine \left/ \right with delimiter
         var tokens: [Token] = []
         var i = 0
         while i < rawTokens.count {
@@ -153,7 +147,10 @@ public class Lexer {
             i += 1
         }
 
-        let eofLocation = SourceLocation(line: lineNumber, column: columnNumber, offset: input.count, length: 0)
+        // Add EOF token
+        let eofLine = input.reduce(1) { $1 == "\n" ? $0 + 1 : $0 }
+        let eofOffset = input.count
+        let eofLocation = SourceLocation(line: eofLine, column: 1, offset: eofOffset, length: 0)
         tokens.append(Token(kind: .eof, text: "EOF", sourceLocation: eofLocation))
         return tokens
     }
@@ -166,7 +163,6 @@ public class Lexer {
         return tokens
     }
 
-    // Now pass catcode to classifyToken for advanced logic
     private func classifyToken(_ text: String, catcode: Catcode) -> TokenKind {
         switch catcode {
         case .comment:

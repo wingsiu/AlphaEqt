@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 700" font-family="Menlo, monospace" font-size="13">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
+    </marker>
+    <marker id="arrowRed" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#cc0000"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="700" fill="#f8f8f8" rx="8"/>
+
+  <!-- Title -->
+  <text x="450" y="35" text-anchor="middle" font-size="20" font-weight="bold" fill="#222">CoreGraphics Coordinate System & shiftDown for \int Glyph</text>
+
+  <!-- LEFT PANEL: Coordinate system explanation -->
+  <rect x="20" y="55" width="420" height="200" fill="white" stroke="#ccc" stroke-width="1" rx="6"/>
+  <text x="30" y="80" font-weight="bold" fill="#333">CGContext Coordinate System (macOS)</text>
+  <text x="30" y="105" fill="#555">• (0,0) = mathematical baseline</text>
+  <text x="30" y="125" fill="#555">• Y-axis: UP = POSITIVE (+y), DOWN = NEGATIVE (-y)</text>
+  <text x="30" y="145" fill="#555">• ascent = distance above baseline (positive number)</text>
+  <text x="30" y="165" fill="#555">• descent = distance below baseline (positive number)</text>
+  <text x="30" y="185" fill="#555">• axisHeight = distance from baseline to math axis (250 FU)</text>
+  <text x="30" y="210" fill="#555" font-size="11" font-style="italic">(FU = font units; at 24pt/UPM=1000: 1pt = 1000/24 = 41.67 FU)</text>
+
+  <!-- RIGHT PANEL: displayBounds formula -->
+  <rect x="460" y="55" width="420" height="200" fill="white" stroke="#ccc" stroke-width="1" rx="6"/>
+  <text x="470" y="80" font-weight="bold" fill="#333">displayBounds() Formula</text>
+  <text x="470" y="110" fill="#555" font-family="monospace">CGRect(</text>
+  <text x="490" y="130" fill="#666" font-family="monospace">x:      self.position.x,</text>
+  <text x="490" y="150" fill="#cc0000" font-family="monospace" font-weight="bold">y:      self.position.y - self.descent,</text>
+  <text x="490" y="170" fill="#666" font-family="monospace">width:  self.width,</text>
+  <text x="490" y="190" fill="#666" font-family="monospace">height: self.ascent + self.descent</text>
+  <text x="470" y="210" fill="#555" font-family="monospace">)</text>
+  <text x="470" y="235" fill="#999" font-size="11">⚠️ ascent/descent are OVERRIDDEN by -shiftDown/+shiftDown</text>
+
+  <!-- MAIN DIAGRAM -->
+  <text x="450" y="290" text-anchor="middle" font-size="16" font-weight="bold" fill="#333">Visual: Comparing regular "x" vs. \int integral glyph</text>
+
+  <!-- LEFT: Regular letter "x" -->
+  <g transform="translate(40, 440)">
+    <!-- Y axis -->
+    <line x1="0" y1="-100" x2="0" y2="100" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <text x="-15" y="-105" text-anchor="end" fill="#333" font-weight="bold">+Y (up)</text>
+    <text x="-15" y="95" text-anchor="end" fill="#333">baseline y=0</text>
+
+    <!-- Red box for "x" -->
+    <rect x="30" y="-68" width="100" height="100" fill="none" stroke="#cc0000" stroke-width="2" stroke-opacity="0.7"/>
+    <text x="80" y="-40" text-anchor="middle" font-size="24" fill="#c00" font-weight="bold">x</text>
+
+    <!-- Labels -->
+    <text x="32" y="-74" font-size="11" fill="#cc0000" font-weight="bold">red box</text>
+    <text x="132" y="-75" font-size="11" fill="#888">origin.y = -descent = -0.7 * (height×0.07)</text>
+    <line x1="130" y1="-68" x2="280" y2="-68" stroke="#ccc" stroke-width="0.5" stroke-dasharray="3,3"/>
+    <line x1="130" y1="32" x2="280" y2="32" stroke="#ccc" stroke-width="0.5" stroke-dasharray="3,3"/>
+    <text x="290" y="-64" font-size="11" fill="#888">box.top = -68 pt</text>
+    <text x="290" y="36" font-size="11" fill="#888">box.bottom = +32 pt</text>
+    <text x="80" y="50" text-anchor="middle" font-size="11" fill="#999">ascent≈45pt, descent≈-7pt</text>
+    <text x="80" y="65" text-anchor="middle" font-size="11" fill="#999">→ no shiftDown</text>
+    <text x="80" y="80" text-anchor="middle" font-size="11" fill="#999">→ box.origin.y = -7pt</text>
+
+    <!-- Title -->
+    <text x="80" y="-110" text-anchor="middle" font-size="15" font-weight="bold" fill="#333">Regular "x" (no shiftDown)</text>
+  </g>
+
+  <!-- RIGHT: integral glyph -->
+  <g transform="translate(460, 440)">
+    <!-- Y axis -->
+    <line x1="0" y1="-160" x2="0" y2="100" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <text x="-15" y="-165" text-anchor="end" fill="#333" font-weight="bold">+Y (up)</text>
+    <text x="-15" y="95" text-anchor="end" fill="#333">baseline y=0</text>
+
+    <!-- Math axis -->
+    <line x1="-20" y1="-30" x2="320" y2="-30" stroke="#090" stroke-width="1" stroke-dasharray="6,3"/>
+    <text x="325" y="-27" font-size="11" fill="#090">math axis (y = axisHeight = 6pt)</text>
+
+    <!-- shiftDown arrow -->
+    <line x1="145" y1="0" x2="145" y2="42" stroke="#00a" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="155" y="24" font-size="12" fill="#00a" font-weight="bold">shiftDown</text>
+    <text x="155" y="38" font-size="11" fill="#00a">= 8.7 pt</text>
+
+    <!-- Integral red box -->
+    <rect x="30" y="-150" width="120" height="192" fill="none" stroke="#cc0000" stroke-width="2" stroke-opacity="0.7"/>
+
+    <!-- Integral glyph (ASCII approximation) -->
+    <text x="90" y="-60" text-anchor="middle" font-size="36" fill="#c00" font-weight="normal" font-family="Times New Roman, serif">∫</text>
+
+    <!-- Box labels -->
+    <text x="32" y="-156" font-size="11" fill="#cc0000" font-weight="bold">red box</text>
+    <text x="152" y="-146" font-size="11" fill="#888">box.origin.y = -descent - shiftDown</text>
+    <text x="152" y="-131" font-size="11" fill="#888">= -10.7 - 8.7 = -19.4 pt</text>
+    <text x="152" y="-116" font-size="11" fill="#888">box.top = -shiftDown + rawAscent</text>
+    <text x="152" y="-101" font-size="11" fill="#888">= -8.7 + 40.1 = 31.4 pt</text>
+    <text x="152" y="-86" font-size="11" fill="#888">box.bottom = -19.4pt + (40.1+10.7) = +31.4</text>
+
+    <!-- Arrow showing descent -->
+    <line x1="32" y1="0" x2="32" y2="42" stroke="#c60" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <text x="0" y="24" text-anchor="end" font-size="11" fill="#c60">descent = 10.7pt</text>
+
+    <!-- Arrow showing shiftDown from baseline -->
+    <line x1="60" y1="0" x2="60" y2="42" stroke="#00a" stroke-width="1.5" stroke-dasharray="3,2"/>
+    <text x="165" y="56" font-size="11" fill="#00a">glyph draws at y = -shiftDown = -8.7pt</text>
+    <text x="165" y="70" font-size="11" fill="#00a">(baseline is pushed down)</text>
+
+    <!-- Arrows for rawAscent/rawDescent -->
+    <line x1="20" y1="-150" x2="20" y2="42" stroke="#f0c" stroke-width="1" stroke-dasharray="2,2"/>
+    <text x="2" y="-55" text-anchor="end" font-size="11" fill="#f0c">rawAscent + rawDescent</text>
+    <text x="2" y="-40" text-anchor="end" font-size="11" fill="#f0c">= 50.8pt</text>
+
+    <!-- Title -->
+    <text x="90" y="-180" text-anchor="middle" font-size="15" font-weight="bold" fill="#333">\int integral.v1 (with shiftDown)</text>
+  </g>
+
+  <!-- BOTTOM BOX: Summary -->
+  <rect x="20" y="620" width="860" height="60" fill="#e8f4e8" stroke="#4a4" stroke-width="1.5" rx="6"/>
+  <text x="30" y="642" font-weight="bold" fill="#060">Key Insight:</text>
+  <text x="30" y="662" fill="#333">The red box is correct. The integral must be centered on the math axis (green line). This forces the glyph down by shiftDown ≈ 8.7pt, making the red box start at y = -19.4pt instead of y = -3.6pt (like "x").</text>
+
+  <!-- Gradient fade warning -->
+  <rect x="20" y="560" width="860" height="55" fill="#fff8e0" stroke="#da0" stroke-width="1" rx="6"/>
+  <text x="30" y="580" font-weight="bold" fill="#960">⚠️ The real coordinate system effect on screen:</text>
+  <text x="30" y="598" fill="#555">The red box IS at y = -19.4pt. If you're comparing it to a normal letter's red box at y = -3.6pt,</text>
+  <text x="30" y="613" fill="#555">the integral's box appears 15.8pt LOWER on screen — this is the correct, expected TeX behavior.</text>
+</svg>

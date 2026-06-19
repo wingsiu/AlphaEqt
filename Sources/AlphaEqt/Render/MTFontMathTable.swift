@@ -18,8 +18,8 @@ public class MTFontMathTable {
 
     // Constants keys
     private let kConstants = "constants"
-    private let kVertVariants = "verticalVariants"
-    private let kHorizVariants = "horizontalVariants"
+    private let kVertVariants = "v_variants"
+    private let kHorizVariants = "h_variants"
 
     private var constants: NSDictionary? { mTable[kConstants] as? NSDictionary }
 
@@ -85,6 +85,12 @@ public class MTFontMathTable {
     public var superscriptBottomMaxWithSubscript: CGFloat { constantFromTable("SuperscriptBottomMaxWithSubscript") }
     public var subSuperscriptGapMin: CGFloat { constantFromTable("SubSuperscriptGapMin") }
 
+    // MARK: - Large Operator Limits
+    public var upperLimitGapMin: CGFloat { constantFromTable("UpperLimitGapMin") }
+    public var upperLimitBaselineRiseMin: CGFloat { constantFromTable("UpperLimitBaselineRiseMin") }
+    public var lowerLimitGapMin: CGFloat { constantFromTable("LowerLimitGapMin") }
+    public var lowerLimitBaselineDropMin: CGFloat { constantFromTable("LowerLimitBaselineDropMin") }
+
     // MARK: - Accent and Over/Under Metrics
     public var accentBaseHeight: CGFloat { constantFromTable("AccentBaseHeight") }
     public var overbarVerticalGap: CGFloat { constantFromTable("OverbarVerticalGap") }
@@ -96,12 +102,18 @@ public class MTFontMathTable {
 
     // MARK: - Radical Metrics
     public var radicalDegreeBottomRaisePercent: CGFloat { percentFromTable("RadicalDegreeBottomRaisePercent") }
+    public var radicalDisplayStyleVerticalGap: CGFloat { constantFromTable("RadicalDisplayStyleVerticalGap") }
     public var radicalVerticalGap: CGFloat { constantFromTable("RadicalVerticalGap") }
     public var radicalRuleThickness: CGFloat { constantFromTable("RadicalRuleThickness") }
     public var radicalExtraAscender: CGFloat { constantFromTable("RadicalExtraAscender") }
     public var radicalKernBeforeDegree: CGFloat { constantFromTable("RadicalKernBeforeDegree") }
     public var radicalKernAfterDegree: CGFloat { constantFromTable("RadicalKernAfterDegree") }
 
+    // MARK: - Constants
+    var scriptScaleDown:CGFloat { percentFromTable("ScriptPercentScaleDown")  }
+    var scriptScriptScaleDown:CGFloat { percentFromTable("ScriptScriptPercentScaleDown")  }
+    var delimitedSubFormulaMinHeight:CGFloat { constantFromTable("DelimitedSubFormulaMinHeight")  }
+    
     // MARK: - Delimiter Metrics
     public var delimiterShortfall: CGFloat { constantFromTable("DelimiterShortfall") }
     public var delimiterFactor: CGFloat { percentFromTable("DelimiterFactor") }
@@ -112,6 +124,39 @@ public class MTFontMathTable {
     public var axisHeight: CGFloat { constantFromTable("AxisHeight") }
     public var scriptscriptSpace: CGFloat { constantFromTable("ScriptscriptSpace") }
     public var scriptSpace: CGFloat { constantFromTable("ScriptSpace") }
+
+    // MARK: - Italic Correction
+    public func getItalicCorrection(_ glyph: CGGlyph) -> CGFloat {
+        let glyphName = font.get(nameForGlyph: glyph)
+        tableLock.lock()
+        defer { tableLock.unlock() }
+        guard let italicDict = mTable["italic"] as? NSDictionary,
+              let correction = italicDict[glyphName] as? NSNumber else { return 0 }
+        return fontUnitsToPt(correction.intValue)
+    }
+
+    /// Returns the largest vertical variant glyph for large operators in display style,
+    /// matching SwiftMath's `getLargerGlyph(forDisplayStyle: true)`.
+    /// If no variants exist, returns the original glyph.
+    public func getLargerGlyph(_ glyph: CGGlyph) -> CGGlyph {
+        let variants = getVerticalVariantsForGlyph(glyph)
+        let glyphName = font.get(nameForGlyph: glyph)
+        print("[getLargerGlyph] input=\(glyphName) variantCount=\(variants.count)")
+        for (i, v) in variants.enumerated() {
+            if let num = v {
+                let vg = CGGlyph(truncating: num)
+                print("  [\(i)] \(font.get(nameForGlyph: vg))")
+            }
+        }
+        // Return the last (largest) variant, matching SwiftMath's display‑style selection.
+        if let lastNum = variants.last, let last = lastNum {
+            let lastName = font.get(nameForGlyph: CGGlyph(truncating: last))
+            print("[getLargerGlyph] returning \(lastName)")
+            return CGGlyph(truncating: last)
+        }
+        print("[getLargerGlyph] no variants, returning original \(glyphName)")
+        return glyph
+    }
 
     // MARK: - Glyph Variant Methods
     public func getVerticalVariantsForGlyph(_ glyph: CGGlyph) -> [NSNumber?] {
@@ -140,6 +185,41 @@ public class MTFontMathTable {
             }
         }
         return glyphArray
+    }
+
+    // MARK: - Glyph Assembly
+
+    /// Part of a vertical/horizontal glyph construction assembly.
+    public struct GlyphPart {
+        public var glyph: CGGlyph = 0
+        public var fullAdvance: CGFloat = 0
+        public var startConnectorLength: CGFloat = 0
+        public var endConnectorLength: CGFloat = 0
+        public var isExtender: Bool = false
+    }
+
+    /// Returns the vertical glyph assembly parts for the given glyph.
+    /// If no assembly is defined, returns an empty array.
+    public func getVerticalGlyphAssembly(forGlyph glyph: CGGlyph) -> [GlyphPart] {
+        tableLock.lock(); defer { tableLock.unlock() }
+        guard let assemblyTable = mTable["v_assembly"] as? NSDictionary else { return [] }
+        let glyphName = font.get(nameForGlyph: glyph)
+        guard let assemblyInfo = assemblyTable[glyphName] as? NSDictionary,
+              let parts = assemblyInfo["parts"] as? NSArray else { return [] }
+        var rv: [GlyphPart] = []
+        for partDict in parts {
+            guard let info = partDict as? NSDictionary,
+                  let glyphNameStr = info["glyph"] as? String,
+                  let advNum = info["advance"] as? NSNumber else { continue }
+            var part = GlyphPart()
+            part.glyph = font.get(glyphWithName: glyphNameStr)
+            part.fullAdvance = fontUnitsToPt(advNum.intValue)
+            part.startConnectorLength = fontUnitsToPt((info["startConnector"] as? NSNumber)?.intValue ?? 0)
+            part.endConnectorLength = fontUnitsToPt((info["endConnector"] as? NSNumber)?.intValue ?? 0)
+            part.isExtender = (info["extender"] as? NSNumber)?.boolValue ?? false
+            rv.append(part)
+        }
+        return rv
     }
 
     // MARK: - Raw Table Access

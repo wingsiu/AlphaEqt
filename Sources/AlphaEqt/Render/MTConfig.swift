@@ -2,37 +2,26 @@
 //  MTConfig.swift
 //  AlphaEqt
 //
-//  Created by Alpha Ng on 2/10/2025.
+//  Optional tuning overrides for MATH table constants.
+//  Set any property to a non-nil value to override the font-table default.
 //
+
 import Foundation
+import CoreGraphics
 
-#if os(iOS) || os(visionOS)
+/// Global configuration for rendering tweaks.
+/// These override the OpenType MATH table values when set.
+public struct MTConfig: @unchecked Sendable {
+    public nonisolated(unsafe) static var shared = MTConfig()
 
-import UIKit
+    /// Fraction script scale (font × value) — nil = use font table.
+    /// Defaults to 0.90 for softer shrinking (scripts use 0.75).
+    public var fractionScriptScaleDown: CGFloat? = 0.90
 
-public typealias MTView = UIView
-public typealias MTColor = UIColor
-public typealias MTBezierPath = UIBezierPath
-public typealias MTLabel = UILabel
-public typealias MTEdgeInsets = UIEdgeInsets
-public typealias MTRect = CGRect
-public typealias MTImage = UIImage
+    /// Fraction script-of-script scale — nil = use font table.
+    /// Defaults to 0.80 for softer shrinking (scripts use 0.60).
+    public var fractionScriptScriptScaleDown: CGFloat? = 0.80
 
-let MTEdgeInsetsZero = UIEdgeInsets.zero
-func MTGraphicsGetCurrentContext() -> CGContext? { UIGraphicsGetCurrentContext() }
-
-#else
-
-import AppKit
-
-public typealias MTView = NSView
-public typealias MTColor = NSColor
-public typealias MTBezierPath = NSBezierPath
-public typealias MTEdgeInsets = NSEdgeInsets
-public typealias MTRect = NSRect
-public typealias MTImage = NSImage
-
-let MTEdgeInsetsZero = NSEdgeInsets.init(top: 0, left: 0, bottom: 0, right: 0)
-func MTGraphicsGetCurrentContext() -> CGContext? { NSGraphicsContext.current?.cgContext }
-
-#endif
+    /// Minimum font size for any level (prevents unreadable text).
+    public var minimumFontSize: CGFloat = 6.0
+}

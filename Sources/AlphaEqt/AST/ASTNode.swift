@@ -56,39 +56,28 @@ public enum ASTNodeType: String {
     case raise          // Raise/lower box, e.g. \raisebox{}
     case inner          // Inner node
     case error          // Parse error node
-    // Add more as needed
 }
 
 /// Math mode for AST nodes.
-/// Indicates whether the node is in math mode or text mode.
 public enum MathMode: String {
     case math      // Math mode, e.g. $...$
     case text      // Text mode, e.g. \text{...}
 }
 
 /// Source format for AST nodes.
-/// Describes the format of the original input, e.g. LaTeX, MathML, AsciiMath.
 public enum MathFormat: String {
     case latex     // LaTeX input
     case mathml    // MathML input
     case asciiMath // AsciiMath input
-    // Extend as needed
 }
 
 /// Records the location of an AST node in the original source string.
-/// Useful for error reporting, highlighting, and debugging.
 public struct SourceLocation {
-    public let line: Int      // Line number (1-based)
-    public let column: Int    // Column number (1-based)
-    public let offset: Int    // Absolute character offset (0-based)
-    public let length: Int    // Length in characters
+    public let line: Int
+    public let column: Int
+    public let offset: Int
+    public let length: Int
 
-    /// Construct a SourceLocation for a node.
-    /// - Parameters:
-    ///   - line: The line number (starting at 1) where this node begins.
-    ///   - column: The column number (starting at 1) where this node begins.
-    ///   - offset: The absolute character position in the source string (starting at 0).
-    ///   - length: The length in characters of the source string for this node.
     public init(line: Int, column: Int, offset: Int, length: Int) {
         self.line = line
         self.column = column
@@ -103,34 +92,87 @@ extension SourceLocation: CustomStringConvertible {
     }
 }
 
-/// Base class for all AST nodes in the KaTeX-style AST.
-/// Subclasses will represent specific node types (e.g. MathOrdNode, FracNode).
-public class ASTNode: CustomStringConvertible {
-    public let type: ASTNodeType           // The node's type
-    public weak var parentNode: ASTNode?        // Reference to parent node in the AST tree (optional)
-    public var location: SourceLocation?   // Location in the original source (optional)
-    public var mode: MathMode              // Math or text mode
-    public var sourceFormat: MathFormat    // Input format (LaTeX, MathML, etc.)
-    public var originalText: String?       // The original source string for this node (optional)
-    
-    // CHANGE 1: Added `text` property for simple node types (mathord, bin, rel, etc).
-    public var text: String?               // Value for symbol/operator (optional, used for simple nodes)
-    
-    /// All child nodes of this node; subclasses override this for their specific children.
+/// The font style of a character.
+public enum MTFontStyle: Int {
+    case defaultStyle = 0
+    case roman
+    case bold
+    case caligraphic
+    case typewriter
+    case italic
+    case sansSerif
+    case fraktur
+    case blackboard
+    case boldItalic
+}
+
+public enum MTLineStyle: Int, Comparable {
+    case display
+    case text
+    case script
+    case scriptOfScript
+
+    public func inc() -> MTLineStyle {
+        let raw = self.rawValue + 1
+        if let style = MTLineStyle(rawValue: raw) { return style }
+        return .display
+    }
+
+    public var isNotScript: Bool { self < .script }
+    public static func < (lhs: MTLineStyle, rhs: MTLineStyle) -> Bool { lhs.rawValue < rhs.rawValue }
+}
+
+/// Base class for all AST nodes.
+/// Thread-safe for rendering: all properties read by Typesetter (`text`, `type`,
+/// `childNodes`, `indexRange`, `fontStyle`) are set during parsing and remain
+/// immutable thereafter. The `weak var display` is set post-render on the caller's
+/// thread, never concurrently.
+public class ASTNode: CustomStringConvertible, @unchecked Sendable {
+    public var type: ASTNodeType
+    public weak var parentNode: ASTNode?
+    public var location: SourceLocation?
+    public var mode: MathMode
+    public var sourceFormat: MathFormat
+    public var originalText: String?
+    public var text: String?
+    public var indexRange = NSRange(location: 0, length: 0)
+    var fontStyle: MTFontStyle = .defaultStyle
+
+    /// All child nodes of this node.
     public var childNodes: [ASTNode]?
-    
-    /// Initializes a base AST node.
-    /// Use subclasses for nodes with additional fields/children.
-    /// - Parameters:
-    ///   - type: The AST node type.
-    ///   - text: Symbol/operator value for simple nodes (optional).
-    ///   - mode: Math mode or text mode.
-    ///   - sourceFormat: Original input format.
-    ///   - parentNode: Parent node in the AST tree.
-    ///   - location: Location in the source string.
-    ///   - originalText: The original source for this node.
+
+    // Weak reference back to display (set during rendering)
+    public weak var display: AnyObject?
+
+    public var atomType: AtomType {
+        switch type {
+        case .mathord, .textord, .text, .unicode, .raw, .phantom, .font, .fontsize, .styling, .sizing, .operatorname, .pmb, .color, .raise, .verb:
+            return .ord
+        case .op:
+            return .op
+        case .bin, .infix:
+            return .bin
+        case .rel:
+            return .rel
+        case .open:
+            return .open
+        case .close:
+            return .close
+        case .punct:
+            return .punct
+        case .accent, .supsub, .frac, .genfrac, .sqrt, .root, .ordgroup, .array, .environment, .htmlmathml, .subarray, .underline, .overline, .lap, .inner, .hbox, .rule, .mathchoice, .tag:
+            return .inner
+        case .spacing, .kern:
+            return .ord
+        case .error:
+            return .ord
+        default:
+            return .ord
+        }
+    }
+
     public init(type: ASTNodeType,
-                text: String? = nil,       // CHANGE 2: Added text parameter
+                text: String? = nil,
                 mode: MathMode = .math,
                 sourceFormat: MathFormat = .latex,
                 parentNode: ASTNode? = nil,
@@ -138,7 +180,7 @@ public class ASTNode: CustomStringConvertible {
                 originalText: String? = nil,
                 childNodes: [ASTNode]? = nil) {
         self.type = type
-        self.text = text                  // CHANGE 3: Initialize text
+        self.text = text
         self.mode = mode
         self.sourceFormat = sourceFormat
         self.parentNode = parentNode
@@ -146,8 +188,7 @@ public class ASTNode: CustomStringConvertible {
         self.originalText = originalText
         self.childNodes = childNodes
     }
-    
-    /// Debug-friendly string description for printing the node and its children.
+
     public var description: String {
         var fields: [String] = ["\"type\": \"\(type)\""]
         if let text = text, !text.isEmpty {
