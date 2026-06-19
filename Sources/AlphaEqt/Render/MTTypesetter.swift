@@ -214,6 +214,7 @@ public class Typesetter: @unchecked Sendable {
         case .root:   return renderRadical(node, hasDegree: true)
         case .spacing:   return renderSpacing(node)
         case .leftright: return renderLeftRight(node)
+        case .array:     return renderArray(node)
         default:         return renderTextNode(node)
         }
     }
@@ -925,6 +926,85 @@ public class Typesetter: @unchecked Sendable {
         gd.width = extWidth
         gd.position = .zero
         return gd
+    }
+
+    // MARK: - Arrays / Matrices
+
+    /// Renders an array/matrix node: rows of cells with equal column widths,
+    /// stacked vertically. Each row is an `MTMathListDisplay`. Rows are stacked
+    /// as a vertical `MTMathListDisplay`.
+    private func renderArray(_ node: ASTNode) -> MTDisplay? {
+        guard let rows = node.childNodes, !rows.isEmpty else { return nil }
+
+        let mu = font.mathTable.muUnit
+        let colGap = mu * 18   // inter‑column space
+        let rowGap = mu * 1    // inter‑row space
+
+        // Determine column count.
+        var numCols = 0
+        for row in rows { numCols = max(numCols, row.childNodes?.count ?? 0) }
+        guard numCols > 0 else { return nil }
+
+        // Render every cell, track per‑column max widths.
+        var allCells = [[MTDisplay?]]()
+        var colW = [CGFloat](repeating: 0, count: numCols)
+        for row in rows {
+            let cols = row.childNodes ?? []
+            var rowCells = [MTDisplay?]()
+            for ci in 0..<numCols {
+                guard ci < cols.count else { rowCells.append(nil); continue }
+                let col = cols[ci]
+                let sub = Typesetter(font: font, style: style, textColor: textColor)
+                let d: MTDisplay?
+                if col.type == .ordgroup, let ch = col.childNodes { d = sub.createDisplay(ch) }
+                else { d = sub.renderNode(col) }
+                if let cd = d { colW[ci] = max(colW[ci], cd.width) }
+                rowCells.append(d)
+            }
+            allCells.append(rowCells)
+        }
+
+        // Build rows as MTMathListDisplay.
+        var rowDisplays = [MTDisplay]()
+        for cells in allCells {
+            var rowElements = [MTDisplay]()
+            var x: CGFloat = 0
+            var rowAscent: CGFloat = 0, rowDescent: CGFloat = 0
+            for ci in 0..<numCols {
+                guard let cell = cells[ci] else { x += colW[ci] + colGap; continue }
+                cell.position = CGPoint(x: x + (colW[ci] - cell.width) / 2, y: 0)
+                rowAscent = max(rowAscent, cell.ascent)
+                rowDescent = max(rowDescent, cell.descent)
+                rowElements.append(cell)
+                x += colW[ci] + colGap
+            }
+            let w = x - colGap
+            let row = MTMathListDisplay(withDisplays: rowElements, range: NSRange(location: NSNotFound, length: 0))
+            row.ascent = rowAscent; row.descent = rowDescent; row.width = w
+            row.position = .zero
+            rowDisplays.append(row)
+        }
+
+        // Stack rows vertically.
+        var y: CGFloat = 0
+        for (i, row) in rowDisplays.enumerated() {
+            if i > 0 { y += rowGap }
+            row.position = CGPoint(x: 0, y: -y)
+            y += row.ascent + row.descent
+        }
+
+        // Outer list with correct extent.
+        let maxW = rowDisplays.map { $0.width }.max() ?? 0
+        var maxTop: CGFloat = 0, maxBottom: CGFloat = 0
+        for row in rowDisplays {
+            maxTop = max(maxTop, row.position.y + row.ascent)
+            maxBottom = max(maxBottom, -(row.position.y - row.descent))
+        }
+        let outer = MTMathListDisplay(withDisplays: rowDisplays, range: node.indexRange)
+        outer.width = maxW
+        outer.ascent = maxTop
+        outer.descent = maxBottom
+        return outer
     }
 
     // MARK: - Inter-element spacing

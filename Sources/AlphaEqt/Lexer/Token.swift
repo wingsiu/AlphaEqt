@@ -14,11 +14,13 @@ public enum TokenKind {
     case leftBrace, rightBrace, leftParen, rightParen, leftBracket, rightBracket
     case customDelimiterLeft
     case customDelimiterRight
+    case alignmentTab     // & in matrix environments
+    case lineBreak        // \\ row separator
     case verbatim 
     case eof
     case error
-    case comment        // <-- Add this!
-    case activeChar     // <-- Add if handling ~ as active character
+    case comment
+    case activeChar
 
 }
 
@@ -29,5 +31,3 @@ public struct Token {
 
     // Optionally, keep 'range' for backward compatibility if needed
 }
-
-

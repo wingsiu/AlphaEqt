@@ -45,6 +45,8 @@ public class LatexParser {
         for cmd in spacingCmds {
             commandHandlers[cmd] = handleSpacingCommand
         }
+        // Matrix environments (trigger on \begin)
+        commandHandlers["\\begin"] = handleBeginMatrixCommand
         // Left/right delimiter pairs — trigger on \left + \right
         commandHandlers["\\left("] = handleLeftRightCommand
         commandHandlers["\\left["] = handleLeftRightCommand

@@ -1,55 +1,87 @@
-# AlphaEqt Progress Report — June 18, 2026
+# AlphaEqt Progress Report — June 20, 2026
 
-## Completed: Fraction Rendering with TeX Appendix G Rules
+## Completed Features
 
-### Files Changed/Created
+### Rendering
+| # | Feature | Description |
+|---|---------|-------------|
+| 1 | **Core Display Tree** | MTDisplay base, MTCTLineDisplay, MTMathListDisplay, Typesetter |
+| 2 | **Superscript/Subscript** | TeX Appendix G rules via MATH table |
+| 3 | **Fractions** | `\frac{num}{den}` with rule, clearance, style cascading |
+| 4 | **Radicals** | `\sqrt{x}`, `\sqrt[n]{x}` with slope-extender + degree |
+| 5 | **Large Operators** | Display-style variants for ∑,∏,∫, etc. via glyph variant chain |
+| 6 | **Limits (above/below)** | ∑,∏,⋂,⋃,⋀,⋁,⨁,⨂ in display style |
+| 7 | **Delimiters** | `\left(...\right)` with variant chain + glyph assembly fallback |
+| 8 | **Spacing commands** | `\quad`, `\qquad`, `\,`, `\;`, `\!` |
+| 9 | **Math italic** | ASCII a-z/A-Z + Greek lowercase α-ω → math-italic Unicode |
+| 10 | **Style sizing** | `\displaystyle`/`\textstyle`/`\scriptstyle`/`\scriptscriptstyle` |
+| 11 | **Font commands (pass-through)** | `\mathbf{F}`, `\mathbb{R}`, etc. — consume braced arg, parse content |
+| 12 | **Inter-element spacing** | TeX atom type spacing via `Spaces.swift` |
+| 13 | **Color** | kCTForegroundColorAttributeName propagation |
+| 14 | **Debug boxes** | Red border rendering (enabled for development) |
 
-| File | Status | Description |
-|---|---|---|
-| `Sources/AlphaEqt/Render/DisplayAtoms.swift` | Modified | `MTFractionDisplay` with TeX gap-minimum clearance algorithm |
-| `Sources/AlphaEqt/Render/MTTypesetter.swift` | Modified | Style cascading (D→T→S→SS), `\displaystyle` handling, `renderSizing()`, `getStyleSize()` |
-| `Sources/AlphaEqt/Render/MTConfig.swift` | New | Configurable fraction scales (0.90/0.80) vs script scales (0.75/0.60) |
-| `Sources/AlphaEqt/Render/MTColor.swift` | New | `MTColor` typealias with safe CGColor access |
-| `Sources/AlphaEqt/Parser/CommandHandler/Sizing.swift` | New | Parser for `\displaystyle`/`\textstyle`/`\scriptstyle`/`\scriptscriptstyle` |
-| `Sources/AlphaEqt/Parser/LatexParser.swift` | Modified | Registered 4 sizing command handlers |
-| `Sources/AlphaEqt/Fonts/latinmodern-math.plist` | Modified | `ScriptPercentScaleDown` 70→75, `ScriptScriptPercentScaleDown` 50→60 |
+### Parsing
+| # | Feature | Description |
+|---|---------|-------------|
+| 15 | **Lexer** | Tokenizes all ASCII math + emoji/CJK + `.`, `,` |
+| 16 | **Command handler framework** | Pluggable handlers for `/frac`, `/sqrt`, `/left`, etc. |
+| 17 | **Greek letters** | 31 commands (lowercase + uppercase + variants) |
+| 18 | **Math symbols** | 280+ commands cross-referenced with SwiftMath |
+| 19 | **Named operators** | 56 operators (∑,∫,sin,cos,log,lim, etc.) |
+| 20 | **Sup/sub parsing** | Recursive nested scripts |
+| 21 | **Text command** | `\text{abc}` |
 
-### Key Design Decisions
+### MathView
+| # | Feature | Description |
+|---|---------|-------------|
+| 22 | **iOS UIView** | Y-flip CoreText rendering |
+| 23 | **macOS NSView** | Y-up CoreText rendering |
+| 24 | **SwiftUI wrapper** | MathText UIViewRepresentable |
+| 25 | **Dark mode** | Manual traitCollection → concrete RGB |
 
-1. **Style Cascading**: Matches iOSMath — `display → text → script → scriptOfScript` (stops at minimum)
-2. **Fraction Scaling**: 0.90/0.80 (configurable) for nested fractions; 0.75/0.60 for scripts
-3. **Gap Minimums**: Display-style gaps only for `.display` (matches iOSMath), not `.text`
-4. **Bar Position**: Drawn at `axisHeight` above baseline (MATH table constant)
-5. **Font Table Values**: All scaling from OpenType MATH plist via `percentFromTable()`
-
-### Working Features
-
-- `\frac{a}{b}` — single-level fractions
-- `\frac{x^2}{\frac{y}{z}}` — nested fractions with style cascading
-- `\displaystyle{\frac{a}{b}}` — style-change commands with braces
-- `\displaystyle`, `\textstyle`, `\scriptstyle`, `\scriptscriptstyle` — all 4 TeX style tokens
+### Demo
+| # | Feature | Description |
+|---|---------|-------------|
+| 26 | **Side-by-side comparison** | AlphaEqt vs SwiftMath, both with xits-math |
+| 27 | **Bidirectional scroll** | ScrollView([.vertical, .horizontal]) |
+| 28 | **35 comparison samples** | Covering all implemented features |
+| 29 | **Benchmark tab** | Render timing measurement |
 
 ---
 
-## Next: Large Operators (`\sum`, `\int`, `\prod`, `\lim`)
+## Remaining Unimplemented Features
 
-### Why Large Operators Before Radicals?
+### ⭐ High Priority
 
-1. **No stretcher assembly** — large operators use pre-built glyph variants, not extender construction
-2. **Limits reuse existing superscript infrastructure** (`makeScripts` in Typesetter)
-3. **More common** in math expressions
-4. **Exercise glyph variant system** that radicals will also need
+| # | Feature | Effort | Description |
+|---|---------|--------|-------------|
+| **I1** | **Integrals with limits** | Medium | ∫∬∭∮ — limits as sub/superscripts (above in display, side in inline). Needs `\limits`/`\nolimits` support. |
+| **I2** | **Debug cleanup** | Small | Disable `debugBoxesEnabled = true`, remove `print(...)` from `MTGlyphDisplay.draw()` and `getLargerGlyph()` |
 
-### Implementation Needs
+### Medium Priority
 
-| Component | Status |
-|---|---|
-| `MTLargeOpLimitsDisplay` | Need to create |
-| `getLargerGlyph` / `getItalicCorrection` in math table | Need to add |
-| `makeLargeOp` / `addLimitsToDisplay` in Typesetter | Need to implement |
-| `\sum`, `\int`, `\prod`, `\lim` parser handlers | Need to create |
-| Axis-height centering | Already available |
+| # | Feature | Effort | Description |
+|---|---------|--------|-------------|
+| **I3** | **Accents** | Medium | `\hat`, `\bar`, `\tilde`, `\dot`, `\ddot`, `\vec`, `\widehat`, `\widetilde` — combining characters or MATH table glyph assembly |
+| **I4** | **Real font styles** | Medium | `\mathbf`, `\mathrm`, `\mathcal`, `\mathbb`, `\mathfrak`, `\mathit`, `\mathsf`, `\mathtt` with actual CTFont switching |
+| **I5** | **Tests** | Ongoing | Expand LexerTests, ParserTests, renderer tests |
+| **I6** | **Over/Underline** | Medium | `\overline{x}`, `\underline{x}` via MATH table constants |
 
-### After Large Operators → Radicals (`\sqrt`)
+### Lower Priority
 
-Radicals reuse the glyph variant infrastructure built for large operators plus fraction-style inner content rendering. The chain is: Large Operators → build variant glyph system → Radicals use it for stretchy √.
+| # | Feature | Effort | Description |
+|---|---------|--------|-------------|
+| **I7** | **Over/Under braces** | Large | `\overbrace`, `\underbrace` with horizontal extender |
+| **I8** | **Matrices** | Large | `\begin{matrix}`, `\pmatrix`, `\bmatrix`, etc. |
+| **I9** | **Cases** | Medium | `\begin{cases}` |
+| **I10** | **Font commands (real)** | Medium | `\mathrm{x}`, `\mathcal{F}` with actual font change |
+| **I11** | **Latin Modern Math** | Small | Verify xits-math constants work with LM Math font |
+| **I12** | **`\limits`/`\nolimits`** | Small | Force limits above/below or side for any operator |
+| **I13** | **`\operatorname`** | Small | Custom named operators |
+| **I14** | **`\binom`** | Small | Generalized fraction with no rule bar |
+
+### Files Created This Session
+| File | Commit |
+|------|--------|
+| `Sources/AlphaEqt/Parser/CommandHandler/Symbols.swift` | `7040656` |
+| `Sources/AlphaEqt/Parser/CommandHandler/LeftRight.swift` | `6696c36` |
