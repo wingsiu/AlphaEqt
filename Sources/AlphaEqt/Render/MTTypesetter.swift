@@ -212,8 +212,9 @@ public class Typesetter: @unchecked Sendable {
         case .op:     return renderLargeOp(node)
         case .sqrt:   return renderRadical(node, hasDegree: false)
         case .root:   return renderRadical(node, hasDegree: true)
-        case .spacing: return renderSpacing(node)
-        default:      return renderTextNode(node)
+        case .spacing:   return renderSpacing(node)
+        case .leftright: return renderLeftRight(node)
+        default:         return renderTextNode(node)
         }
     }
 
@@ -761,6 +762,169 @@ public class Typesetter: @unchecked Sendable {
         d.descent = 0
         d.range = node.indexRange
         return d
+    }
+
+    // MARK: - Left/Right Delimiters
+
+    /// Renders `\left<delim> ... \right<delim>` with stretchy delimiters.
+    ///
+    /// Computes required delimiter height from inner content, selects the
+    /// largest pre-built variant glyph, or falls back to glyph assembly
+    /// (stacked parts) for very tall expressions.
+    private func renderLeftRight(_ node: ASTNode) -> MTDisplay? {
+        guard let children = node.childNodes, children.count >= 1 else { return nil }
+        guard let innerGroup = children.first else { return nil }
+
+        // Parse delimiter chars from node.text "leftDelim\0rightDelim"
+        let parts = (node.text ?? ".\0.").split(separator: "\0")
+        let leftDelim = parts.count > 0 ? String(parts[0]) : "."
+        let rightDelim = parts.count > 1 ? String(parts[1]) : "."
+
+        // Render inner content
+        let subTS = Typesetter(font: font, style: style, textColor: textColor)
+        guard let innerDisplay = subTS.createDisplay(innerGroup.childNodes ?? []) else { return nil }
+
+        let mt = font.mathTable
+        let axis = mt.axisHeight
+
+        // Calculate required delimiter height (SwiftMath algorithm)
+        let delta = max(innerDisplay.ascent - axis, innerDisplay.descent + axis)
+        let d1 = (delta / 500) * 901  // 90% coverage
+        let d2 = 2 * delta - 5         // 5pt shortfall
+        let glyphHeight = max(d1, d2)
+
+        let delimiterPadding = mt.muUnit * 2
+        var elements: [MTDisplay] = []
+
+        // Left delimiter
+        if leftDelim != "." {
+            let leftGD = makeDelimiterGlyph(leftDelim, height: glyphHeight)
+            leftGD?.position = .zero
+            if let lg = leftGD {
+                elements.append(lg)
+            }
+        }
+
+        // Inner content
+        innerDisplay.position = CGPoint(
+            x: (leftDelim != "." ? (elements.first?.width ?? 0) + delimiterPadding : 0),
+            y: 0
+        )
+        elements.append(innerDisplay)
+
+        // Right delimiter
+        if rightDelim != "." {
+            let rightX = (elements.last?.position.x ?? 0) + (elements.last?.width ?? 0) + delimiterPadding
+            let rightGD = makeDelimiterGlyph(rightDelim, height: glyphHeight)
+            rightGD?.position = CGPoint(x: rightX, y: 0)
+            if let rg = rightGD {
+                elements.append(rg)
+            }
+        }
+
+        let list = MTMathListDisplay(withDisplays: elements, range: node.indexRange)
+        return list
+    }
+
+    /// Builds a single stretchy delimiter glyph using variants or assembly.
+    /// When the largest pre‑built variant is too short, falls back to glyph
+    /// assembly (stacked parts: bottom + extender + top).
+    private func makeDelimiterGlyph(_ delim: String, height: CGFloat) -> MTDisplay? {
+        let mt = font.mathTable
+        let axis = mt.axisHeight
+
+        // Get the base glyph for the delimiter character
+        guard let ch = delim.unicodeScalars.first else { return nil }
+        let unicharPtr = UnsafeMutablePointer<UniChar>.allocate(capacity: 1)
+        defer { unicharPtr.deallocate() }
+        unicharPtr[0] = UniChar(ch.value)
+        var baseGlyph: CGGlyph = 0
+        guard CTFontGetGlyphsForCharacters(font.ctFont, unicharPtr, &baseGlyph, 1) else {
+            return nil
+        }
+
+        // Find the largest variant
+        var glyphAscent: CGFloat = 0, glyphDescent: CGFloat = 0, glyphWidth: CGFloat = 0
+        let glyph = findGlyph(baseGlyph, withHeight: height,
+                              glyphAscent: &glyphAscent,
+                              glyphDescent: &glyphDescent,
+                              glyphWidth: &glyphWidth)
+
+        // If the largest variant isn't tall enough, try assembly
+        if glyphAscent + glyphDescent < height {
+            let parts = mt.getVerticalGlyphAssembly(forGlyph: baseGlyph)
+            if !parts.isEmpty {
+                return buildAssemblyDisplay(parts: parts, targetHeight: height, axis: axis)
+            }
+        }
+
+        let gd = MTGlyphDisplay(glyph: glyph, range: NSRange(location: NSNotFound, length: 0),
+                                font: font)
+        gd.rawAscent = glyphAscent
+        gd.rawDescent = glyphDescent
+        gd.width = glyphWidth
+        gd.shiftDown = 0.5 * (glyphAscent - glyphDescent) - axis
+        gd.position = .zero
+        return gd
+    }
+
+    /// Builds a stacked glyph from assembly parts (bottom, extender, top).
+    /// The extender is repeated until the total height meets `targetHeight`.
+    private func buildAssemblyDisplay(parts: [MTFontMathTable.GlyphPart],
+                                       targetHeight: CGFloat, axis: CGFloat) -> MTDisplay? {
+        guard parts.count >= 3 else { return nil }
+
+        // Parts: [0]=bottom, [1]=extender, [2]=top
+        let bottom = parts[0]
+        let extender = parts[1]
+        let top = parts[2]
+
+        let bottomAdv = bottom.fullAdvance
+        let extAdv = extender.fullAdvance
+        let topAdv = top.fullAdvance
+
+        let nonExtHeight = bottomAdv + topAdv
+        let extHeight = max(0, targetHeight - nonExtHeight)
+        let extCount = max(1, Int(ceil(extHeight / extAdv)))
+
+        var glyphs: [CGGlyph] = []
+        var offsets: [CGFloat] = []
+        var yOffset: CGFloat = 0
+
+        // Bottom
+        glyphs.append(CGGlyph(bottom.glyph))
+        offsets.append(yOffset)
+        yOffset += bottomAdv
+
+        // Extenders (repeated)
+        for _ in 0..<extCount {
+            glyphs.append(CGGlyph(extender.glyph))
+            offsets.append(yOffset)
+            yOffset += extAdv
+        }
+
+        // Top
+        glyphs.append(CGGlyph(top.glyph))
+        offsets.append(yOffset)
+        yOffset += topAdv
+
+        let totalHeight = yOffset
+        // Centre the assembly on the math axis so it covers content evenly
+        // from top and bottom. TeX rule: the delimiter is axis-centered
+        // and extends sufficiently above and below the content.
+        let gd = MTGlyphConstructionDisplay(glyphs: glyphs, offsets: offsets, font: font)
+        // Raw ascent: entire stack extends upward from glyph origin
+        gd.ascent = totalHeight
+        gd.descent = 0
+        // Shift down so the visual center aligns with the math axis
+        gd.shiftDown = (totalHeight / 2) - axis
+
+        // Get actual glyph advance width from the extender piece
+        var extGlyph = CGGlyph(extender.glyph)
+        let extWidth = CTFontGetAdvancesForGlyphs(font.ctFont, .horizontal, &extGlyph, nil, 1)
+        gd.width = extWidth
+        gd.position = .zero
+        return gd
     }
 
     // MARK: - Inter-element spacing

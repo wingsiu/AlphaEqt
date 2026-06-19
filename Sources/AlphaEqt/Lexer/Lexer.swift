@@ -109,13 +109,17 @@ public class Lexer {
         while i < rawTokens.count {
             if rawTokens[i].kind == .command && rawTokens[i].text == "\\left" && (i + 1) < rawTokens.count {
                 let next = rawTokens[i + 1]
-                let delimMap: [TokenKind: String] = [
-                    .leftParen: "\\left(",
-                    .leftBracket: "\\left[",
-                    .leftBrace: "\\left{",
-                    .operatorSymbol: "\\left|"
-                ]
-                if let combinedText = delimMap[next.kind] {
+                var combinedText: String?
+                switch next.kind {
+                case .leftParen:    combinedText = "\\left("
+                case .leftBracket:  combinedText = "\\left["
+                case .leftBrace:    combinedText = "\\left{"
+                case .operatorSymbol:
+                    if next.text == "." { combinedText = "\\left." }
+                    else { combinedText = "\\left|" }
+                default: break
+                }
+                if let combinedText = combinedText {
                     let combinedLoc = rawTokens[i].sourceLocation
                     let combinedEnd = next.sourceLocation
                     let combinedSourceLocation = SourceLocation(
@@ -131,13 +135,17 @@ public class Lexer {
             }
             if rawTokens[i].kind == .command && rawTokens[i].text == "\\right" && (i + 1) < rawTokens.count {
                 let next = rawTokens[i + 1]
-                let delimMap: [TokenKind: String] = [
-                    .rightParen: "\\right)",
-                    .rightBracket: "\\right]",
-                    .rightBrace: "\\right}",
-                    .operatorSymbol: "\\right|"
-                ]
-                if let combinedText = delimMap[next.kind] {
+                var combinedText: String?
+                switch next.kind {
+                case .rightParen:    combinedText = "\\right)"
+                case .rightBracket:  combinedText = "\\right]"
+                case .rightBrace:    combinedText = "\\right}"
+                case .operatorSymbol:
+                    if next.text == "." { combinedText = "\\right." }
+                    else { combinedText = "\\right|" }
+                default: break
+                }
+                if let combinedText = combinedText {
                     let combinedLoc = rawTokens[i].sourceLocation
                     let combinedEnd = next.sourceLocation
                     let combinedSourceLocation = SourceLocation(

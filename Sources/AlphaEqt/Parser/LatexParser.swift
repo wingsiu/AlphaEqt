@@ -45,6 +45,12 @@ public class LatexParser {
         for cmd in spacingCmds {
             commandHandlers[cmd] = handleSpacingCommand
         }
+        // Left/right delimiter pairs — trigger on \left + \right
+        commandHandlers["\\left("] = handleLeftRightCommand
+        commandHandlers["\\left["] = handleLeftRightCommand
+        commandHandlers["\\left{"] = handleLeftRightCommand
+        commandHandlers["\\left|"] = handleLeftRightCommand
+        commandHandlers["\\left."] = handleLeftRightCommand
         // Font commands — consume braced arg, parse content inline
         let fontCmds = ["\\mathbf", "\\mathrm", "\\mathit", "\\mathsf",
                         "\\mathtt", "\\mathcal", "\\mathbb", "\\mathfrak",
@@ -67,8 +73,9 @@ public class LatexParser {
             let token = tokens[i]
             guard shouldParseToken(token) else { i += 1; continue }
 
-            // Command handler dispatch
-            if token.kind == .command, let handler = commandHandlers[token.text] {
+            // Command handler dispatch (handles .command and .customDelimiterLeft)
+            if (token.kind == .command || token.kind == .customDelimiterLeft),
+               let handler = commandHandlers[token.text] {
                 let slice = tokens[i..<tokenCount]
                 var relIdx = 0
                 if let node = handler(slice, &relIdx) {
