@@ -107,19 +107,14 @@ public class LatexParser {
         return nodes
     }
 
-    // MARK: - Superscript / Subscript (recursive — supports scripts-of-scripts)
+    // MARK: - Superscript / Subscript (recursive)
 
-    /// Consumes ^ or _ at position `i`, reads the script content (which may itself
-    /// contain ^ and _ for nested scripts), and merges into the last node.
-    /// Returns the new index.
     private func consumeSupSub(_ tokens: [Token], at i: Int, nodes: inout [ASTNode]) -> Int {
         let isSup = tokens[i].text == "^"
         var idx = i + 1
 
-        // Collect the tokens for the script content.
         let scriptTokens: [Token]
         if idx < tokens.count, tokens[idx].kind == .leftBrace {
-            // Collect inside { ... } — may contain ^ and _ for nested scripts.
             idx += 1
             var depth = 1
             var collected: [Token] = []
@@ -138,13 +133,9 @@ public class LatexParser {
             scriptTokens = []
         }
 
-        // Recursively parse the script content into AST nodes.
         let scriptNodes = parse(tokens: scriptTokens)
-
-        // Remove the base node
         let base = nodes.removeLast()
 
-        // Build the new child nodes: [base, sup, sub]
         let supNode: ASTNode
         let subNode: ASTNode
         if isSup {
@@ -159,7 +150,6 @@ public class LatexParser {
                 : ASTNode(type: .ordgroup, text: nil, childNodes: scriptNodes.isEmpty ? nil : scriptNodes)
         }
 
-        // If base is already a supsub, merge into it
         if base.type == .supsub {
             var children = base.childNodes ?? []
             while children.count < 3 {
@@ -170,11 +160,9 @@ public class LatexParser {
             base.childNodes = children
             nodes.append(base)
         } else {
-            let supsub = ASTNode(type: .supsub, text: nil,
-                                 childNodes: [base, supNode, subNode])
+            let supsub = ASTNode(type: .supsub, text: nil, childNodes: [base, supNode, subNode])
             nodes.append(supsub)
         }
-
         return idx
     }
 
@@ -182,36 +170,25 @@ public class LatexParser {
 
     private func shouldParseToken(_ token: Token) -> Bool {
         switch token.kind {
-        case .whitespace, .eof, .error:
-            return false
-        default:
-            return true
+        case .whitespace, .eof, .error: return false
+        default: return true
         }
     }
 
     private func mapTokenKindToASTNodeType(_ token: Token) -> ASTNodeType {
         switch token.kind {
-        case .identifier, .number, .verbatim:
-            return .mathord
+        case .identifier, .number, .verbatim: return .mathord
         case .operatorSymbol:
             switch token.text {
-            case "+", "-", "*", "/":
-                return .bin
-            case "=", "<", ">":
-                return .rel
-            case ".", ",":
-                return .mathord
-            default:
-                return .bin
+            case "+", "-", "*", "/": return .bin
+            case "=", "<", ">": return .rel
+            case ".", ",": return .mathord
+            default: return .bin
             }
-        case .leftParen, .leftBracket, .leftBrace, .customDelimiterLeft:
-            return .open
-        case .rightParen, .rightBracket, .rightBrace, .customDelimiterRight:
-            return .close
-        case .command:
-            return .textord
-        default:
-            return .mathord
+        case .leftParen, .leftBracket, .leftBrace, .customDelimiterLeft: return .open
+        case .rightParen, .rightBracket, .rightBrace, .customDelimiterRight: return .close
+        case .command: return .textord
+        default: return .mathord
         }
     }
 
