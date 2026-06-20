@@ -170,7 +170,7 @@ public class LatexParser {
 
     private func shouldParseToken(_ token: Token) -> Bool {
         switch token.kind {
-        case .whitespace, .eof, .error: return false
+        case .whitespace, .eof, .error, .lineBreak, .alignmentTab: return false
         default: return true
         }
     }

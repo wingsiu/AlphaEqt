@@ -29,6 +29,13 @@ struct DemoView: View {
                     MathText("x^3 - 2x^2 + 5x - 7 = 0", fontSize: 26)
                 }
 
+                Group {
+                    Text("Matrix:").font(.headline)
+                    MathText("\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}", fontSize: 28)
+                    MathText("\\begin{bmatrix} 1 & 2 \\\\ 3 & 4 \\end{bmatrix}", fontSize: 28)
+                    MathText("\\begin{pmatrix} 10 & x^2 & -3 \\\\ 4 & y_n & 5 \\\\ a_{ij} & 0 & 1 \\end{pmatrix}", fontSize: 26)
+                }
+
                 Spacer()
             }
             .padding(40)

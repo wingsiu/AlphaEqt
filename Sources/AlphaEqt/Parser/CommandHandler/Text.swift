@@ -23,7 +23,7 @@ func handleTextCommand(tokens: ArraySlice<Token>, idx: inout Int) -> ASTNode? {
         if braceDepth > 0 { childTokens.append(t) }
         j += 1
     }
-    let textContent = childTokens.map { $0.text }.joined(separator: " ")
+    let textContent = childTokens.map { $0.text }.joined()
     let childNode = ASTNode(type: .textord,
                             text: textContent,
                             location: childTokens.first?.sourceLocation,

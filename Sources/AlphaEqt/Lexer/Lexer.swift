@@ -44,7 +44,7 @@ public class Lexer {
     // Single-letter identifiers for math mode (mc^2 → m, c, ^, 2)
     // Commands like \text still work via \\[a-zA-Z@]+
     static let tokenPattern: NSRegularExpression = {
-        let pattern = #"([ \r\n\t]+|\\([a-zA-Z@]+)([ \r\n\t]*)|\\[a-zA-Z@]+|\\(?:\\|&)|\\[^a-zA-Z@]|\\(\n|[ \r\t]+\n?)[ \r\t]*|[A-Za-z]|\d+|[+\-*/^_=.,]|[{}()\[\]|~&]|[^\x00-\x7F])"#
+        let pattern = #"([ \r\n\t]+|\\([a-zA-Z@]+)([ \r\n\t]*)|\\[a-zA-Z@]+|\\(?:\\|&)|\\[^a-zA-Z@]|\\(\n|[ \r\t]+\n?)[ \r\t]*|[A-Za-z]|\d+|[+\-*/^_=.,<>]|[{}()\[\]|~&]|[^\x00-\x7F])"#
         return try! NSRegularExpression(pattern: pattern, options: [])
     }()
 
@@ -195,6 +195,7 @@ public class Lexer {
             if text == "\\{" { return .leftBrace }
             if text == "\\}" { return .rightBrace }
             if text == "\\|" { return .operatorSymbol }
+            if text == "\\\\" { return .lineBreak }
             return .command
         default:
             break
@@ -215,7 +216,7 @@ public class Lexer {
         }
         if text == "&" { return .alignmentTab }
         if text == "\\\\" { return .lineBreak }
-        if text.range(of: #"^[+\-*/^_=.,]$"#, options: .regularExpression) != nil {
+        if text.range(of: #"^[+\-*/^_=.,<>]$"#, options: .regularExpression) != nil {
             return .operatorSymbol
         }
         // Non-ASCII characters (emoji, Chinese, etc.) → mathord identifiers

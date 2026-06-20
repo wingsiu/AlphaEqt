@@ -239,8 +239,10 @@ public class Typesetter: @unchecked Sendable {
         guard !text.isEmpty else { return nil }
         let displayText: String
         switch node.type {
-        case .mathord, .textord, .text, .unicode:
+        case .mathord, .unicode:
             displayText = mathItalicize(text)
+        case .text, .textord:
+            displayText = text
         case .bin, .rel:
             displayText = text.replacingOccurrences(of: "-", with: "\u{2212}")
         default:
@@ -930,25 +932,32 @@ public class Typesetter: @unchecked Sendable {
 
     // MARK: - Arrays / Matrices
 
-    /// Renders an array/matrix node: rows of cells with equal column widths,
-    /// stacked vertically. Each row is an `MTMathListDisplay`. Rows are stacked
-    /// as a vertical `MTMathListDisplay`.
+    /// Renders an array/matrix node using TeX `\vcenter` semantics:
+    ///   - Each row's cells are baseline-aligned and centered horizontally in columns
+    ///   - Rows are stacked top-to-bottom with `rowGap` between content edges
+    ///   - The entire array is axis-centered so its vertical midpoint sits on the math axis
+    ///
+    /// This matches the behaviour of KaTeX, iOSMath, and TeX's `\vcenter` for matrices.
     private func renderArray(_ node: ASTNode) -> MTDisplay? {
         guard let rows = node.childNodes, !rows.isEmpty else { return nil }
 
-        let mu = font.mathTable.muUnit
-        let colGap = mu * 18   // inter‑column space
-        let rowGap = mu * 1    // inter‑row space
+        let mt = font.mathTable
+        let mu = mt.muUnit
+        let colGap = mu * 18   // inter‑column space (2 × 9mu per TeX)
+        let rowGap = mu * 3    // \jot equivalent = 3mu ≈ 1.67pt at 10pt
 
-        // Determine column count.
+        // Determine column count
         var numCols = 0
         for row in rows { numCols = max(numCols, row.childNodes?.count ?? 0) }
         guard numCols > 0 else { return nil }
 
-        // Render every cell, track per‑column max widths.
+        // Render every cell, track per‑column widths and per‑row extents
         var allCells = [[MTDisplay?]]()
         var colW = [CGFloat](repeating: 0, count: numCols)
-        for row in rows {
+        var rowAscent = [CGFloat](repeating: 0, count: rows.count)
+        var rowDescent = [CGFloat](repeating: 0, count: rows.count)
+
+        for (ri, row) in rows.enumerated() {
             let cols = row.childNodes ?? []
             var rowCells = [MTDisplay?]()
             for ci in 0..<numCols {
@@ -958,52 +967,78 @@ public class Typesetter: @unchecked Sendable {
                 let d: MTDisplay?
                 if col.type == .ordgroup, let ch = col.childNodes { d = sub.createDisplay(ch) }
                 else { d = sub.renderNode(col) }
-                if let cd = d { colW[ci] = max(colW[ci], cd.width) }
+                if let cd = d {
+                    colW[ci] = max(colW[ci], cd.width)
+                    rowAscent[ri] = max(rowAscent[ri], cd.ascent)
+                    rowDescent[ri] = max(rowDescent[ri], cd.descent)
+                }
                 rowCells.append(d)
             }
             allCells.append(rowCells)
         }
 
-        // Build rows as MTMathListDisplay.
+        // Build rows: cells baseline-aligned (position.y = 0 in row space)
         var rowDisplays = [MTDisplay]()
         for cells in allCells {
             var rowElements = [MTDisplay]()
             var x: CGFloat = 0
-            var rowAscent: CGFloat = 0, rowDescent: CGFloat = 0
             for ci in 0..<numCols {
                 guard let cell = cells[ci] else { x += colW[ci] + colGap; continue }
                 cell.position = CGPoint(x: x + (colW[ci] - cell.width) / 2, y: 0)
-                rowAscent = max(rowAscent, cell.ascent)
-                rowDescent = max(rowDescent, cell.descent)
                 rowElements.append(cell)
                 x += colW[ci] + colGap
             }
-            let w = x - colGap
-            let row = MTMathListDisplay(withDisplays: rowElements, range: NSRange(location: NSNotFound, length: 0))
-            row.ascent = rowAscent; row.descent = rowDescent; row.width = w
+            let w = max(0, x - colGap)
+            let row = MTMathListDisplay(withDisplays: rowElements,
+                                         range: NSRange(location: NSNotFound, length: 0))
+            row.width = w
             row.position = .zero
             rowDisplays.append(row)
         }
 
-        // Stack rows vertically.
-        var y: CGFloat = 0
-        for (i, row) in rowDisplays.enumerated() {
-            if i > 0 { y += rowGap }
-            row.position = CGPoint(x: 0, y: -y)
-            y += row.ascent + row.descent
+        // ---- Vertical stacking (TeX \vcenter semantics) ----
+        //
+        // Each row's `position.y` is its baseline. Cells within the row sit
+        // at y=0, so the row's ascent = max cell ascent and descent = max
+        // cell descent.
+        //
+        // We stack rows top-to-bottom so that:
+        //   row[0].content.top = 0        (highest y = top reference)
+        //   row[i].content.top = row[i-1].content.bottom - rowGap
+        //
+        // After positioning we compute the content's vertical midpoint and
+        // shift everything so that midpoint sits on the math axis.
+
+        var currentTop: CGFloat = 0  // y-coordinate of the next row's content top
+
+        for (ri, row) in rowDisplays.enumerated() {
+            // Row baseline = contentTop - ascent
+            // (because content top = position.y + ascent → position.y = contentTop - ascent)
+            row.position = CGPoint(x: 0, y: currentTop - rowAscent[ri])
+
+            // Update currentTop to the bottom of this row's content
+            // (bottom of content = position.y - descent), plus the gap to next row
+            currentTop = row.position.y - rowDescent[ri] - rowGap
         }
 
-        // Outer list with correct extent.
-        let maxW = rowDisplays.map { $0.width }.max() ?? 0
-        var maxTop: CGFloat = 0, maxBottom: CGFloat = 0
+        // Content spans from y=0 (top of first row) to `currentTop + rowGap`
+        // (the bottom of the last row — we subtracted the gap after the last
+        //  row, so add it back to get the actual bottom).
+        let contentBottom = currentTop + rowGap
+        let contentMid = (0 + contentBottom) / 2
+
+        // Shift so the content v-center sits on the math axis
+        let axis = mt.axisHeight
+        let shift = axis - contentMid
         for row in rowDisplays {
-            maxTop = max(maxTop, row.position.y + row.ascent)
-            maxBottom = max(maxBottom, -(row.position.y - row.descent))
+            row.position = CGPoint(x: row.position.x, y: row.position.y + shift)
         }
+
+        // Build the outer container; MTMathListDisplay will compute the
+        // correct ascent/descent from row positions.
+        let maxW = rowDisplays.map { $0.width }.max() ?? 0
         let outer = MTMathListDisplay(withDisplays: rowDisplays, range: node.indexRange)
         outer.width = maxW
-        outer.ascent = maxTop
-        outer.descent = maxBottom
         return outer
     }
 
