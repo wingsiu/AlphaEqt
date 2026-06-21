@@ -17,6 +17,20 @@
           "path" : "/Users/alpha/Desktop/swift/AlphaEqt"
         },
         "subpath" : "alphaeqt"
+      },
+      {
+        "basedOn" : null,
+        "packageRef" : {
+          "identity" : "swiftmath",
+          "kind" : "fileSystem",
+          "location" : "/Users/alpha/Desktop/swift/SwiftMath",
+          "name" : "SwiftMath"
+        },
+        "state" : {
+          "name" : "fileSystem",
+          "path" : "/Users/alpha/Desktop/swift/SwiftMath"
+        },
+        "subpath" : "swiftmath"
       }
     ]
   },

@@ -311,6 +311,29 @@ SWIFT_CLASS("_TtC8AlphaEqt9MTDisplay")
 @end
 
 
+/// Renders an accent glyph (e.g., ^, ~, ˙) above a base accentee.
+/// Matches iOSMath <code>MTAccentDisplay</code> behavior.
+/// Positioning (TeX Appendix G, Rule 12 + OpenType MATH table):
+/// <ol>
+///   <li>
+///     The accent is placed at (skew, accentee.ascent - accentBaseHeight).
+///   </li>
+///   <li>
+///     <code>skew</code> = accenteeAdjustment - accentAdjustment, aligning the
+///     attachment points of accent and accentee per font metrics.
+///   </li>
+///   <li>
+///     Wrapping the accentee in a display ensures it contributes to
+///     the full ascent/descent of the compound display.
+///   </li>
+/// </ol>
+SWIFT_CLASS("_TtC8AlphaEqt15MTAccentDisplay")
+@interface MTAccentDisplay : MTDisplay
+- (nonnull instancetype)init SWIFT_UNAVAILABLE;
++ (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
+@end
+
+
 SWIFT_CLASS("_TtC8AlphaEqt15MTCTLineDisplay")
 @interface MTCTLineDisplay : MTDisplay
 - (nonnull instancetype)init SWIFT_UNAVAILABLE;
@@ -318,7 +341,50 @@ SWIFT_CLASS("_TtC8AlphaEqt15MTCTLineDisplay")
 @end
 
 
+/// Renders a background‑colored box with optional border around inner content.
+/// Used for <code>\colorbox{color}{content}</code> and <code>\fcolorbox{border}{fill}{content}</code>.
+SWIFT_CLASS("_TtC8AlphaEqt17MTColorboxDisplay")
+@interface MTColorboxDisplay : MTDisplay
+- (nonnull instancetype)init SWIFT_UNAVAILABLE;
++ (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
+@end
 
+
+
+/// Renders a fraction using TeX Appendix G rules.
+/// Coordinate system (matching SwiftMath):
+/// <code>position.y</code> is the mathematical baseline (y=0 axis).
+/// The fraction bar is drawn at <code>position.y + linePosition</code>.
+/// <code>numeratorUp</code> is the distance from the baseline to the numerator’s baseline.
+/// <code>denominatorDown</code> is the distance from the baseline to the denominator’s baseline.
+/// TeX positioning algorithm (from the typesetter’s <code>makeFraction</code>):
+/// <ol>
+///   <li>
+///     Start with <code>numeratorShiftUp</code> / <code>denominatorShiftDown</code> from the MATH table.
+///   </li>
+///   <li>
+///     Compute the actual clearance between the numerator’s bottom and the bar top:
+///     <code>distanceFromNumeratorToBar = (numeratorUp - num.descent) - (linePosition + ruleThickness/2)</code>
+///   </li>
+///   <li>
+///     If clearance < <code>numeratorGapMin</code>, increase <code>numeratorUp</code> to meet the minimum.
+///   </li>
+///   <li>
+///     Same for denominator: <code>distanceFromDenominatorToBar = (linePosition - ruleThickness/2) - (den.ascent - denominatorDown)</code>
+///   </li>
+///   <li>
+///     If clearance < <code>denominatorGapMin</code>, increase <code>denominatorDown</code> to meet the minimum.
+///   </li>
+///   <li>
+///     <code>ascent = num.ascent + numeratorUp</code>
+///   </li>
+///   <li>
+///     <code>descent = den.descent + denominatorDown</code>
+///   </li>
+///   <li>
+///     <code>width = max(num.width, den.width)</code>
+///   </li>
+/// </ol>
 SWIFT_CLASS("_TtC8AlphaEqt17MTFractionDisplay")
 @interface MTFractionDisplay : MTDisplay
 - (nonnull instancetype)init SWIFT_UNAVAILABLE;
@@ -326,8 +392,85 @@ SWIFT_CLASS("_TtC8AlphaEqt17MTFractionDisplay")
 @end
 
 
+/// Stacked glyph display built from extendable assembly parts.
+/// Used for stretchy radicals and delimiters when no single pre‑built
+/// variant is tall enough.
+SWIFT_CLASS("_TtC8AlphaEqt26MTGlyphConstructionDisplay")
+@interface MTGlyphConstructionDisplay : MTDisplay
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+/// Standalone glyph display for drawing a single glyph.
+/// <code>shiftDown</code> centers the glyph on the math axis: <code>0.5*(ascent-descent) - axisHeight</code>.
+/// <code>rawAscent</code>/<code>rawDescent</code> hold the glyph’s true bounding box.
+/// The public <code>ascent</code>/<code>descent</code> are adjusted when <code>shiftDown</code> is set
+/// so parents see visual (axis-centered) bounds.
+SWIFT_CLASS("_TtC8AlphaEqt14MTGlyphDisplay")
+@interface MTGlyphDisplay : MTDisplay
+- (nonnull instancetype)init SWIFT_UNAVAILABLE;
++ (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
+@end
+
+
+/// Renders a large operator (e.g., ∑, ∫, ∏) with limits above/below
+/// in display style. Matches iOSMath <code>MTLargeOpLimitsDisplay</code> behavior.
+/// Positioning:
+/// <ul>
+///   <li>
+///     Nucleus centered horizontally at <code>self.position</code>
+///   </li>
+///   <li>
+///     Upper limit: <code>self.position.y + nuc.ascent + upperLimitGap + upper.descent</code>
+///   </li>
+///   <li>
+///     Lower limit: <code>self.position.y - nuc.descent - lowerLimitGap - lower.ascent</code>
+///   </li>
+/// </ul>
+/// Reported dimensions include full extent of limits:
+/// <ul>
+///   <li>
+///     <code>ascent = nuc.ascent + extraPadding + upper.ascent + upperGap + upper.descent</code>
+///   </li>
+///   <li>
+///     <code>descent = nuc.descent + extraPadding + lowerGap + lower.ascent + lower.descent</code>
+///   </li>
+/// </ul>
+SWIFT_CLASS("_TtC8AlphaEqt22MTLargeOpLimitsDisplay")
+@interface MTLargeOpLimitsDisplay : MTDisplay
+- (nonnull instancetype)init SWIFT_UNAVAILABLE;
++ (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
+@end
+
+
 SWIFT_CLASS("_TtC8AlphaEqt17MTMathListDisplay")
 @interface MTMathListDisplay : MTDisplay
+- (nonnull instancetype)init SWIFT_UNAVAILABLE;
++ (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
+@end
+
+
+/// Renders a radical (square root / nth root) using TeX Appendix G rules.
+/// When the √ glyph is shorter than the required radicand height,
+/// a diagonal connector line (slope ~5.67 from font metrics) extends
+/// from the glyph body up to the horizontal rule bar, avoiding the
+/// ugly vertical extender assembly.
+/// Coordinate system:
+/// <code>position</code> is the baseline origin of the radical.
+/// The radical glyph is placed at <code>local (radicalShift, 0)</code>.
+/// The radicand sits at <code>local (radicalShift + glyphWidth, 0)</code>.
+/// The rule bar connects from glyph right edge across the radicand width.
+/// Dimensions:
+/// <ul>
+///   <li>
+///     Width: glyphWidth + extenderDeltaX (if slope‑extended) + radicand.width
+///   </li>
+///   <li>
+///     Ascent: tops at ruleThickness + clearance + radicand.ascent + extraAscender
+///   </li>
+/// </ul>
+SWIFT_CLASS("_TtC8AlphaEqt16MTRadicalDisplay")
+@interface MTRadicalDisplay : MTDisplay
 - (nonnull instancetype)init SWIFT_UNAVAILABLE;
 + (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
 @end
@@ -349,6 +492,7 @@ SWIFT_CLASS("_TtC8AlphaEqt8MathView")
 - (void)drawRect:(NSRect)dirtyRect;
 - (void)viewDidEndLiveResize;
 @end
+
 
 #endif
 #if __has_attribute(external_source_symbol)

@@ -126,9 +126,21 @@ public class Typesetter: @unchecked Sendable {
     let font: MTFont
     let style: MTLineStyle
     let textColor: CGColor?
+    /// Whether this style is cramped (TeX Appendix G prime styles).
+    /// Affects superscript shift — cramped superscripts use `superscriptShiftUpCramped`.
+    let cramped: Bool
+    /// Font scaled for the current style (SwiftMath's styleFont).
+    /// Uses the base font size for .display/.text, and scaled for .script/.scriptOfScript.
+    private lazy var _styleFont: MTFont? = nil
+    var styleFont: MTFont {
+        if _styleFont == nil {
+            _styleFont = font.copy(withSize: Self.getStyleSize(style, baseFont: font))
+        }
+        return _styleFont!
+    }
 
-    public init(font: MTFont, style: MTLineStyle = .display, textColor: CGColor? = nil) {
-        self.font = font; self.style = style; self.textColor = textColor
+    public init(font: MTFont, style: MTLineStyle = .display, cramped: Bool = false, textColor: CGColor? = nil) {
+        self.font = font; self.style = style; self.cramped = cramped; self.textColor = textColor
     }
 
     func scriptStyle() -> MTLineStyle {
@@ -136,6 +148,19 @@ public class Typesetter: @unchecked Sendable {
         case .display, .text: return .script
         case .script, .scriptOfScript: return .scriptOfScript
         }
+    }
+
+    /// Per TeX: subscript is always cramped.
+    func subscriptCramped() -> Bool { true }
+
+    /// Per TeX: superscript is cramped only if parent style is cramped.
+    func superscriptCramped() -> Bool { cramped }
+
+    /// The shift-up value for superscripts — uses cramped variant when cramped.
+    func superscriptShiftUp() -> CGFloat {
+        let supSubFontSize = Self.getStyleSize(style, baseFont: font)
+        let mt = font.copy(withSize: supSubFontSize).mathTable
+        return cramped ? mt.superscriptShiftUpCramped : mt.superscriptShiftUp
     }
 
     public func createDisplay(_ nodes: [ASTNode]) -> MTDisplay? {
@@ -151,7 +176,8 @@ public class Typesetter: @unchecked Sendable {
                 currentStyle = newStyle
                 currentFont = font.copy(withSize: Typesetter.getStyleSize(newStyle, baseFont: font))
                 if let children = node.childNodes, !children.isEmpty {
-                    let subTS = Typesetter(font: currentFont, style: currentStyle, textColor: textColor)
+                    let subTS = Typesetter(font: currentFont, style: currentStyle,
+                                           cramped: self.cramped, textColor: textColor)
                     guard let display = subTS.createDisplay(children) else { continue }
                     if let last = lastType {
                         xOffset += getInterElementSpace(last, right: .inner)
@@ -163,7 +189,8 @@ public class Typesetter: @unchecked Sendable {
                 }
                 continue
             }
-            let tsWithStyle = Typesetter(font: currentFont, style: currentStyle, textColor: textColor)
+            let tsWithStyle = Typesetter(font: currentFont, style: currentStyle,
+                                         cramped: self.cramped, textColor: textColor)
             guard let display = tsWithStyle.renderNode(node) else { continue }
             if let last = lastType {
                 let rightAtomType: AtomType
@@ -215,6 +242,9 @@ public class Typesetter: @unchecked Sendable {
         case .spacing:   return renderSpacing(node)
         case .leftright: return renderLeftRight(node)
         case .array:     return renderArray(node)
+        case .accent:    return renderAccent(node)
+        case .color:     return renderColor(node)
+        case .colorbox:  return renderColorbox(node)
         default:         return renderTextNode(node)
         }
     }
@@ -223,7 +253,7 @@ public class Typesetter: @unchecked Sendable {
         if let children = node.childNodes, !children.isEmpty {
             let newStyle = Typesetter.styleFromSizing(node.text ?? "displaystyle")
             let newFont = font.copy(withSize: Typesetter.getStyleSize(newStyle, baseFont: font))
-            let subTS = Typesetter(font: newFont, style: newStyle, textColor: textColor)
+            let subTS = Typesetter(font: newFont, style: newStyle, cramped: self.cramped, textColor: textColor)
             return subTS.createDisplay(children)
         }
         return nil
@@ -248,9 +278,10 @@ public class Typesetter: @unchecked Sendable {
         default:
             displayText = text
         }
+        let scaledFont = styleFont
         let ctDisplay = MTCTLineDisplay(
-            attrString: makeAttributedString(displayText, font: font.ctFont),
-            position: .zero, range: node.indexRange, font: font, atoms: [node]
+            attrString: makeAttributedString(displayText, font: scaledFont.ctFont),
+            position: .zero, range: node.indexRange, font: scaledFont, atoms: [node]
         )
         node.display = ctDisplay
         return ctDisplay
@@ -295,21 +326,24 @@ public class Typesetter: @unchecked Sendable {
         }
         let limitsAboveBelow = isLimitsOp && style == .display
 
-        let scale = font.mathTable.scriptScaleDown
-        let scriptFontSz = max(font.size * scale, 6)
-        let scriptFont = font.copy(withSize: scriptFontSz)
-        let mt = font.mathTable
+        let supSubFontSize = Self.getStyleSize(style, baseFont: font)
+        let mt = font.copy(withSize: supSubFontSize).mathTable
 
         let supDisplay: MTDisplay?
         let subDisplay: MTDisplay?
+        // Font for plain text scripts: always scale from the top-level
+        // base font, not from the already-scaled effective font.
+        let scriptFontSize = Self.getStyleSize(scriptStyle(), baseFont: font)
+        let scriptFontForText = font.copy(withSize: scriptFontSize)
+
         if hasSup {
             if children[1].childNodes == nil {
                 let text = mathItalicize(children[1].text ?? "")
-                supDisplay = makeCTLine(text, scriptFont.ctFont,
-                                        children[1].indexRange, scriptFont)
+                supDisplay = makeCTLine(text, scriptFontForText.ctFont,
+                                        children[1].indexRange, scriptFontForText)
             } else {
-                let subTS = Typesetter(font: scriptFont, style: scriptStyle(),
-                                       textColor: textColor)
+                let subTS = Typesetter(font: font, style: scriptStyle(),
+                                       cramped: superscriptCramped(), textColor: textColor)
                 supDisplay = subTS.renderNode(children[1])
             }
         } else {
@@ -319,11 +353,11 @@ public class Typesetter: @unchecked Sendable {
         if hasSub {
             if children[2].childNodes == nil {
                 let text = mathItalicize(children[2].text ?? "")
-                subDisplay = makeCTLine(text, scriptFont.ctFont,
-                                        children[2].indexRange, scriptFont)
+                subDisplay = makeCTLine(text, scriptFontForText.ctFont,
+                                        children[2].indexRange, scriptFontForText)
             } else {
-                let subTS = Typesetter(font: scriptFont, style: scriptStyle(),
-                                       textColor: textColor)
+                let subTS = Typesetter(font: font, style: scriptStyle(),
+                                       cramped: true, textColor: textColor)
                 subDisplay = subTS.renderNode(children[2])
             }
         } else {
@@ -388,7 +422,8 @@ public class Typesetter: @unchecked Sendable {
         }
 
         guard let sup = supDisplay else { return base }
-        supShift = max(supShift, mt.superscriptShiftUp)
+        // Use cramped-aware shift from the style-scaled math table.
+        supShift = max(supShift, cramped ? mt.superscriptShiftUpCramped : mt.superscriptShiftUp)
         supShift = max(supShift, sup.descent + mt.superscriptBottomMin)
 
         if let sub = subDisplay {
@@ -426,41 +461,45 @@ public class Typesetter: @unchecked Sendable {
         let numNode = children[0]
         let denNode = children[1]
 
-        let innerFont: MTFont
+        // TeX Appendix G, Rule 15e: fraction inner style = style.inc()
+        // (display→text, text→script, script→scriptscript, scriptscript→scriptscript)
+        let innerStyle: MTLineStyle
         switch style {
-        case .display:
-            innerFont = font
-        case .text:
-            let scale = MTConfig.shared.fractionScriptScaleDown ?? font.mathTable.scriptScaleDown
-            innerFont = font.copy(withSize: max(font.size * scale, MTConfig.shared.minimumFontSize))
-        case .script:
-            let scale = MTConfig.shared.fractionScriptScriptScaleDown ?? font.mathTable.scriptScriptScaleDown
-            innerFont = font.copy(withSize: max(font.size * scale, MTConfig.shared.minimumFontSize))
-        case .scriptOfScript:
-            innerFont = font
+        case .display: innerStyle = .text
+        case .text:    innerStyle = .script
+        case .script:  innerStyle = .scriptOfScript
+        case .scriptOfScript: innerStyle = .scriptOfScript
         }
-        let subTS = Typesetter(font: innerFont, style: .text, textColor: textColor)
+        
+        // TeX Rule 15e: numerator is cramped only if parent is cramped;
+        // denominator is always cramped.
+        let numTS = Typesetter(font: font, style: innerStyle, cramped: self.cramped, textColor: textColor)
+        let denTS = Typesetter(font: font, style: innerStyle, cramped: true, textColor: textColor)
 
         let trivial = (numNode.text?.count ?? 0) + (denNode.text?.count ?? 0) <= 2
         let (num, den): (MTDisplay?, MTDisplay?)
         if Self.useParallel && !trivial {
             (num, den) = concurrentRender(
-                { subTS.renderNode(numNode) },
-                { subTS.renderNode(denNode) }
+                { numTS.renderNode(numNode) },
+                { denTS.renderNode(denNode) }
             )
         } else {
-            num = subTS.renderNode(numNode)
-            den = subTS.renderNode(denNode)
+            num = numTS.renderNode(numNode)
+            den = denTS.renderNode(denNode)
         }
         guard let num, let den else { return nil }
 
-        let mt = font.mathTable
+        // Per TeX: shift/gap values depend on the fraction's own style level.
+        // Scale the math table to the current style's font size so that shifts
+        // are proportional (e.g., a fraction in scriptstyle uses smaller
+        // shifts than one in displaystyle).
+        let fracFontSize = Self.getStyleSize(style, baseFont: font)
+        let mt = font.copy(withSize: fracFontSize).mathTable
         let isDisplay = style == .display
-        let isDisplayOrText = style == .display || style == .text
         let numShiftUp = isDisplay ? mt.fractionNumeratorDisplayStyleShiftUp : mt.fractionNumeratorShiftUp
         let denShiftDown = isDisplay ? mt.fractionDenominatorDisplayStyleShiftDown : mt.fractionDenominatorShiftDown
-        let numGapMin = isDisplayOrText ? mt.fractionNumeratorDisplayStyleGapMin : mt.fractionNumeratorGapMin
-        let denGapMin = isDisplayOrText ? mt.fractionDenominatorDisplayStyleGapMin : mt.fractionDenominatorGapMin
+        let numGapMin = isDisplay ? mt.fractionNumeratorDisplayStyleGapMin : mt.fractionNumeratorGapMin
+        let denGapMin = isDisplay ? mt.fractionDenominatorDisplayStyleGapMin : mt.fractionDenominatorGapMin
 
         return MTFractionDisplay(
             numerator: num, denominator: den,
@@ -535,11 +574,15 @@ public class Typesetter: @unchecked Sendable {
         return mt.radicalVerticalGap
     }
 
+    /// Finds a vertical glyph variant that satisfies the required height.
+    /// Uses the provided math table and measurement font so everything matches
+    /// the current style scale.
     private func findGlyph(_ glyph: CGGlyph, withHeight height: CGFloat,
+                           using mt: MTFontMathTable,
+                           measurementFont: MTFont,
                            glyphAscent: inout CGFloat,
                            glyphDescent: inout CGFloat,
                            glyphWidth: inout CGFloat) -> CGGlyph {
-        let mt = font.mathTable
         let variants = mt.getVerticalVariantsForGlyph(glyph)
         let numVariants = variants.count
         guard numVariants > 0 else {
@@ -555,9 +598,9 @@ public class Typesetter: @unchecked Sendable {
 
         var bboxes = [CGRect](repeating: .zero, count: numVariants)
         var advances = [CGSize](repeating: .zero, count: numVariants)
-        CTFontGetBoundingRectsForGlyphs(font.ctFont, .horizontal,
+        CTFontGetBoundingRectsForGlyphs(measurementFont.ctFont, .horizontal,
                                         &varGlyphs, &bboxes, numVariants)
-        CTFontGetAdvancesForGlyphs(font.ctFont, .horizontal,
+        CTFontGetAdvancesForGlyphs(measurementFont.ctFont, .horizontal,
                                    &varGlyphs, &advances, numVariants)
 
         for i in 0..<numVariants {
@@ -577,7 +620,11 @@ public class Typesetter: @unchecked Sendable {
         return varGlyphs[numVariants - 1]
     }
 
-    private func getRadicalGlyph(withHeight radicalHeight: CGFloat) -> MTGlyphDisplay? {
+    /// Returns the best radical glyph for the given height, using the provided
+    /// scaled math table and font so the glyph matches the style level.
+    private func getRadicalGlyph(withHeight radicalHeight: CGFloat,
+                                  mt: MTFontMathTable,
+                                  radicalFont: MTFont) -> MTGlyphDisplay? {
         let sqrtChar = "\u{221A}"
         let unicharPtr = UnsafeMutablePointer<UniChar>.allocate(capacity: 1)
         defer { unicharPtr.deallocate() }
@@ -587,17 +634,19 @@ public class Typesetter: @unchecked Sendable {
         utf16.formIndex(after: &i)
         var radicalGlyph: CGGlyph = 0
         let numChars = (i == utf16.startIndex) ? 1 : (utf16.distance(from: utf16.startIndex, to: i))
-        guard CTFontGetGlyphsForCharacters(font.ctFont, unicharPtr, &radicalGlyph, numChars) else {
+        guard CTFontGetGlyphsForCharacters(radicalFont.ctFont, unicharPtr, &radicalGlyph, numChars) else {
             return nil
         }
 
         var glyphAscent: CGFloat = 0, glyphDescent: CGFloat = 0, glyphWidth: CGFloat = 0
         let glyph = findGlyph(radicalGlyph, withHeight: radicalHeight,
+                              using: mt,
+                              measurementFont: radicalFont,
                               glyphAscent: &glyphAscent,
                               glyphDescent: &glyphDescent,
                               glyphWidth: &glyphWidth)
 
-        let gd = MTGlyphDisplay(glyph: glyph, range: NSRange(location: NSNotFound, length: 0), font: font)
+        let gd = MTGlyphDisplay(glyph: glyph, range: NSRange(location: NSNotFound, length: 0), font: radicalFont)
         gd.rawAscent = glyphAscent
         gd.rawDescent = glyphDescent
         gd.width = glyphWidth
@@ -622,7 +671,10 @@ public class Typesetter: @unchecked Sendable {
     ///   - `adjustedRadicalAscent` accounts for excess glyph height for
     ///     visual centering.
     private func renderRadical(_ node: ASTNode, hasDegree: Bool) -> MTDisplay? {
-        let mt = font.mathTable
+        // Scale math table to the current style's font size so clearance,
+        // rule thickness, and other metrics are proportional.
+        let radicalFontSize = Self.getStyleSize(style, baseFont: font)
+        let mt = font.copy(withSize: radicalFontSize).mathTable
         guard let children = node.childNodes, !children.isEmpty else { return nil }
 
         let degreeNode: ASTNode?
@@ -635,24 +687,39 @@ public class Typesetter: @unchecked Sendable {
             radicandNode = children[0]
         }
 
-        let subTS = Typesetter(font: font, style: style, textColor: textColor)
+        // Per TeX Rule 11: the radicand is always typeset in cramped style.
+        let subTS = Typesetter(font: font, style: style, cramped: true, textColor: textColor)
         guard let radicand = subTS.renderNode(radicandNode) else { return nil }
 
-        var clearance = radicalVerticalGap()
+        var clearance: CGFloat
+        if style == .display {
+            clearance = mt.radicalDisplayStyleVerticalGap
+        } else {
+            clearance = mt.radicalVerticalGap
+        }
         let ruleThickness = mt.radicalRuleThickness
+        // Per TeX Rule 11: radical must be tall enough to cover
+        // the entire radicand (ascent + descent) plus clearance and rule.
         let radicalHeight = radicand.ascent + radicand.descent + clearance + ruleThickness
 
-        guard let glyph = getRadicalGlyph(withHeight: radicalHeight) else { return nil }
+        let radicalFont = font.copy(withSize: radicalFontSize)
+        guard let glyph = getRadicalGlyph(withHeight: radicalHeight,
+                                           mt: mt, radicalFont: radicalFont) else { return nil }
 
-        let glyphTotalHeight = glyph.rawAscent + glyph.rawDescent
-        let needsExtender = glyphTotalHeight < radicalHeight
+        // Shift glyph to cover radicand's descent first.
+        glyph.shiftDown = max(0, radicand.descent - glyph.rawDescent)
 
-        // Excess glyph height distributed to clearance for visual centering.
-        let excess = glyphTotalHeight - (radicand.ascent + radicand.descent + clearance + ruleThickness)
+        // Compare glyph's visual top (after descent shift) against bar-needed height.
+        let glyphTopAfterShift = glyph.rawAscent - glyph.shiftDown
+        let barNeeded = radicand.ascent + clearance + ruleThickness
+        let needsExtender = glyphTopAfterShift < barNeeded
+
+        // If glyph top exceeds bar height, distribute excess to clearance.
+        let excess = glyphTopAfterShift - barNeeded
         if excess > 0 {
             clearance += excess / 2
         }
-        let adjustedRadicalAscent = ruleThickness + clearance + radicand.ascent
+        let adjustedRadicalAscent = max(barNeeded, ruleThickness + clearance + radicand.ascent)
 
         if needsExtender {
             // ---- Extender path ----
@@ -702,8 +769,8 @@ public class Typesetter: @unchecked Sendable {
                                     barStartX: barStartX)
 
                 if hasDegree, let degNode = degreeNode {
-                    let degTS = Typesetter(font: font.copy(withSize: font.size * mt.scriptScaleDown),
-                                            style: .script, textColor: textColor)
+                    // TeX Rule 11: degree is in scriptscript style, not cramped.
+                    let degTS = Typesetter(font: font, style: .scriptOfScript, textColor: textColor)
                     if let degree = degTS.renderNode(degNode) {
                         radical.setDegree(degree, fontMetrics: mt)
                     }
@@ -735,8 +802,8 @@ public class Typesetter: @unchecked Sendable {
         radical.width = glyph.width + radicand.width
 
         if hasDegree, let degNode = degreeNode {
-            let degTS = Typesetter(font: font.copy(withSize: font.size * mt.scriptScaleDown),
-                                    style: .script, textColor: textColor)
+            // TeX Rule 11: degree is in scriptscript style, not cramped.
+            let degTS = Typesetter(font: font, style: .scriptOfScript, textColor: textColor)
             if let degree = degTS.renderNode(degNode) {
                 radical.setDegree(degree, fontMetrics: mt)
             }
@@ -784,7 +851,7 @@ public class Typesetter: @unchecked Sendable {
         let rightDelim = parts.count > 1 ? String(parts[1]) : "."
 
         // Render inner content
-        let subTS = Typesetter(font: font, style: style, textColor: textColor)
+        let subTS = Typesetter(font: font, style: style, cramped: self.cramped, textColor: textColor)
         guard let innerDisplay = subTS.createDisplay(innerGroup.childNodes ?? []) else { return nil }
 
         let mt = font.mathTable
@@ -849,6 +916,8 @@ public class Typesetter: @unchecked Sendable {
         // Find the largest variant
         var glyphAscent: CGFloat = 0, glyphDescent: CGFloat = 0, glyphWidth: CGFloat = 0
         let glyph = findGlyph(baseGlyph, withHeight: height,
+                              using: mt,
+                              measurementFont: font,
                               glyphAscent: &glyphAscent,
                               glyphDescent: &glyphDescent,
                               glyphWidth: &glyphWidth)
@@ -944,7 +1013,16 @@ public class Typesetter: @unchecked Sendable {
         let mt = font.mathTable
         let mu = mt.muUnit
         let colGap = mu * 18   // inter‑column space (2 × 9mu per TeX)
-        let rowGap = mu * 3    // \jot equivalent = 3mu ≈ 1.67pt at 10pt
+        // TeX matrix cells use \textstyle by default.
+        // A fraction inside a textstyle cell then cascades to scriptstyle
+        // for numerator/denominator (via renderFraction's Rule 15e).
+        let cellStyle: MTLineStyle = .text
+        let cellFont = font
+        // TeX matrix row spacing: \normalbaselines at 10pt = \baselineskip=12pt,
+        // \lineskip=1pt, \lineskiplimit=0pt (per PROGRESS.md)
+        let baselineSkip = font.size * 1.2
+        let lineSkip = font.size * 0.1
+        let lineSkipLimit: CGFloat = 0
 
         // Determine column count
         var numCols = 0
@@ -963,7 +1041,9 @@ public class Typesetter: @unchecked Sendable {
             for ci in 0..<numCols {
                 guard ci < cols.count else { rowCells.append(nil); continue }
                 let col = cols[ci]
-                let sub = Typesetter(font: font, style: style, textColor: textColor)
+                // Matrix cells render in \textstyle (not \displaystyle)
+                // Use cramped style for matrix cells
+                let sub = Typesetter(font: cellFont, style: cellStyle, cramped: true, textColor: textColor)
                 let d: MTDisplay?
                 if col.type == .ordgroup, let ch = col.childNodes { d = sub.createDisplay(ch) }
                 else { d = sub.renderNode(col) }
@@ -996,36 +1076,34 @@ public class Typesetter: @unchecked Sendable {
             rowDisplays.append(row)
         }
 
-        // ---- Vertical stacking (TeX \vcenter semantics) ----
-        //
-        // Each row's `position.y` is its baseline. Cells within the row sit
-        // at y=0, so the row's ascent = max cell ascent and descent = max
-        // cell descent.
-        //
-        // We stack rows top-to-bottom so that:
-        //   row[0].content.top = 0        (highest y = top reference)
-        //   row[i].content.top = row[i-1].content.bottom - rowGap
-        //
-        // After positioning we compute the content's vertical midpoint and
-        // shift everything so that midpoint sits on the math axis.
+        // ---- Vertical stacking (TeX \halign rule) ----
+        // TeX §22: \normalbaselines at 10pt = \baselineskip=12pt, \lineskip=1pt
+        // For row i > 0:
+        //   natural = baselineskip - descent[i-1] - ascent[i]
+        //   If natural >= lineskiplimit → space by baselineskip (uniform)
+        //   Else → space by lineskip (content-bottom to content-top)
 
-        var currentTop: CGFloat = 0  // y-coordinate of the next row's content top
+        rowDisplays[0].position = CGPoint(x: 0, y: 0)
+        var prevBaseline: CGFloat = 0
 
-        for (ri, row) in rowDisplays.enumerated() {
-            // Row baseline = contentTop - ascent
-            // (because content top = position.y + ascent → position.y = contentTop - ascent)
-            row.position = CGPoint(x: 0, y: currentTop - rowAscent[ri])
-
-            // Update currentTop to the bottom of this row's content
-            // (bottom of content = position.y - descent), plus the gap to next row
-            currentTop = row.position.y - rowDescent[ri] - rowGap
+        for ri in 1..<rowDisplays.count {
+            let prevDepth = rowDescent[ri-1]
+            let curHeight = rowAscent[ri]
+            let naturalGap = baselineSkip - prevDepth - curHeight
+            if naturalGap >= lineSkipLimit {
+                prevBaseline -= baselineSkip
+            } else {
+                let prevBottom = prevBaseline - prevDepth
+                prevBaseline = prevBottom - lineSkip - curHeight
+            }
+            rowDisplays[ri].position = CGPoint(x: 0, y: prevBaseline)
         }
 
-        // Content spans from y=0 (top of first row) to `currentTop + rowGap`
-        // (the bottom of the last row — we subtracted the gap after the last
-        //  row, so add it back to get the actual bottom).
-        let contentBottom = currentTop + rowGap
-        let contentMid = (0 + contentBottom) / 2
+        // Content spans from y=0 (first baseline + ascent) to last baseline - last descent
+        let contentTop = rowAscent[0]
+        let lastPos = rowDisplays.last!.position.y
+        let contentBottom = lastPos - rowDescent[rowDescent.count - 1]
+        let contentMid = (contentTop + contentBottom) / 2
 
         // Shift so the content v-center sits on the math axis
         let axis = mt.axisHeight
@@ -1040,6 +1118,163 @@ public class Typesetter: @unchecked Sendable {
         let outer = MTMathListDisplay(withDisplays: rowDisplays, range: node.indexRange)
         outer.width = maxW
         return outer
+    }
+
+    // MARK: - Color
+
+    private func renderColor(_ node: ASTNode) -> MTDisplay? {
+        guard let children = node.childNodes, !children.isEmpty else { return nil }
+        guard let colorName = node.text, !colorName.isEmpty else { return createDisplay(children) }
+        let color = parseColor(colorName)
+        let subTS = Typesetter(font: font, style: style, cramped: self.cramped, textColor: color?.cgColor ?? textColor)
+        guard let inner = subTS.createDisplay(children) else { return nil }
+        if let c = color { inner.textColor = c }
+        return inner
+    }
+
+    private func renderColorbox(_ node: ASTNode) -> MTDisplay? {
+        guard let children = node.childNodes, !children.isEmpty else { return nil }
+        let colorStr = node.text ?? ""
+        let parts = colorStr.split(separator: "\0", maxSplits: 1)
+        let fillColorName = parts.count > 0 ? String(parts[0]) : ""
+        let borderColorName = parts.count > 1 ? String(parts[1]) : ""
+        let fillColor = fillColorName.isEmpty ? MTColor.black : (parseColor(fillColorName) ?? MTColor.black)
+        let borderColor = borderColorName.isEmpty ? MTColor.black : (parseColor(borderColorName) ?? MTColor.black)
+        let subTS = Typesetter(font: font, style: style, cramped: self.cramped, textColor: textColor)
+        guard let inner = subTS.createDisplay(children) else { return nil }
+        let box = MTColorboxDisplay(inner: inner, fillColor: fillColor, borderColor: borderColor, padding: 0)
+        box.range = node.indexRange
+        return box
+    }
+
+    // MARK: - Accents
+
+    private func isSingleCharAccentee(_ node: ASTNode) -> Bool {
+        guard let children = node.childNodes, children.count == 1 else { return false }
+        let inner = children[0]
+        guard inner.childNodes == nil else { return false }
+        guard let text = inner.text, text.unicodeScalars.count == 1 else { return false }
+        if inner.type == .supsub { return false }
+        return true
+    }
+
+    private func getSkew(accentNode: ASTNode, accenteeWidth: CGFloat, accentGlyph: CGGlyph) -> CGFloat {
+        let mt = font.mathTable
+        let accentAdjustment = mt.getTopAccentAdjustment(accentGlyph)
+        var accenteeAdjustment: CGFloat = 0
+        if !isSingleCharAccentee(accentNode) {
+            accenteeAdjustment = accenteeWidth / 2
+        } else if let inner = accentNode.childNodes?.first,
+                  let innerText = inner.text,
+                  let ch = innerText.unicodeScalars.last {
+            let unicharPtr = UnsafeMutablePointer<UniChar>.allocate(capacity: 1)
+            defer { unicharPtr.deallocate() }
+            unicharPtr[0] = UniChar(ch.value)
+            var accenteeGlyph: CGGlyph = 0
+            if CTFontGetGlyphsForCharacters(font.ctFont, unicharPtr, &accenteeGlyph, 1) {
+                accenteeAdjustment = mt.getTopAccentAdjustment(accenteeGlyph)
+            }
+        }
+        return accenteeAdjustment - accentAdjustment
+    }
+
+    private func findHorizontalVariantGlyph(_ glyph: CGGlyph, withMaxWidth maxWidth: CGFloat,
+                                             glyphAscent: inout CGFloat, glyphDescent: inout CGFloat,
+                                             glyphWidth: inout CGFloat) -> CGGlyph {
+        let mt = font.mathTable
+        let variants = mt.getHorizontalVariantsForGlyph(glyph)
+        guard !variants.isEmpty else { glyphAscent = 0; glyphDescent = 0; glyphWidth = 0; return glyph }
+        let n = variants.count
+        var gs = [CGGlyph](repeating: 0, count: n)
+        var bb = [CGRect](repeating: .zero, count: n)
+        var ad = [CGSize](repeating: .zero, count: n)
+        for (i, v) in variants.enumerated() { gs[i] = CGGlyph(truncating: v ?? NSNumber(value: 0)) }
+        CTFontGetBoundingRectsForGlyphs(font.ctFont, .horizontal, &gs, &bb, n)
+        CTFontGetAdvancesForGlyphs(font.ctFont, .horizontal, &gs, &ad, n)
+        var curGlyph = gs[0]
+        for i in 0..<n {
+            if ad[i].width > maxWidth {
+                if i == 0 { glyphWidth = ad[0].width; glyphAscent = max(0, bb[0].maxY); glyphDescent = max(0, -bb[0].minY) }
+                return curGlyph
+            }
+            curGlyph = gs[i]; glyphWidth = ad[i].width; glyphAscent = max(0, bb[i].maxY); glyphDescent = max(0, -bb[i].minY)
+        }
+        return curGlyph
+    }
+
+    private func buildHorizontalAssemblyDisplay(parts: [MTFontMathTable.GlyphPart], targetWidth: CGFloat,
+                                                  ascent: inout CGFloat, descent: inout CGFloat) -> MTDisplay? {
+        guard parts.count >= 2 else { return nil }
+        var extenderPart: MTFontMathTable.GlyphPart?
+        var fixedWidth: CGFloat = 0
+        for p in parts { if p.isExtender { extenderPart = p } else { fixedWidth += p.fullAdvance } }
+        guard let ext = extenderPart else { return nil }
+        let extCount = max(1, Int(ceil(max(0, targetWidth - fixedWidth) / ext.fullAdvance)))
+        var glyphs: [CGGlyph] = []; var offsets: [CGFloat] = []; var x: CGFloat = 0
+        var prev: MTFontMathTable.GlyphPart?
+        for p in parts {
+            if p.isExtender {
+                for _ in 0..<extCount {
+                    if let pr = prev { x -= min(pr.endConnectorLength, p.startConnectorLength) }
+                    glyphs.append(CGGlyph(p.glyph)); offsets.append(x); x += p.fullAdvance; prev = p
+                }
+            } else {
+                if let pr = prev { x -= min(pr.endConnectorLength, p.startConnectorLength) }
+                glyphs.append(CGGlyph(p.glyph)); offsets.append(x); x += p.fullAdvance; prev = p
+            }
+        }
+        var ma: CGFloat = 0, md: CGFloat = 0
+        for g in glyphs { var gv = g; let b = CTFontGetBoundingRectsForGlyphs(font.ctFont, .horizontal, &gv, nil, 1); ma = max(ma, max(0, b.maxY)); md = max(md, max(0,-b.minY)) }
+        ascent = ma; descent = md
+        let disp = MTGlyphConstructionDisplay()
+        disp.glyphs = glyphs; disp.positions = offsets.map { CGPoint(x: $0, y: 0) }; disp.font = font
+        disp.width = x; disp.ascent = ascent; disp.descent = descent; disp.position = .zero
+        return disp
+    }
+
+    private func renderAccent(_ node: ASTNode) -> MTDisplay? {
+        guard let children = node.childNodes, !children.isEmpty else { return nil }
+        guard let accentee = createDisplay(children) else { return nil }
+        guard let accentName = node.text, !accentName.isEmpty else { return accentee }
+        guard let accentChar = MTMathAtomFactory.accents[accentName] else { return accentee }
+        let mt = font.mathTable
+        guard let ch = accentChar.unicodeScalars.first else { return accentee }
+        let up = UnsafeMutablePointer<UniChar>.allocate(capacity: 1); defer { up.deallocate() }
+        up[0] = UniChar(ch.value)
+        var accentGlyph: CGGlyph = 0
+        guard CTFontGetGlyphsForCharacters(font.ctFont, up, &accentGlyph, 1) else { return accentee }
+        let baseGlyph = accentGlyph
+        let aw = accentee.width
+        var ga: CGFloat = 0, gd: CGFloat = 0, gw: CGFloat = 0
+        if isSingleCharAccentee(node) {
+            var gv = accentGlyph; let a = CTFontGetAdvancesForGlyphs(font.ctFont, .horizontal, &gv, nil, 1)
+            let b = CTFontGetBoundingRectsForGlyphs(font.ctFont, .horizontal, &gv, nil, 1)
+            ga = max(0, b.maxY); gd = max(0, -b.minY); gw = a
+        } else {
+            accentGlyph = findHorizontalVariantGlyph(accentGlyph, withMaxWidth: aw, glyphAscent: &ga, glyphDescent: &gd, glyphWidth: &gw)
+        }
+        let accentBase: MTDisplay
+        if !isSingleCharAccentee(node) && gw < aw * 0.8 {
+            let parts = mt.getHorizontalGlyphAssembly(forGlyph: baseGlyph)
+            if parts.count >= 2, parts.reduce(0, { $0 + $1.fullAdvance }) <= aw * 1.5,
+               let asm = buildHorizontalAssemblyDisplay(parts: parts, targetWidth: aw * 0.9, ascent: &ga, descent: &gd),
+               asm.width <= aw + 1 { accentBase = asm }
+            else { let g = MTGlyphDisplay(glyph: accentGlyph, range: node.indexRange, font: font); g.rawAscent = ga; g.rawDescent = gd; g.width = gw; accentBase = g }
+        } else { let g = MTGlyphDisplay(glyph: accentGlyph, range: node.indexRange, font: font); g.rawAscent = ga; g.rawDescent = gd; g.width = gw; accentBase = g }
+        let ax: CGFloat, ay: CGFloat
+        if accentName == "arc" {
+            var ag = accentGlyph; let b = CTFontGetBoundingRectsForGlyphs(font.ctFont, .horizontal, &ag, nil, 1)
+            ax = isSingleCharAccentee(node) ? getSkew(accentNode: node, accenteeWidth: aw, accentGlyph: accentGlyph) : (aw - accentBase.width) / 2
+            ay = accentee.ascent - max(0, b.origin.y) + 1
+        } else {
+            let delta = min(accentee.ascent, mt.accentBaseHeight)
+            ax = isSingleCharAccentee(node) ? getSkew(accentNode: node, accenteeWidth: aw, accentGlyph: accentGlyph) : (aw - accentBase.width) / 2
+            ay = accentee.ascent - delta
+        }
+        accentBase.position = CGPoint(x: ax, y: ay)
+        let display = MTAccentDisplay(accent: accentBase, accentee: accentee, range: node.indexRange)
+        display.position = .zero
+        return display
     }
 
     // MARK: - Inter-element spacing

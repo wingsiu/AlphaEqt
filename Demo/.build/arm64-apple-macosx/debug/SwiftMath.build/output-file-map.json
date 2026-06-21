@@ -1,0 +1,137 @@
+{
+  "": {
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/master.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/SwiftMath/Sources/SwiftMath/MathBundle/MTFontMathTableV2.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTFontMathTableV2.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTFontMathTableV2.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTFontMathTableV2~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTFontMathTableV2.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/SwiftMath/Sources/SwiftMath/MathBundle/MTFontV2.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTFontV2.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTFontV2.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTFontV2~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTFontV2.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/SwiftMath/Sources/SwiftMath/MathBundle/MathFont.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MathFont.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MathFont.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MathFont~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MathFont.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/SwiftMath/Sources/SwiftMath/MathBundle/MathImage.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MathImage.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MathImage.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MathImage~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MathImage.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/SwiftMath/Sources/SwiftMath/MathRender/MTBezierPath.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTBezierPath.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTBezierPath.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTBezierPath~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTBezierPath.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/SwiftMath/Sources/SwiftMath/MathRender/MTColor.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTColor.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTColor.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTColor~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTColor.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/SwiftMath/Sources/SwiftMath/MathRender/MTConfig.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTConfig.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTConfig.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTConfig~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTConfig.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/SwiftMath/Sources/SwiftMath/MathRender/MTFont.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTFont.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTFont.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTFont~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTFont.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/SwiftMath/Sources/SwiftMath/MathRender/MTFontManager.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTFontManager.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTFontManager.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTFontManager~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTFontManager.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/SwiftMath/Sources/SwiftMath/MathRender/MTFontMathTable.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTFontMathTable.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTFontMathTable.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTFontMathTable~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTFontMathTable.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/SwiftMath/Sources/SwiftMath/MathRender/MTLabel.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTLabel.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTLabel.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTLabel~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTLabel.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/SwiftMath/Sources/SwiftMath/MathRender/MTMathAtomFactory.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTMathAtomFactory.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTMathAtomFactory.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTMathAtomFactory~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTMathAtomFactory.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/SwiftMath/Sources/SwiftMath/MathRender/MTMathImage.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTMathImage.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTMathImage.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTMathImage~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTMathImage.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/SwiftMath/Sources/SwiftMath/MathRender/MTMathList.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTMathList.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTMathList.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTMathList~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTMathList.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/SwiftMath/Sources/SwiftMath/MathRender/MTMathListBuilder.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTMathListBuilder.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTMathListBuilder.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTMathListBuilder~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTMathListBuilder.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/SwiftMath/Sources/SwiftMath/MathRender/MTMathListDisplay.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTMathListDisplay.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTMathListDisplay.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTMathListDisplay~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTMathListDisplay.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/SwiftMath/Sources/SwiftMath/MathRender/MTMathListIndex.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTMathListIndex.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTMathListIndex.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTMathListIndex~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTMathListIndex.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/SwiftMath/Sources/SwiftMath/MathRender/MTMathUILabel.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTMathUILabel.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTMathUILabel.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTMathUILabel~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTMathUILabel.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/SwiftMath/Sources/SwiftMath/MathRender/MTTypesetter.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTTypesetter.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTTypesetter.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTTypesetter~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTTypesetter.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/SwiftMath/Sources/SwiftMath/MathRender/MTUnicode.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTUnicode.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTUnicode.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTUnicode~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/MTUnicode.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/SwiftMath/Sources/SwiftMath/MathRender/RWLock.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/RWLock.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/RWLock.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/RWLock~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/RWLock.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/DerivedSources/resource_bundle_accessor.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/resource_bundle_accessor.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/resource_bundle_accessor.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/resource_bundle_accessor~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/resource_bundle_accessor.swiftdeps"
+  }
+}

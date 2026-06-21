@@ -364,6 +364,7 @@ public class MTRadicalDisplay: MTDisplay {
             super.textColor = newValue
             radicand?.textColor = newValue
             degree?.textColor = newValue
+            _radicalGlyph?.textColor = newValue
         }
         get { super.textColor }
     }
@@ -386,6 +387,8 @@ public class MTGlyphConstructionDisplay: MTDisplay {
     public var positions: [CGPoint] = []
     public var font: MTFont?
     public var shiftDown: CGFloat = 0
+
+    public override init() { super.init() }
 
     public init(glyphs: [CGGlyph], offsets: [CGFloat], font: MTFont?) {
         self.font = font
@@ -474,11 +477,6 @@ public class MTGlyphDisplay: MTDisplay {
             CTFontDrawGlyphs(ctFont, &glyphs, &points, 1, ctx)
         }
         ctx.restoreGState()
-
-        // Print metrics every draw call
-        print("[Draw] glyph=\(glyph) pos=(\(position.x),\(position.y)) "
-              + "width=\(width) ascent=\(ascent) descent=\(descent) "
-              + "shiftDown=\(shiftDown) leftMargin=\(leftMargin)")
     }
 
     override public func dumpDisplayTree(indent: String = "") {
@@ -489,6 +487,130 @@ public class MTGlyphDisplay: MTDisplay {
               + " pos=(\(Int(position.x)),\(Int(position.y)))"
               + " ascent=\(Int(ascent)) descent=\(Int(descent))"
               + " width=\(Int(width))\(extra)")
+    }
+}
+
+// MARK: - MTAccentDisplay
+
+/// Renders an accent glyph (e.g., ^, ~, ˙) above a base accentee.
+/// Matches iOSMath `MTAccentDisplay` behavior.
+///
+/// Positioning (TeX Appendix G, Rule 12 + OpenType MATH table):
+///   1. The accent is placed at (skew, accentee.ascent - accentBaseHeight).
+///   2. `skew` = accenteeAdjustment - accentAdjustment, aligning the
+///      attachment points of accent and accentee per font metrics.
+///   3. Wrapping the accentee in a display ensures it contributes to
+///      the full ascent/descent of the compound display.
+public class MTAccentDisplay: MTDisplay {
+    public var accent: MTDisplay?
+    public var accentee: MTDisplay?
+
+    public init(accent: MTDisplay?, accentee: MTDisplay?, range: NSRange) {
+        self.accent = accent
+        self.accentee = accentee
+        super.init()
+        self.range = range
+
+        if let acc = accent, let aee = accentee {
+            // Width is determined by the accentee
+            self.width = aee.width
+            // Descent matches the accentee
+            self.descent = aee.descent
+            // Ascent must encompass both the accent (which may sit above the accentee)
+            // and the accentee itself.
+            self.ascent = max(aee.ascent, max(0, acc.position.y + acc.ascent))
+        }
+    }
+
+    override public func draw(_ ctx: CGContext) {
+        super.draw(ctx)
+        ctx.saveGState()
+        if let aee = accentee {
+            ctx.saveGState()
+            ctx.translateBy(x: aee.position.x, y: aee.position.y)
+            aee.draw(ctx)
+            ctx.restoreGState()
+        }
+        if let acc = accent {
+            ctx.saveGState()
+            ctx.translateBy(x: acc.position.x, y: acc.position.y)
+            acc.draw(ctx)
+            ctx.restoreGState()
+        }
+        ctx.restoreGState()
+    }
+
+    override public var textColor: MTColor? {
+        set { accent?.textColor = newValue; accentee?.textColor = newValue }
+        get { accent?.textColor }
+    }
+
+    override public func dumpDisplayTree(indent: String = "") {
+        super.dumpDisplayTree(indent: indent)
+        accent?.dumpDisplayTree(indent: indent + "  A> ")
+        accentee?.dumpDisplayTree(indent: indent + "  aee> ")
+    }
+}
+
+// MARK: - MTColorboxDisplay
+
+/// Renders a background‑colored box with optional border around inner content.
+/// Used for `\colorbox{color}{content}` and `\fcolorbox{border}{fill}{content}`.
+public class MTColorboxDisplay: MTDisplay {
+    public var inner: MTDisplay?
+    public var fillColor: MTColor
+    public var borderColor: MTColor
+    public var padding: CGFloat
+
+    public init(inner: MTDisplay?, fillColor: MTColor, borderColor: MTColor, padding: CGFloat) {
+        self.inner = inner
+        self.fillColor = fillColor
+        self.borderColor = borderColor
+        self.padding = padding
+        super.init()
+        guard let inner = inner else { return }
+        // Width = inner width + padding on both sides
+        self.width = inner.width + 2 * padding
+        // Ascent/descent extend by padding above/below inner content
+        self.ascent = inner.ascent + padding
+        self.descent = inner.descent + padding
+        // Inner is positioned at (padding, 0) — baseline aligned
+        inner.position = CGPoint(x: padding, y: 0)
+    }
+
+    override public func draw(_ ctx: CGContext) {
+        super.draw(ctx)
+
+        // Fill background
+        ctx.saveGState()
+        ctx.setFillColor(fillColor.cgColor)
+        let bgRect = CGRect(x: 0, y: -descent, width: width, height: ascent + descent)
+        ctx.fill(bgRect)
+
+        // Draw border
+        ctx.setStrokeColor(borderColor.cgColor)
+        ctx.setLineWidth(1)
+        ctx.stroke(bgRect)
+        ctx.restoreGState()
+
+        // Draw inner content
+        if let inner = inner {
+            ctx.saveGState()
+            ctx.translateBy(x: inner.position.x, y: inner.position.y)
+            inner.draw(ctx)
+            ctx.restoreGState()
+        }
+    }
+
+    override public var textColor: MTColor? {
+        set { inner?.textColor = newValue }
+        get { inner?.textColor }
+    }
+
+    override public func dumpDisplayTree(indent: String = "") {
+        super.dumpDisplayTree(indent: indent)
+        print("\(indent)  fill=\(fillColor) border=\(borderColor) padding=\(Int(padding))")
+        inner?.dumpDisplayTree(indent: indent + "  > ")
     }
 }
 

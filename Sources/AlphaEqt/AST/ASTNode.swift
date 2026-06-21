@@ -24,6 +24,7 @@ public enum ASTNodeType: String {
     case root           // N-th root node, e.g. \sqrt[3]{x}
     case ordgroup       // Grouped expressions, e.g. {xyz}
     case color          // Color node, e.g. \color{red}{x}
+    case colorbox       // Background color box, e.g. \colorbox{red}{x}
     case styling        // Font style node, e.g. \mathbb{x}
     case sizing         // Math style node, e.g. \displaystyle
     case array          // Array or matrix node, e.g. \begin{matrix}
@@ -106,6 +107,16 @@ public enum MTFontStyle: Int {
     case boldItalic
 }
 
+/// Controls how limits are positioned on large operators.
+/// - `.default`: TeX default (above/below in display style, side in inline)
+/// - `.limits`: Force above/below regardless of style
+/// - `.nolimits`: Force side (sup/sub) regardless of style
+public enum LimitMode {
+    case `default`
+    case limits
+    case nolimits
+}
+
 public enum MTLineStyle: Int, Comparable {
     case display
     case text
@@ -143,6 +154,9 @@ public class ASTNode: CustomStringConvertible, @unchecked Sendable {
 
     // Weak reference back to display (set during rendering)
     public weak var display: AnyObject?
+
+    /// Limit mode for operators — set by `\limits` or `\nolimits`.
+    public var limitMode: LimitMode = .default
 
     public var atomType: AtomType {
         switch type {

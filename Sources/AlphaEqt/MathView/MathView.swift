@@ -64,15 +64,15 @@ public class MathView: UIView {
         let tokens = lexer.lexAll()
         let nodes = LatexParser().parse(tokens: tokens)
         guard !nodes.isEmpty else { display = nil; return }
-        display = Typesetter(font: mathFont.mtfont(size: mathFontSize),
-                             style: .display).createDisplay(nodes)
         // Resolve to concrete UIColor (not dynamic) so CTLineDraw gets real RGB values.
         // Dynamic colors (.label) produce proxy CGColors that render black in CoreText.
         let isDark = traitCollection.userInterfaceStyle == .dark
         let concreteColor = isDark
             ? UIColor(red: 1, green: 1, blue: 1, alpha: 1)
             : UIColor(red: 0, green: 0, blue: 0, alpha: 1)
-        display?.textColor = concreteColor
+        display = Typesetter(font: mathFont.mtfont(size: mathFontSize),
+                             style: .display,
+                             textColor: concreteColor.cgColor).createDisplay(nodes)
 
         invalidateIntrinsicContentSize()
     }
@@ -131,15 +131,15 @@ public class MathView: NSView {
         let tokens = lexer.lexAll()
         let nodes = LatexParser().parse(tokens: tokens)
         guard !nodes.isEmpty else { display = nil; return }
-        display = Typesetter(font: mathFont.mtfont(size: mathFontSize),
-                             style: .display).createDisplay(nodes)
         // Resolve to concrete NSColor so CTLineDraw gets real RGB values.
         let isDark = effectiveAppearance.name == .darkAqua
             || effectiveAppearance.name == .vibrantDark
         let concreteColor = isDark
             ? NSColor(red: 1, green: 1, blue: 1, alpha: 1)
             : NSColor(red: 0, green: 0, blue: 0, alpha: 1)
-        display?.textColor = concreteColor
+        display = Typesetter(font: mathFont.mtfont(size: mathFontSize),
+                             style: .display,
+                             textColor: concreteColor.cgColor).createDisplay(nodes)
 
         // ---- Debug: dump display tree to console ----
         if let d = display {

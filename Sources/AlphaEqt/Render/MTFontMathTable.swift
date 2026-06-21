@@ -135,26 +135,36 @@ public class MTFontMathTable {
         return fontUnitsToPt(correction.intValue)
     }
 
+    /// Returns the top accent attachment position (in points) for the given glyph.
+    /// This is the vertical position from the glyph baseline to where the accent
+    /// should be placed, as defined in the OpenType MATH table's `TopAccentAttachment`
+    /// via the font's plist "accents" dictionary.
+    public func getTopAccentAdjustment(_ glyph: CGGlyph) -> CGFloat {
+        let glyphName = font.get(nameForGlyph: glyph)
+        tableLock.lock()
+        defer { tableLock.unlock() }
+        if let accentsDict = mTable["accents"] as? NSDictionary,
+           let adjustment = accentsDict[glyphName] as? NSNumber {
+            return fontUnitsToPt(adjustment.intValue)
+        }
+        var gv = glyph
+        var advances = CGSize.zero
+        CTFontGetAdvancesForGlyphs(font.ctFont, .horizontal, &gv, &advances, 1)
+        if advances.width > 0 { return advances.width / 2 }
+        // Combining mark with zero advance — use bounding-box center
+        let bbox = CTFontGetBoundingRectsForGlyphs(font.ctFont, .horizontal, &gv, nil, 1)
+        return (bbox.origin.x + bbox.width / 2)
+    }
+
     /// Returns the largest vertical variant glyph for large operators in display style,
     /// matching SwiftMath's `getLargerGlyph(forDisplayStyle: true)`.
     /// If no variants exist, returns the original glyph.
     public func getLargerGlyph(_ glyph: CGGlyph) -> CGGlyph {
         let variants = getVerticalVariantsForGlyph(glyph)
-        let glyphName = font.get(nameForGlyph: glyph)
-        print("[getLargerGlyph] input=\(glyphName) variantCount=\(variants.count)")
-        for (i, v) in variants.enumerated() {
-            if let num = v {
-                let vg = CGGlyph(truncating: num)
-                print("  [\(i)] \(font.get(nameForGlyph: vg))")
-            }
-        }
         // Return the last (largest) variant, matching SwiftMath's display‑style selection.
         if let lastNum = variants.last, let last = lastNum {
-            let lastName = font.get(nameForGlyph: CGGlyph(truncating: last))
-            print("[getLargerGlyph] returning \(lastName)")
             return CGGlyph(truncating: last)
         }
-        print("[getLargerGlyph] no variants, returning original \(glyphName)")
         return glyph
     }
 
@@ -196,6 +206,30 @@ public class MTFontMathTable {
         public var startConnectorLength: CGFloat = 0
         public var endConnectorLength: CGFloat = 0
         public var isExtender: Bool = false
+    }
+
+    /// Returns the horizontal glyph assembly parts for the given glyph.
+    /// If no assembly is defined, returns an empty array.
+    public func getHorizontalGlyphAssembly(forGlyph glyph: CGGlyph) -> [GlyphPart] {
+        tableLock.lock(); defer { tableLock.unlock() }
+        guard let assemblyTable = mTable["h_assembly"] as? NSDictionary else { return [] }
+        let glyphName = font.get(nameForGlyph: glyph)
+        guard let assemblyInfo = assemblyTable[glyphName] as? NSDictionary,
+              let parts = assemblyInfo["parts"] as? NSArray else { return [] }
+        var rv: [GlyphPart] = []
+        for partDict in parts {
+            guard let info = partDict as? NSDictionary,
+                  let glyphNameStr = info["glyph"] as? String,
+                  let advNum = info["advance"] as? NSNumber else { continue }
+            var part = GlyphPart()
+            part.glyph = font.get(glyphWithName: glyphNameStr)
+            part.fullAdvance = fontUnitsToPt(advNum.intValue)
+            part.startConnectorLength = fontUnitsToPt((info["startConnector"] as? NSNumber)?.intValue ?? 0)
+            part.endConnectorLength = fontUnitsToPt((info["endConnector"] as? NSNumber)?.intValue ?? 0)
+            part.isExtender = (info["extender"] as? NSNumber)?.boolValue ?? false
+            rv.append(part)
+        }
+        return rv
     }
 
     /// Returns the vertical glyph assembly parts for the given glyph.

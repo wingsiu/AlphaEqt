@@ -10,12 +10,13 @@ let package = Package(
         .visionOS(.v1),
     ],
     dependencies: [
-        .package(path: "../")
+        .package(path: "../"),
+        .package(path: "../../SwiftMath")
     ],
     targets: [
         .executableTarget(
             name: "DemoApp",
-            dependencies: ["AlphaEqt"]
+            dependencies: ["AlphaEqt", "SwiftMath"]
         ),
     ]
 )

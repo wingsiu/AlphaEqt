@@ -53,6 +53,18 @@ public class LatexParser {
         commandHandlers["\\left{"] = handleLeftRightCommand
         commandHandlers["\\left|"] = handleLeftRightCommand
         commandHandlers["\\left."] = handleLeftRightCommand
+        // Accent commands
+        let accentCmds = ["\\hat", "\\bar", "\\tilde", "\\dot", "\\ddot", "\\vec",
+                          "\\widehat", "\\widetilde", "\\check", "\\breve", "\\acute", "\\grave",
+                          "\\arc"]
+        for cmd in accentCmds {
+            commandHandlers[cmd] = handleAccentCommand
+        }
+        // Color commands
+        commandHandlers["\\color"] = handleColorCommand
+        commandHandlers["\\textcolor"] = handleColorCommand
+        commandHandlers["\\colorbox"] = handleColorboxCommand
+        commandHandlers["\\fcolorbox"] = handleColorboxCommand
         // Font commands — consume braced arg, parse content inline
         let fontCmds = ["\\mathbf", "\\mathrm", "\\mathit", "\\mathsf",
                         "\\mathtt", "\\mathcal", "\\mathbb", "\\mathfrak",
@@ -87,9 +99,37 @@ public class LatexParser {
                 continue
             }
 
+            // Handle braced groups: {...} → ordgroup
+            if token.kind == .leftBrace {
+                i += 1
+                var depth = 1
+                var groupTokens: [Token] = []
+                while i < tokenCount, depth > 0 {
+                    let t = tokens[i]
+                    if t.kind == .leftBrace { depth += 1 }
+                    else if t.kind == .rightBrace { depth -= 1 }
+                    if depth > 0 { groupTokens.append(t) }
+                    i += 1
+                }
+                let groupNodes = parse(tokens: groupTokens)
+                let groupNode = ASTNode(type: .ordgroup, text: nil, childNodes: groupNodes.isEmpty ? nil : groupNodes)
+                nodes.append(groupNode)
+                continue
+            }
+
             // Handle ^ and _ (superscript/subscript)
             if (token.text == "^" || token.text == "_") && !nodes.isEmpty {
                 i = consumeSupSub(tokens, at: i, nodes: &nodes)
+                continue
+            }
+
+            // Handle \limits / \nolimits (postfix modifier for .op nodes)
+            if (token.text == "\\limits" || token.text == "\\nolimits"),
+               token.kind == .command,
+               let lastNode = nodes.last,
+               lastNode.type == .op {
+                lastNode.limitMode = (token.text == "\\limits") ? .limits : .nolimits
+                i += 1
                 continue
             }
 

@@ -20,41 +20,49 @@ func handleFracCommand(tokens: ArraySlice<Token>, idx: inout Int) -> ASTNode? {
     let startIdx = idx
     idx += 1 // skip \frac
 
-    // --- Consume first brace group (numerator) ---
-    guard idx < tokensArray.count, tokensArray[idx].kind == .leftBrace else {
-        // Could not find opening brace — back out
-        idx = startIdx + 1
-        return nil
-    }
-    idx += 1 // skip {
-    var braceDepth = 1
+    // --- Consume numerator ---
+    // Supports both \frac{num}{den} and \frac num{den} (one token without braces).
     var numTokens: [Token] = []
-    while idx < tokensArray.count, braceDepth > 0 {
-        let t = tokensArray[idx]
-        if t.kind == .leftBrace { braceDepth += 1 }
-        if t.kind == .rightBrace { braceDepth -= 1 }
-        if braceDepth > 0 { numTokens.append(t) }
+    if idx < tokensArray.count, tokensArray[idx].kind == .leftBrace {
+        idx += 1 // skip {
+        var braceDepth = 1
+        while idx < tokensArray.count, braceDepth > 0 {
+            let t = tokensArray[idx]
+            if t.kind == .leftBrace { braceDepth += 1 }
+            if t.kind == .rightBrace { braceDepth -= 1 }
+            if braceDepth > 0 { numTokens.append(t) }
+            idx += 1
+        }
+    } else if idx < tokensArray.count {
+        // Single-token numerator (e.g., \frac 1{2})
+        numTokens.append(tokensArray[idx])
         idx += 1
-    }
-    // idx is now past the closing }
-
-    // --- Consume second brace group (denominator) ---
-    guard idx < tokensArray.count, tokensArray[idx].kind == .leftBrace else {
-        // Missing second brace group — back out
+    } else {
         idx = startIdx + 1
         return nil
     }
-    idx += 1 // skip {
-    braceDepth = 1
+
+    // --- Consume denominator ---
+    // Supports both \frac{num}{den}, \frac num{den}, \frac num den, \frac{num}den
     var denTokens: [Token] = []
-    while idx < tokensArray.count, braceDepth > 0 {
-        let t = tokensArray[idx]
-        if t.kind == .leftBrace { braceDepth += 1 }
-        if t.kind == .rightBrace { braceDepth -= 1 }
-        if braceDepth > 0 { denTokens.append(t) }
+    if idx < tokensArray.count, tokensArray[idx].kind == .leftBrace {
+        idx += 1 // skip {
+        var braceDepth = 1
+        while idx < tokensArray.count, braceDepth > 0 {
+            let t = tokensArray[idx]
+            if t.kind == .leftBrace { braceDepth += 1 }
+            if t.kind == .rightBrace { braceDepth -= 1 }
+            if braceDepth > 0 { denTokens.append(t) }
+            idx += 1
+        }
+    } else if idx < tokensArray.count {
+        // Single-token denominator (e.g., \frac x y or \frac{x}{y} variant)
+        denTokens.append(tokensArray[idx])
         idx += 1
+    } else {
+        idx = startIdx + 1
+        return nil
     }
-    // idx is now past the closing }
 
     // Parse numerator and denominator token sequences into AST subtrees
     let parser = LatexParser()
