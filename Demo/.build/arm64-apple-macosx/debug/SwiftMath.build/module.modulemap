@@ -1,4 +1,0 @@
-module SwiftMath {
-    header "/Users/alpha/Desktop/swift/AlphaEqt/Demo/.build/arm64-apple-macosx/debug/SwiftMath.build/SwiftMath-Swift.h"
-    requires objc
-}
