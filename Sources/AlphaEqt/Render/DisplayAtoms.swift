@@ -490,6 +490,38 @@ public class MTGlyphDisplay: MTDisplay {
     }
 }
 
+// MARK: - MTRuleDisplay
+
+/// Draws a filled horizontal rule (rectangle) with configurable thickness.
+/// Used for overbar accents (`\bar{abc}`) when the font lacks stretchy glyph variants.
+/// Positioned such that the rule's center is at y=0; the caller sets `position.y`
+/// to place it correctly above the accentee.
+/// Renders a filled horizontal rule (rectangle) with configurable thickness.
+/// y=0 is the **bottom** edge of the rule (ascent = thickness, descent = 0),
+/// matching glyph display semantics so the rule can be positioned using
+/// the same `accentBaseHeight` formula as accent glyphs.
+public class MTRuleDisplay: MTDisplay {
+    public var ruleThickness: CGFloat
+
+    public init(width: CGFloat, thickness: CGFloat) {
+        self.ruleThickness = thickness
+        super.init()
+        self.width = width
+        self.ascent = thickness
+        self.descent = 0
+    }
+
+    override public func draw(_ ctx: CGContext) {
+        super.draw(ctx)
+        ctx.saveGState()
+        textColor?.setFill()
+        let rect = CGRect(x: 0, y: 0,
+                          width: width, height: ruleThickness)
+        ctx.fill(rect)
+        ctx.restoreGState()
+    }
+}
+
 // MARK: - MTAccentDisplay
 
 /// Renders an accent glyph (e.g., ^, ~, ˙) above a base accentee.

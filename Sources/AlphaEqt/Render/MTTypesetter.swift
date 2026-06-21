@@ -1158,23 +1158,41 @@ public class Typesetter: @unchecked Sendable {
         return true
     }
 
-    private func getSkew(accentNode: ASTNode, accenteeWidth: CGFloat, accentGlyph: CGGlyph) -> CGFloat {
+    /// TeX Appendix G, Rule 12: accent horizontal position.
+    /// For a single‑character accentee, the accent is placed at
+    ///   h = Atop(nucleus) − Atop(accent)
+    /// where the nucleus is the math‑italicized glyph actually drawn.
+    /// Atop is the TopAccentAttachment value from the MATH table.
+    /// For multi‑character accentees, the accent is centered.
+    private func getSkew(accentNode: ASTNode, accentee: MTDisplay, accentGlyph: CGGlyph) -> CGFloat {
         let mt = font.mathTable
         let accentAdjustment = mt.getTopAccentAdjustment(accentGlyph)
-        var accenteeAdjustment: CGFloat = 0
         if !isSingleCharAccentee(accentNode) {
-            accenteeAdjustment = accenteeWidth / 2
-        } else if let inner = accentNode.childNodes?.first,
-                  let innerText = inner.text,
-                  let ch = innerText.unicodeScalars.last {
-            let unicharPtr = UnsafeMutablePointer<UniChar>.allocate(capacity: 1)
-            defer { unicharPtr.deallocate() }
-            unicharPtr[0] = UniChar(ch.value)
-            var accenteeGlyph: CGGlyph = 0
-            if CTFontGetGlyphsForCharacters(font.ctFont, unicharPtr, &accenteeGlyph, 1) {
-                accenteeAdjustment = mt.getTopAccentAdjustment(accenteeGlyph)
-            }
+            // Multi‑char: center the accent over the accentee
+            return (accentee.width - accentee.width) / 2  // will be overridden by caller to (aw-accentBase.width)/2
         }
+
+        // Single‑char: extract the actual rendered (math‑italic) glyph
+        // and get its TopAccentAttachment value (Atop in TeX notation).
+        var accenteeAdjustment: CGFloat = accentee.width / 2
+        if let ctDisplay = accentee as? MTCTLineDisplay,
+           let line = ctDisplay.line,
+           let runs = CTLineGetGlyphRuns(line) as? [CTRun] {
+            for run in runs.reversed() {
+                let glyphCount = CTRunGetGlyphCount(run)
+                if glyphCount > 0 {
+                    var glyphs = [CGGlyph](repeating: 0, count: glyphCount)
+                    CTRunGetGlyphs(run, CFRange(location: 0, length: 0), &glyphs)
+                    let lastGlyph = glyphs[glyphCount - 1]
+                    accenteeAdjustment = mt.getTopAccentAdjustment(lastGlyph)
+                    break
+                }
+            }
+        } else if let gd = accentee as? MTGlyphDisplay {
+            accenteeAdjustment = mt.getTopAccentAdjustment(gd.glyph)
+        }
+
+        // TeX Rule 12: accent x‑position = Atop(nucleus) − Atop(accent)
         return accenteeAdjustment - accentAdjustment
     }
 
@@ -1236,9 +1254,20 @@ public class Typesetter: @unchecked Sendable {
         guard let children = node.childNodes, !children.isEmpty else { return nil }
         guard let accentee = createDisplay(children) else { return nil }
         guard let accentName = node.text, !accentName.isEmpty else { return accentee }
-        guard let accentChar = MTMathAtomFactory.accents[accentName] else { return accentee }
         let mt = font.mathTable
-        guard let ch = accentChar.unicodeScalars.first else { return accentee }
+
+        // For multi‑char accentees with \bar, use the standalone macron (U+00AF)
+        // instead of the combining macron (U+0304), because the combining
+        // mark has zero advance width and no horizontal variants in the MATH table.
+        let isMultiChar = !isSingleCharAccentee(node)
+        let effectiveAccentChar: String
+        if accentName == "bar" && isMultiChar {
+            effectiveAccentChar = "\u{00AF}"  // ¯  standalone macron
+        } else {
+            effectiveAccentChar = MTMathAtomFactory.accents[accentName] ?? ""
+        }
+        guard !effectiveAccentChar.isEmpty else { return accentee }
+        guard let ch = effectiveAccentChar.unicodeScalars.first else { return accentee }
         let up = UnsafeMutablePointer<UniChar>.allocate(capacity: 1); defer { up.deallocate() }
         up[0] = UniChar(ch.value)
         var accentGlyph: CGGlyph = 0
@@ -1254,7 +1283,18 @@ public class Typesetter: @unchecked Sendable {
             accentGlyph = findHorizontalVariantGlyph(accentGlyph, withMaxWidth: aw, glyphAscent: &ga, glyphDescent: &gd, glyphWidth: &gw)
         }
         let accentBase: MTDisplay
-        if !isSingleCharAccentee(node) && gw < aw * 0.8 {
+        if accentName == "bar" && isMultiChar && gw < aw * 0.8 {
+            // Draw a custom rule using Overbar metrics from the MATH table.
+            // The combining macron and standalone macron both lack stretchy
+            // horizontal variants in most OpenType MATH fonts.
+            // MTRuleDisplay has y=0 at the rule's bottom edge (ascent=thickness,
+            // descent=0), matching glyph display semantics.
+            let ruleThickness = mt.overbarRuleThickness
+            let rule = MTRuleDisplay(width: aw, thickness: ruleThickness)
+            rule.position = .zero
+            ga = ruleThickness
+            accentBase = rule
+        } else if isMultiChar && gw < aw * 0.8 {
             let parts = mt.getHorizontalGlyphAssembly(forGlyph: baseGlyph)
             if parts.count >= 2, parts.reduce(0, { $0 + $1.fullAdvance }) <= aw * 1.5,
                let asm = buildHorizontalAssemblyDisplay(parts: parts, targetWidth: aw * 0.9, ascent: &ga, descent: &gd),
@@ -1262,13 +1302,32 @@ public class Typesetter: @unchecked Sendable {
             else { let g = MTGlyphDisplay(glyph: accentGlyph, range: node.indexRange, font: font); g.rawAscent = ga; g.rawDescent = gd; g.width = gw; accentBase = g }
         } else { let g = MTGlyphDisplay(glyph: accentGlyph, range: node.indexRange, font: font); g.rawAscent = ga; g.rawDescent = gd; g.width = gw; accentBase = g }
         let ax: CGFloat, ay: CGFloat
-        if accentName == "arc" {
+        if accentBase is MTRuleDisplay {
+            // Position the rule's bottom edge at the same visual height as the
+            // combining macron's visual bar bottom.
+            // Combining macron (U+0304): bbox.origin.y=18 (at 30pt), bar sits
+            // ~18 units above the glyph baseline.
+            let delta = min(accentee.ascent, mt.accentBaseHeight)
+            let macronBarBottomOffset: CGFloat = {
+                let combiningMacron = "\u{0304}"
+                let cmUp = UnsafeMutablePointer<UniChar>.allocate(capacity: 1); defer { cmUp.deallocate() }
+                cmUp[0] = UniChar(combiningMacron.unicodeScalars.first!.value)
+                var cmGlyph: CGGlyph = 0
+                if CTFontGetGlyphsForCharacters(font.ctFont, cmUp, &cmGlyph, 1) {
+                    let cmBbox = CTFontGetBoundingRectsForGlyphs(font.ctFont, .horizontal, &cmGlyph, nil, 1)
+                    return cmBbox.origin.y
+                }
+                return 0
+            }()
+            ax = (aw - accentBase.width) / 2
+            ay = accentee.ascent - delta + macronBarBottomOffset
+        } else if accentName == "arc" {
             var ag = accentGlyph; let b = CTFontGetBoundingRectsForGlyphs(font.ctFont, .horizontal, &ag, nil, 1)
-            ax = isSingleCharAccentee(node) ? getSkew(accentNode: node, accenteeWidth: aw, accentGlyph: accentGlyph) : (aw - accentBase.width) / 2
+            ax = isSingleCharAccentee(node) ? getSkew(accentNode: node, accentee: accentee, accentGlyph: accentGlyph) : (aw - accentBase.width) / 2
             ay = accentee.ascent - max(0, b.origin.y) + 1
         } else {
             let delta = min(accentee.ascent, mt.accentBaseHeight)
-            ax = isSingleCharAccentee(node) ? getSkew(accentNode: node, accenteeWidth: aw, accentGlyph: accentGlyph) : (aw - accentBase.width) / 2
+            ax = isSingleCharAccentee(node) ? getSkew(accentNode: node, accentee: accentee, accentGlyph: accentGlyph) : (aw - accentBase.width) / 2
             ay = accentee.ascent - delta
         }
         accentBase.position = CGPoint(x: ax, y: ay)
