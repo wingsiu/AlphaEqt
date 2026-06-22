@@ -1,0 +1,104 @@
+{
+  "itemCount": 10,
+  "expression": "\\sin^{2}\\theta + \\cos^{2}\\theta",
+  "label": "sin-cos",
+  "items": [
+    {
+      "descent": 2.0500000000000003,
+      "x": 0,
+      "kind": "MTMathListDisplay",
+      "ascent": 45.349999999999994,
+      "width": 284.0388888888889,
+      "y": 0,
+      "depth": 0
+    },
+    {
+      "ascent": 45.349999999999994,
+      "kind": "MTSupSubDisplay",
+      "y": 0,
+      "depth": 1,
+      "x": 0,
+      "width": 77.1,
+      "descent": 0.5
+    },
+    {
+      "y": 0,
+      "width": 58.35,
+      "depth": 2,
+      "x": 0,
+      "text": "sin",
+      "ascent": 34.15,
+      "kind": "MTCTLineDisplay",
+      "descent": 0.5
+    },
+    {
+      "width": 18.75,
+      "ascent": 25.349999999999998,
+      "depth": 2,
+      "kind": "MTCTLineDisplay",
+      "text": "",
+      "x": 58.35,
+      "descent": 0,
+      "y": 20
+    },
+    {
+      "text": "\u03b8",
+      "depth": 1,
+      "y": 0,
+      "ascent": 33.4,
+      "x": 85.43333333333332,
+      "kind": "MTCTLineDisplay",
+      "descent": 0.55,
+      "width": 24.200000000000003
+    },
+    {
+      "x": 120.74444444444444,
+      "descent": 2.0500000000000003,
+      "width": 34.25,
+      "y": 0,
+      "ascent": 27.35,
+      "text": "+",
+      "kind": "MTCTLineDisplay",
+      "depth": 1
+    },
+    {
+      "descent": 0.5,
+      "depth": 1,
+      "kind": "MTSupSubDisplay",
+      "x": 166.10555555555555,
+      "y": 0,
+      "width": 85.4,
+      "ascent": 45.349999999999994
+    },
+    {
+      "ascent": 23,
+      "text": "cos",
+      "width": 66.65,
+      "descent": 0.5,
+      "kind": "MTCTLineDisplay",
+      "depth": 2,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "kind": "MTCTLineDisplay",
+      "y": 20,
+      "width": 18.75,
+      "text": "",
+      "ascent": 25.349999999999998,
+      "x": 66.65,
+      "descent": 0,
+      "depth": 2
+    },
+    {
+      "width": 24.200000000000003,
+      "depth": 1,
+      "descent": 0.55,
+      "kind": "MTCTLineDisplay",
+      "ascent": 33.4,
+      "x": 259.8388888888889,
+      "text": "\u03b8",
+      "y": 0
+    }
+  ]
+}

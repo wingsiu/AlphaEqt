@@ -438,8 +438,8 @@ public class MTGlyphDisplay: MTDisplay {
     }
 
     /// Glyph bounding box without axis-centering.
-    public var rawAscent: CGFloat = 0
-    public var rawDescent: CGFloat = 0
+    public var rawAscent: CGFloat = 0 { didSet { applyShiftDown() } }
+    public var rawDescent: CGFloat = 0 { didSet { applyShiftDown() } }
     /// Space between bbox.minX and the visual glyph body start (left-bearing).
     public var leftMargin: CGFloat = 0
     /// Raw glyph advance width (from CTFontGetAdvancesForGlyphs).

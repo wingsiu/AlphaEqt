@@ -1,0 +1,63 @@
+{
+  "expression": "x_{i}^{2}",
+  "parseTree": [
+    {
+      "kind": "supsub",
+      "depth": 0
+    },
+    {
+      "kind": "mathord",
+      "depth": 1,
+      "text": "x"
+    },
+    {
+      "kind": "ordgroup",
+      "depth": 1
+    },
+    {
+      "kind": "textord",
+      "depth": 2,
+      "text": "2"
+    },
+    {
+      "kind": "ordgroup",
+      "depth": 1
+    },
+    {
+      "kind": "mathord",
+      "depth": 2,
+      "text": "i"
+    }
+  ],
+  "parseTreeCount": 6,
+  "htmlSpans": [
+    {
+      "classes": "strut",
+      "heightEm": 1.1111,
+      "text": ""
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 0.8641,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 2.7,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 2.7,
+      "text": ""
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 0.247,
+      "text": ""
+    }
+  ],
+  "htmlSpanCount": 5,
+  "htmlPreview": "<span class=\"katex-display\"><span class=\"katex\"><span class=\"katex-mathml\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><msubsup><mi>x</mi><mi>i</mi><mn>2</mn></msubsup></mrow><annotation encoding=\"application/x-tex\">x_{i}^{2}</annotation></semantics></math></span><span class=\"katex-html\" aria-hidden=\"true\"><span class=\"base\"><span class=\"strut\" style=\"height:1",
+  "totalHeightEm": 1.1111
+}

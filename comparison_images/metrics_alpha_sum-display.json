@@ -1,0 +1,116 @@
+{
+  "itemCount": 11,
+  "label": "sum-display",
+  "expression": "\\displaystyle\\sum_{i=0}^n i^2",
+  "items": [
+    {
+      "depth": 0,
+      "y": 0,
+      "kind": "MTMathListDisplay",
+      "x": 0,
+      "width": 107.23333333333333,
+      "descent": 58.35,
+      "ascent": 81.5125
+    },
+    {
+      "y": 0,
+      "kind": "MTLargeOpLimitsDisplay",
+      "descent": 58.35,
+      "width": 64.60000000000001,
+      "depth": 1,
+      "x": 0,
+      "ascent": 81.5125
+    },
+    {
+      "x": 0,
+      "descent": 24.975,
+      "depth": 2,
+      "glyph": 3634,
+      "rawAscent": 74.95,
+      "shiftDown": 24.975,
+      "width": 64.60000000000001,
+      "y": 0,
+      "ascent": 49.975,
+      "rawDescent": 0,
+      "kind": "MTGlyphDisplay"
+    },
+    {
+      "depth": 2,
+      "kind": "MTCTLineDisplay",
+      "ascent": 16.537499999999998,
+      "x": 22.981250000000003,
+      "width": 18.6375,
+      "text": "",
+      "y": 64.975,
+      "descent": 0.3
+    },
+    {
+      "y": -57.825,
+      "depth": 2,
+      "x": 4.2500000000000036,
+      "kind": "MTMathListDisplay",
+      "descent": 0.525,
+      "ascent": 25.349999999999998,
+      "width": 56.1
+    },
+    {
+      "ascent": 23.099999999999998,
+      "y": 0,
+      "descent": 0.4125,
+      "width": 11.6625,
+      "depth": 3,
+      "x": 0,
+      "text": "i",
+      "kind": "MTCTLineDisplay"
+    },
+    {
+      "depth": 3,
+      "x": 11.6625,
+      "ascent": 14.475,
+      "y": 0,
+      "descent": 0,
+      "text": "=",
+      "kind": "MTCTLineDisplay",
+      "width": 25.6875
+    },
+    {
+      "y": 0,
+      "width": 18.75,
+      "kind": "MTCTLineDisplay",
+      "depth": 3,
+      "x": 37.35,
+      "text": "0",
+      "ascent": 25.349999999999998,
+      "descent": 0.525
+    },
+    {
+      "depth": 1,
+      "y": 0,
+      "kind": "MTSupSubDisplay",
+      "ascent": 45.349999999999994,
+      "descent": 0.55,
+      "x": 72.93333333333334,
+      "width": 34.3
+    },
+    {
+      "kind": "MTCTLineDisplay",
+      "text": "i",
+      "y": 0,
+      "descent": 0.55,
+      "depth": 2,
+      "x": 0,
+      "ascent": 30.8,
+      "width": 15.55
+    },
+    {
+      "x": 15.55,
+      "descent": 0,
+      "depth": 2,
+      "width": 18.75,
+      "kind": "MTCTLineDisplay",
+      "ascent": 25.349999999999998,
+      "y": 20,
+      "text": ""
+    }
+  ]
+}

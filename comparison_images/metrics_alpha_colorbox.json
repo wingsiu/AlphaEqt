@@ -1,0 +1,64 @@
+{
+  "expression": "\\colorbox{yellow}{x+y}",
+  "itemCount": 6,
+  "label": "colorbox",
+  "items": [
+    {
+      "depth": 0,
+      "x": 0,
+      "descent": 9.15,
+      "ascent": 27.35,
+      "width": 108.77222222222223,
+      "y": 0,
+      "kind": "MTMathListDisplay"
+    },
+    {
+      "x": 0,
+      "descent": 9.15,
+      "kind": "MTColorboxDisplay",
+      "width": 108.77222222222223,
+      "ascent": 27.35,
+      "depth": 1,
+      "y": 0
+    },
+    {
+      "kind": "MTMathListDisplay",
+      "x": 0,
+      "ascent": 27.35,
+      "descent": 9.15,
+      "depth": 2,
+      "y": 0,
+      "width": 108.77222222222223
+    },
+    {
+      "ascent": 22.05,
+      "descent": 0.45,
+      "width": 27.5,
+      "x": 0,
+      "kind": "MTCTLineDisplay",
+      "y": 0,
+      "text": "x",
+      "depth": 3
+    },
+    {
+      "width": 34.25,
+      "y": 0,
+      "depth": 3,
+      "descent": 2.0500000000000003,
+      "kind": "MTCTLineDisplay",
+      "ascent": 27.35,
+      "x": 38.611111111111114,
+      "text": "+"
+    },
+    {
+      "kind": "MTCTLineDisplay",
+      "width": 24.8,
+      "descent": 9.15,
+      "depth": 3,
+      "x": 83.97222222222223,
+      "ascent": 22,
+      "text": "y",
+      "y": 0
+    }
+  ]
+}

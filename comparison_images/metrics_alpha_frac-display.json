@@ -1,0 +1,57 @@
+{
+  "expression": "\\dfrac{1}{2}",
+  "label": "frac-display",
+  "itemCount": 5,
+  "items": [
+    {
+      "kind": "MTMathListDisplay",
+      "y": 0,
+      "width": 25,
+      "descent": 35,
+      "ascent": 62.800000000000004,
+      "depth": 0,
+      "x": 0
+    },
+    {
+      "kind": "MTMathListDisplay",
+      "depth": 1,
+      "y": 0,
+      "width": 25,
+      "ascent": 62.800000000000004,
+      "descent": 35,
+      "x": 0
+    },
+    {
+      "kind": "MTFractionDisplay",
+      "depth": 2,
+      "width": 25,
+      "lineThickness": 3.3,
+      "descent": 35,
+      "denominatorDown": 35,
+      "numeratorUp": 29,
+      "x": 0,
+      "y": 0,
+      "ascent": 62.800000000000004
+    },
+    {
+      "width": 25,
+      "kind": "MTCTLineDisplay",
+      "ascent": 33.800000000000004,
+      "text": "1",
+      "depth": 3,
+      "descent": 0,
+      "x": 0,
+      "y": 29
+    },
+    {
+      "ascent": 33.800000000000004,
+      "x": 0,
+      "y": -35,
+      "descent": 0,
+      "kind": "MTCTLineDisplay",
+      "text": "2",
+      "width": 25,
+      "depth": 3
+    }
+  ]
+}

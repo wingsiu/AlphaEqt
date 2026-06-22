@@ -1,0 +1,4 @@
+module AlphaEqt {
+    header "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/release/AlphaEqt.build/AlphaEqt-Swift.h"
+    requires objc
+}

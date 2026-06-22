@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AlphaEqt vs KaTeX — Metrics Comparison</title>
+<link rel="stylesheet" href="node_modules/katex/dist/katex.min.css">
+<style>
+* { box-sizing:border-box; margin:0; padding:0; }
+body { background:#1a1a1a; font-family:-apple-system,sans-serif; padding:16px 8px; color:#ccc; }
+h1 { text-align:center; font-size:16px; color:#fff; margin-bottom:2px; }
+.subtitle { text-align:center; color:#888; font-size:10px; margin-bottom:10px; }
+.grid { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; }
+.card { background:#252525; border-radius:4px; overflow:hidden; width:fit-content; max-width:500px; }
+.card-header { padding:3px 8px; background:#333; font-size:9px; display:flex; justify-content:space-between; }
+.card-label { color:#ddd; font-weight:600; }
+.card-latex { color:#888; font-family:monospace; font-size:8px; }
+.panes { display:flex; background:#fff; align-items:flex-end; }
+.pane { display:flex; flex-direction:column; align-items:center; padding:4px 3px; position:relative; min-width:24px; }
+.pane:first-child { border-right:2px solid #ddd; }
+.pane-label { font-size:7px; font-weight:600; text-transform:uppercase; color:#888; margin-bottom:3px; }
+.pane-label.a { color:#0099ff; } .pane-label.k { color:#4ecb71; }
+.pane img { display:block; image-rendering:pixelated; background:white; }
+/* KaTeX sized to match 50pt at 72dpi = 50px */
+.pane .katex { font-size:50px !important; line-height:1 !important; }
+.pane .katex-display { margin:0 !important; }
+/* Red debug boxes: every non-strut span within KaTeX output */
+.pane .katex-html span { outline:1px solid rgba(255,0,0,0.35); }
+.pane .katex-html span.strut,
+.pane .katex-html span.pstrut { outline:none; }
+.metrics-row { display:flex; font-size:8px; padding:3px 6px; border-top:1px solid #333; gap:8px; }
+.metrics-col { flex:1; min-width:0; }
+.metrics-col h4 { color:#999; font-size:8px; margin-bottom:2px; border-bottom:1px solid #444; padding-bottom:2px; }
+.metrics-col.alpha h4 { color:#0099ff; border-color:#0099ff44; }
+.metrics-col.katex h4 { color:#4ecb71; border-color:#4ecb7144; }
+.metrics-col pre { font-family:monospace; font-size:7px; color:#aaa; line-height:1.15; margin:0; white-space:pre; overflow-x:auto; }
+.summary { text-align:center; margin-top:12px; font-size:10px; color:#888; }
+.summary a { color:#0099ff; }
+</style>
+</head>
+<body>
+<h1>AlphaEqt vs KaTeX — Side-by-Side + Metrics</h1>
+<p class="subtitle">AlphaEqt: Latin Modern Math 50pt · KaTeX: 50px display · Red outlines on KaTeX content spans</p>
+<div class="grid" id="grid"></div>
+<div class="summary">
+  📄 <a href="metrics_report.txt" target="_blank">Full metrics comparison report</a> (all 28 expressions)
+</div>
+<script src="node_modules/katex/dist/katex.min.js"></script>
+<script>
+const cases = [
+  ["fraction","\\frac{x}{y}"],["nested-frac","\\frac{\\frac{a}{b}}{\\frac{c}{d}}"],
+  ["sqrt","\\sqrt{x+1}"],["sqrt-nested","\\sqrt{\\frac{x}{y}}"],
+  ["sup","x^{2}"],["sub","x_{1}"],["supsub","x_{i}^{2}"],
+  ["sum-display","\\sum_{i=0}^{n} i^{2}"],["sum-inline","\\textstyle\\sum_{i=0}^{n} i^{2}"],
+  ["integral","\\int_{0}^{\\infty} f(x)\\,dx"],
+  ["matrix","\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}"],
+  ["leftright","\\left(\\frac{x}{y}\\right)"],
+  ["accent-hat","\\hat{x}"],["accent-vec","\\vec{x}"],["accent-bar","\\bar{x}"],
+  ["accent-bar-multi","\\bar{ab}"],["accent-widehat","\\widehat{AB}"],
+  ["accent-tilde","\\tilde{x}"],["accent-dot","\\dot{x}"],["accent-ddot","\\ddot{x}"],
+  ["color","\\textcolor{red}{x}"],["colorbox","\\colorbox{yellow}{x+y}"],
+  ["frac-display","\\dfrac{1}{2}"],["frac-text","\\tfrac{1}{2}"],
+  ["sqrt-3","\\sqrt[3]{x}"],["greek","\\alpha\\beta\\gamma\\omega"],
+  ["sin-cos","\\sin^{2}\\theta + \\cos^{2}\\theta"],
+  ["sum-limits","\\sum_{i=0}^{\\infty} \\frac{1}{i}"],
+];
+
+const grid = document.getElementById('grid');
+
+// Load all metrics JSONs first
+const alphaMet = {}, katexMet = {};
+Promise.all(cases.map(([label]) => Promise.all([
+  fetch(`metrics_alpha_${label}.json`).then(r=>r.json()).then(d=>{alphaMet[label]=d}).catch(()=>{}),
+  fetch(`metrics_katex_${label}.json`).then(r=>r.json()).then(d=>{katexMet[label]=d}).catch(()=>{}),
+]))).then(() => {
+  cases.forEach(([label,latex]) => {
+    const card = document.createElement('div'); card.className='card';
+    const am = alphaMet[label], km = katexMet[label];
+    
+    let alphaStr = '', katexStr = '';
+    if (am && am.items) alphaStr = am.items.map(n =>
+      `${'  '.repeat(n.depth)}${n.kind.replace(/MT|Display/g,'')} x${n.x.toFixed(1)} y${n.y.toFixed(1)} ↗${n.ascent.toFixed(1)} ↘${n.descent.toFixed(1)} w${n.width.toFixed(1)}${n.text?' '+n.text:''}`
+    ).join('\n');
+    if (km && km.parseTree) katexStr = km.parseTree.map(n =>
+      `${'  '.repeat(n.depth)}${n.kind}${n.text?' '+n.text:''}${n.style?' ['+n.style+']':''}`
+    ).join('\n') + (km.htmlSpans ? '\n---\n' + km.htmlSpans.filter(s=>!s.classes.includes('strut')&&!s.classes.includes('pstrut')).slice(0,4).map(s =>
+      `${s.classes} h${s.heightEm||'?'} w${s.widthEm||'?'} "${s.text}"`
+    ).join('\n') : '');
+    
+    card.innerHTML = `<div class="card-header"><span class="card-label">${label}</span><span class="card-latex">${latex}</span></div>
+      <div class="panes">
+        <div class="pane"><div class="pane-label a">AlphaEqt</div><img src="${label}.png" alt=""></div>
+        <div class="pane"><div class="pane-label k">KaTeX</div><div id="katex-${label}"></div></div>
+      </div>
+      <div class="metrics-row">
+        <div class="metrics-col alpha"><h4>AlphaEqt (pt)</h4><pre>${alphaStr||'—'}</pre></div>
+        <div class="metrics-col katex"><h4>KaTeX (em)</h4><pre>${katexStr||'—'}</pre></div>
+      </div>`;
+    grid.appendChild(card);
+    
+    try { katex.render(latex, document.getElementById(`katex-${label}`), {displayMode:true,throwOnError:false,strict:false}); }
+    catch(e) { document.getElementById(`katex-${label}`).textContent='Error'; }
+  });
+});
+</script>
+</body>
+</html>

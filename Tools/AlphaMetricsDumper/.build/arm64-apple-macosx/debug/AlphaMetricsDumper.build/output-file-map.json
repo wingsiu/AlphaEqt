@@ -1,0 +1,11 @@
+{
+  "": {
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaMetricsDumper.build/master.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/main.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaMetricsDumper.build/main.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaMetricsDumper.build/main.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaMetricsDumper.build/main~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaMetricsDumper.build/main.swiftdeps"
+  }
+}

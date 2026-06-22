@@ -1,0 +1,55 @@
+{
+  "expression": "x_{i}^{2}",
+  "label": "supsub",
+  "itemCount": 5,
+  "items": [
+    {
+      "kind": "MTMathListDisplay",
+      "depth": 0,
+      "x": 0,
+      "width": 46.25,
+      "descent": 16.7125,
+      "y": 0,
+      "ascent": 45.349999999999994
+    },
+    {
+      "descent": 16.7125,
+      "depth": 1,
+      "y": 0,
+      "kind": "MTSupSubDisplay",
+      "ascent": 45.349999999999994,
+      "width": 46.25,
+      "x": 0
+    },
+    {
+      "text": "x",
+      "depth": 2,
+      "x": 0,
+      "kind": "MTCTLineDisplay",
+      "width": 27.5,
+      "descent": 0.45,
+      "ascent": 22.05,
+      "y": 0
+    },
+    {
+      "x": 27.5,
+      "kind": "MTCTLineDisplay",
+      "width": 18.75,
+      "text": "",
+      "ascent": 25.349999999999998,
+      "y": 20,
+      "descent": 0,
+      "depth": 2
+    },
+    {
+      "descent": 0.4125,
+      "x": 27.5,
+      "y": -16.299999999999997,
+      "ascent": 23.099999999999998,
+      "kind": "MTCTLineDisplay",
+      "text": "",
+      "depth": 2,
+      "width": 11.6625
+    }
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "itemCount": 8,
+  "label": "leftright",
+  "expression": "\\left(\\frac{x}{y}\\right)",
+  "items": [
+    {
+      "kind": "MTMathListDisplay",
+      "depth": 0,
+      "y": 0,
+      "descent": 49.00000000000001,
+      "x": 0,
+      "width": 113.61111111111111,
+      "ascent": 74
+    },
+    {
+      "descent": 49.00000000000001,
+      "ascent": 74,
+      "kind": "MTMathListDisplay",
+      "x": 0,
+      "y": 0,
+      "depth": 1,
+      "width": 113.61111111111111
+    },
+    {
+      "depth": 2,
+      "descent": 49.00000000000001,
+      "shiftDown": 29.300000000000004,
+      "ascent": 74,
+      "glyph": 3727,
+      "width": 37.5,
+      "kind": "MTGlyphDisplay",
+      "rawAscent": 103.30000000000001,
+      "y": 0,
+      "rawDescent": 19.700000000000003,
+      "x": 0
+    },
+    {
+      "depth": 2,
+      "y": 0,
+      "width": 27.5,
+      "ascent": 51.05,
+      "descent": 44.15,
+      "x": 43.05555555555556,
+      "kind": "MTMathListDisplay"
+    },
+    {
+      "kind": "MTFractionDisplay",
+      "depth": 3,
+      "y": 0,
+      "numeratorUp": 29,
+      "denominatorDown": 35,
+      "lineThickness": 3.3,
+      "x": 0,
+      "ascent": 51.05,
+      "descent": 44.15,
+      "width": 27.5
+    },
+    {
+      "descent": 0.45,
+      "kind": "MTCTLineDisplay",
+      "ascent": 22.05,
+      "y": 29,
+      "x": 0,
+      "depth": 4,
+      "width": 27.5,
+      "text": "x"
+    },
+    {
+      "x": 1.3499999999999996,
+      "y": -35,
+      "descent": 9.15,
+      "kind": "MTCTLineDisplay",
+      "text": "y",
+      "depth": 4,
+      "ascent": 22,
+      "width": 24.8
+    },
+    {
+      "kind": "MTGlyphDisplay",
+      "shiftDown": 29.300000000000004,
+      "glyph": 3728,
+      "rawDescent": 19.700000000000003,
+      "y": 0,
+      "descent": 49.00000000000001,
+      "depth": 2,
+      "ascent": 74,
+      "width": 37.5,
+      "x": 76.11111111111111,
+      "rawAscent": 103.30000000000001
+    }
+  ]
+}

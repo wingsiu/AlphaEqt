@@ -1,0 +1,57 @@
+{
+  "itemCount": 5,
+  "items": [
+    {
+      "ascent": 38,
+      "width": 27.5,
+      "x": 0,
+      "descent": 0.45,
+      "y": 0,
+      "kind": "MTMathListDisplay",
+      "depth": 0
+    },
+    {
+      "descent": 0.45,
+      "width": 27.5,
+      "x": 0,
+      "y": 0,
+      "kind": "MTAccentDisplay",
+      "ascent": 38,
+      "depth": 1
+    },
+    {
+      "shiftDown": 0,
+      "kind": "MTGlyphDisplay",
+      "y": 0,
+      "rawAscent": 38,
+      "descent": 0,
+      "width": 21.8,
+      "depth": 2,
+      "x": 2.8499999999999996,
+      "glyph": 938,
+      "ascent": 38,
+      "rawDescent": 0
+    },
+    {
+      "ascent": 22.05,
+      "y": 0,
+      "kind": "MTMathListDisplay",
+      "width": 27.5,
+      "depth": 2,
+      "x": 0,
+      "descent": 0.45
+    },
+    {
+      "kind": "MTCTLineDisplay",
+      "ascent": 22.05,
+      "y": 0,
+      "descent": 0.45,
+      "depth": 3,
+      "x": 0,
+      "text": "x",
+      "width": 27.5
+    }
+  ],
+  "expression": "\\vec{x}",
+  "label": "accent-vec"
+}

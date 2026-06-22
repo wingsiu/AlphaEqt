@@ -1,0 +1,120 @@
+{
+  "expression": "\\sin^{2}\\theta + \\cos^{2}\\theta",
+  "parseTree": [
+    {
+      "kind": "supsub",
+      "depth": 0
+    },
+    {
+      "kind": "op",
+      "depth": 1
+    },
+    {
+      "kind": "ordgroup",
+      "depth": 1
+    },
+    {
+      "kind": "textord",
+      "depth": 2,
+      "text": "2"
+    },
+    {
+      "kind": "mathord",
+      "depth": 0,
+      "text": "\\theta"
+    },
+    {
+      "kind": "atom",
+      "depth": 0,
+      "text": "+"
+    },
+    {
+      "kind": "supsub",
+      "depth": 0
+    },
+    {
+      "kind": "op",
+      "depth": 1
+    },
+    {
+      "kind": "ordgroup",
+      "depth": 1
+    },
+    {
+      "kind": "textord",
+      "depth": 2,
+      "text": "2"
+    },
+    {
+      "kind": "mathord",
+      "depth": 0,
+      "text": "\\theta"
+    }
+  ],
+  "parseTreeCount": 11,
+  "htmlSpans": [
+    {
+      "classes": "strut",
+      "heightEm": 0.9552,
+      "text": ""
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 0.8719,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 2.7,
+      "text": ""
+    },
+    {
+      "classes": "mspace",
+      "marginRightEm": 0.1667,
+      "text": ""
+    },
+    {
+      "classes": "mord mathnormal",
+      "marginRightEm": 0.0278,
+      "text": "\u03b8"
+    },
+    {
+      "classes": "mspace",
+      "marginRightEm": 0.2222,
+      "text": ""
+    },
+    {
+      "classes": "mspace",
+      "marginRightEm": 0.2222,
+      "text": ""
+    },
+    {
+      "classes": "strut",
+      "heightEm": 0.8641,
+      "text": ""
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 0.8641,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 2.7,
+      "text": ""
+    },
+    {
+      "classes": "mspace",
+      "marginRightEm": 0.1667,
+      "text": ""
+    },
+    {
+      "classes": "mord mathnormal",
+      "marginRightEm": 0.0278,
+      "text": "\u03b8"
+    }
+  ],
+  "htmlSpanCount": 12,
+  "htmlPreview": "<span class=\"katex-display\"><span class=\"katex\"><span class=\"katex-mathml\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><msup><mrow><mi>sin</mi><mo>\u2061</mo></mrow><mn>2</mn></msup><mi>\u03b8</mi><mo>+</mo><msup><mrow><mi>cos</mi><mo>\u2061</mo></mrow><mn>2</mn></msup><mi>\u03b8</mi></mrow><annotation encoding=\"application/x-tex\">\\sin^{2}\\theta + \\cos^{2}\\theta</annotation></sem",
+  "totalHeightEm": 0.9552
+}

@@ -1,0 +1,84 @@
+{
+  "expression": "\\sqrt[3]{x}",
+  "parseTree": [
+    {
+      "kind": "sqrt",
+      "depth": 0
+    },
+    {
+      "kind": "ordgroup",
+      "depth": 1
+    },
+    {
+      "kind": "mathord",
+      "depth": 2,
+      "text": "x"
+    },
+    {
+      "kind": "ordgroup",
+      "depth": 1
+    },
+    {
+      "kind": "textord",
+      "depth": 2,
+      "text": "3"
+    }
+  ],
+  "parseTreeCount": 5,
+  "htmlSpans": [
+    {
+      "classes": "strut",
+      "heightEm": 1.04,
+      "text": ""
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 0.7172,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 2.5,
+      "text": ""
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 0.8492,
+      "text": ""
+    },
+    {
+      "classes": "svg-align",
+      "topEm": -3,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 3,
+      "text": ""
+    },
+    {
+      "classes": "mord",
+      "leftEm": 0.833,
+      "text": "x"
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 3,
+      "text": ""
+    },
+    {
+      "classes": "hide-tail",
+      "heightEm": 1.08,
+      "widthEm": 0.853,
+      "text": ""
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 0.1908,
+      "text": ""
+    }
+  ],
+  "htmlSpanCount": 10,
+  "htmlPreview": "<span class=\"katex-display\"><span class=\"katex\"><span class=\"katex-mathml\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><mroot><mi>x</mi><mn>3</mn></mroot></mrow><annotation encoding=\"application/x-tex\">\\sqrt[3]{x}</annotation></semantics></math></span><span class=\"katex-html\" aria-hidden=\"true\"><span class=\"base\"><span class=\"strut\" style=\"height:1.04em;vertic",
+  "totalHeightEm": 1.04
+}

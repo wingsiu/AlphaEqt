@@ -1,0 +1,67 @@
+{
+  "itemCount": 6,
+  "label": "accent-widehat",
+  "items": [
+    {
+      "depth": 0,
+      "ascent": 49.7,
+      "width": 70.65,
+      "kind": "MTMathListDisplay",
+      "x": 0,
+      "descent": 0,
+      "y": 0
+    },
+    {
+      "width": 70.65,
+      "descent": 0,
+      "y": 0,
+      "depth": 1,
+      "x": 0,
+      "ascent": 49.7,
+      "kind": "MTAccentDisplay"
+    },
+    {
+      "kind": "MTGlyphDisplay",
+      "ascent": 38.85,
+      "x": 10.850000000000001,
+      "rawAscent": 38.85,
+      "descent": 0,
+      "y": 10.850000000000001,
+      "shiftDown": 0,
+      "depth": 2,
+      "glyph": 3689,
+      "rawDescent": 0,
+      "width": 48.95
+    },
+    {
+      "ascent": 33.35,
+      "descent": 0,
+      "kind": "MTMathListDisplay",
+      "width": 70.65,
+      "x": 0,
+      "y": 0,
+      "depth": 2
+    },
+    {
+      "text": "A",
+      "depth": 3,
+      "width": 35.85,
+      "kind": "MTCTLineDisplay",
+      "ascent": 33.35,
+      "y": 0,
+      "descent": 0,
+      "x": 0
+    },
+    {
+      "kind": "MTCTLineDisplay",
+      "x": 35.85,
+      "descent": 0,
+      "y": 0,
+      "width": 34.800000000000004,
+      "text": "B",
+      "ascent": 32.65,
+      "depth": 3
+    }
+  ],
+  "expression": "\\widehat{AB}"
+}

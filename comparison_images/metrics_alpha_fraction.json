@@ -1,0 +1,48 @@
+{
+  "itemCount": 4,
+  "items": [
+    {
+      "width": 27.5,
+      "y": 0,
+      "x": 0,
+      "depth": 0,
+      "ascent": 51.05,
+      "descent": 44.15,
+      "kind": "MTMathListDisplay"
+    },
+    {
+      "kind": "MTFractionDisplay",
+      "numeratorUp": 29,
+      "y": 0,
+      "lineThickness": 3.3,
+      "descent": 44.15,
+      "depth": 1,
+      "x": 0,
+      "width": 27.5,
+      "denominatorDown": 35,
+      "ascent": 51.05
+    },
+    {
+      "text": "x",
+      "kind": "MTCTLineDisplay",
+      "depth": 2,
+      "x": 0,
+      "y": 29,
+      "ascent": 22.05,
+      "descent": 0.45,
+      "width": 27.5
+    },
+    {
+      "kind": "MTCTLineDisplay",
+      "y": -35,
+      "descent": 9.15,
+      "text": "y",
+      "depth": 2,
+      "x": 1.3499999999999996,
+      "ascent": 22,
+      "width": 24.8
+    }
+  ],
+  "label": "fraction",
+  "expression": "\\frac{x}{y}"
+}

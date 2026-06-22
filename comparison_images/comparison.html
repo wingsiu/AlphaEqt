@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>AlphaEqt vs KaTeX</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<style>
+@font-face{font-family:"KaTeX_AMS";src:url("xits-math-comparison.otf?v=1782062814") format("opentype")}
+@font-face{font-family:"KaTeX_Caligraphic";src:url("xits-math-comparison.otf?v=1782062814") format("opentype")}
+@font-face{font-family:"KaTeX_Fraktur";src:url("xits-math-comparison.otf?v=1782062814") format("opentype")}
+@font-face{font-family:"KaTeX_Main";src:url("xits-math-comparison.otf?v=1782062814") format("opentype")}
+@font-face{font-family:"KaTeX_Main";src:url("xits-math-comparison.otf?v=1782062814") format("opentype");font-weight:bold}
+@font-face{font-family:"KaTeX_Math";src:url("xits-math-comparison.otf?v=1782062814") format("opentype")}
+@font-face{font-family:"KaTeX_SansSerif";src:url("xits-math-comparison.otf?v=1782062814") format("opentype")}
+@font-face{font-family:"KaTeX_Script";src:url("xits-math-comparison.otf?v=1782062814") format("opentype")}
+@font-face{font-family:"KaTeX_Size1";src:url("xits-math-comparison.otf?v=1782062814") format("opentype")}
+@font-face{font-family:"KaTeX_Size2";src:url("xits-math-comparison.otf?v=1782062814") format("opentype")}
+@font-face{font-family:"KaTeX_Size3";src:url("xits-math-comparison.otf?v=1782062814") format("opentype")}
+@font-face{font-family:"KaTeX_Size4";src:url("xits-math-comparison.otf?v=1782062814") format("opentype")}
+@font-face{font-family:"KaTeX_Typewriter";src:url("xits-math-comparison.otf?v=1782062814") format("opentype")}
+
+.katex,.katex *{font-size:50px!important}
+
+body{font-family:system-ui,sans-serif;background:#1a1a2e;color:#eee;margin:20px}
+h1{color:#e94560;text-align:center}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;max-width:1500px;margin:0 auto}
+.card{background:#16213e;border-radius:8px;padding:8px}
+.card h3{color:#0f3460;background:#e94560;display:inline-block;padding:2px 8px;border-radius:4px;margin:0 0 6px 0;font-size:13px}
+.row{display:flex;gap:8px;align-items:flex-start}
+.col{flex:1;min-width:0}
+.col-label{font-size:11px;color:#888;margin-bottom:4px}
+.card img{max-width:100%;height:auto;background:#fff;border-radius:4px;padding:6px}
+.katex-out{background:#fff;border-radius:4px;padding:6px;min-height:20px;color:#000}
+.code{font-family:monospace;font-size:11px;color:#aaa;margin-top:4px;word-break:break-all}
+</style></head><body>
+<h1>AlphaEqt vs KaTeX (xits-math, 50pt) — Open directly from disk</h1>
+<p style="text-align:center;color:#888;font-size:12px">
+Browser will ask: "Allow this page to access files?" → click <b>Allow</b>
+</p>
+<div class="grid"><div class="card"><h3>fraction</h3>
+<div class="row">
+<div class="col"><div class="col-label">AlphaEqt</div><img src="fraction.png"></div>
+<div class="col"><div class="col-label">KaTeX</div><div class="katex-out" id="k-fraction"></div></div>
+</div>
+<div class="code">\frac{x}{y}</div>
+</div><div class="card"><h3>nested-frac</h3>
+<div class="row">
+<div class="col"><div class="col-label">AlphaEqt</div><img src="nested-frac.png"></div>
+<div class="col"><div class="col-label">KaTeX</div><div class="katex-out" id="k-nested-frac"></div></div>
+</div>
+<div class="code">\frac{\frac{a}{b}}{\frac{c}{d}}</div>
+</div><div class="card"><h3>sqrt</h3>
+<div class="row">
+<div class="col"><div class="col-label">AlphaEqt</div><img src="sqrt.png"></div>
+<div class="col"><div class="col-label">KaTeX</div><div class="katex-out" id="k-sqrt"></div></div>
+</div>
+<div class="code">\sqrt{x+1}</div>
+</div><div class="card"><h3>sqrt-nested</h3>
+<div class="row">
+<div class="col"><div class="col-label">AlphaEqt</div><img src="sqrt-nested.png"></div>
+<div class="col"><div class="col-label">KaTeX</div><div class="katex-out" id="k-sqrt-nested"></div></div>
+</div>
+<div class="code">\sqrt{\frac{x}{y}}</div>
+</div><div class="card"><h3>sup</h3>
+<div class="row">
+<div class="col"><div class="col-label">AlphaEqt</div><img src="sup.png"></div>
+<div class="col"><div class="col-label">KaTeX</div><div class="katex-out" id="k-sup"></div></div>
+</div>
+<div class="code">x^2</div>
+</div><div class="card"><h3>sub</h3>
+<div class="row">
+<div class="col"><div class="col-label">AlphaEqt</div><img src="sub.png"></div>
+<div class="col"><div class="col-label">KaTeX</div><div class="katex-out" id="k-sub"></div></div>
+</div>
+<div class="code">x_1</div>
+</div><div class="card"><h3>supsub</h3>
+<div class="row">
+<div class="col"><div class="col-label">AlphaEqt</div><img src="supsub.png"></div>
+<div class="col"><div class="col-label">KaTeX</div><div class="katex-out" id="k-supsub"></div></div>
+</div>
+<div class="code">x_i^2</div>
+</div><div class="card"><h3>sum-display</h3>
+<div class="row">
+<div class="col"><div class="col-label">AlphaEqt</div><img src="sum-display.png"></div>
+<div class="col"><div class="col-label">KaTeX</div><div class="katex-out" id="k-sum-display"></div></div>
+</div>
+<div class="code">\displaystyle\sum_{i=0}^n i^2</div>
+</div><div class="card"><h3>sum-inline</h3>
+<div class="row">
+<div class="col"><div class="col-label">AlphaEqt</div><img src="sum-inline.png"></div>
+<div class="col"><div class="col-label">KaTeX</div><div class="katex-out" id="k-sum-inline"></div></div>
+</div>
+<div class="code">\textstyle\sum_{i=0}^n i^2</div>
+</div><div class="card"><h3>integral</h3>
+<div class="row">
+<div class="col"><div class="col-label">AlphaEqt</div><img src="integral.png"></div>
+<div class="col"><div class="col-label">KaTeX</div><div class="katex-out" id="k-integral"></div></div>
+</div>
+<div class="code">\displaystyle\int_0^\infty f(x)dx</div>
+</div><div class="card"><h3>matrix</h3>
+<div class="row">
+<div class="col"><div class="col-label">AlphaEqt</div><img src="matrix.png"></div>
+<div class="col"><div class="col-label">KaTeX</div><div class="katex-out" id="k-matrix"></div></div>
+</div>
+<div class="code">\begin{pmatrix} a & b \\ c & d \end{pmatrix}</div>
+</div><div class="card"><h3>leftright</h3>
+<div class="row">
+<div class="col"><div class="col-label">AlphaEqt</div><img src="leftright.png"></div>
+<div class="col"><div class="col-label">KaTeX</div><div class="katex-out" id="k-leftright"></div></div>
+</div>
+<div class="code">\left(\frac{x}{y}\right)</div>
+</div><div class="card"><h3>accent-hat</h3>
+<div class="row">
+<div class="col"><div class="col-label">AlphaEqt</div><img src="accent-hat.png"></div>
+<div class="col"><div class="col-label">KaTeX</div><div class="katex-out" id="k-accent-hat"></div></div>
+</div>
+<div class="code">\hat{x}</div>
+</div><div class="card"><h3>accent-vec</h3>
+<div class="row">
+<div class="col"><div class="col-label">AlphaEqt</div><img src="accent-vec.png"></div>
+<div class="col"><div class="col-label">KaTeX</div><div class="katex-out" id="k-accent-vec"></div></div>
+</div>
+<div class="code">\vec{x}</div>
+</div><div class="card"><h3>accent-bar</h3>
+<div class="row">
+<div class="col"><div class="col-label">AlphaEqt</div><img src="accent-bar.png"></div>
+<div class="col"><div class="col-label">KaTeX</div><div class="katex-out" id="k-accent-bar"></div></div>
+</div>
+<div class="code">\bar{x}</div>
+</div><div class="card"><h3>accent-bar-multi</h3>
+<div class="row">
+<div class="col"><div class="col-label">AlphaEqt</div><img src="accent-bar-multi.png"></div>
+<div class="col"><div class="col-label">KaTeX</div><div class="katex-out" id="k-accent-bar-multi"></div></div>
+</div>
+<div class="code">\bar{ab}</div>
+</div><div class="card"><h3>accent-widehat</h3>
+<div class="row">
+<div class="col"><div class="col-label">AlphaEqt</div><img src="accent-widehat.png"></div>
+<div class="col"><div class="col-label">KaTeX</div><div class="katex-out" id="k-accent-widehat"></div></div>
+</div>
+<div class="code">\widehat{AB}</div>
+</div><div class="card"><h3>accent-tilde</h3>
+<div class="row">
+<div class="col"><div class="col-label">AlphaEqt</div><img src="accent-tilde.png"></div>
+<div class="col"><div class="col-label">KaTeX</div><div class="katex-out" id="k-accent-tilde"></div></div>
+</div>
+<div class="code">\tilde{x}</div>
+</div><div class="card"><h3>accent-dot</h3>
+<div class="row">
+<div class="col"><div class="col-label">AlphaEqt</div><img src="accent-dot.png"></div>
+<div class="col"><div class="col-label">KaTeX</div><div class="katex-out" id="k-accent-dot"></div></div>
+</div>
+<div class="code">\dot{x}</div>
+</div><div class="card"><h3>accent-ddot</h3>
+<div class="row">
+<div class="col"><div class="col-label">AlphaEqt</div><img src="accent-ddot.png"></div>
+<div class="col"><div class="col-label">KaTeX</div><div class="katex-out" id="k-accent-ddot"></div></div>
+</div>
+<div class="code">\ddot{x}</div>
+</div><div class="card"><h3>color</h3>
+<div class="row">
+<div class="col"><div class="col-label">AlphaEqt</div><img src="color.png"></div>
+<div class="col"><div class="col-label">KaTeX</div><div class="katex-out" id="k-color"></div></div>
+</div>
+<div class="code">\textcolor{red}{x}</div>
+</div><div class="card"><h3>colorbox</h3>
+<div class="row">
+<div class="col"><div class="col-label">AlphaEqt</div><img src="colorbox.png"></div>
+<div class="col"><div class="col-label">KaTeX</div><div class="katex-out" id="k-colorbox"></div></div>
+</div>
+<div class="code">\colorbox{yellow}{x+y}</div>
+</div><div class="card"><h3>frac-display</h3>
+<div class="row">
+<div class="col"><div class="col-label">AlphaEqt</div><img src="frac-display.png"></div>
+<div class="col"><div class="col-label">KaTeX</div><div class="katex-out" id="k-frac-display"></div></div>
+</div>
+<div class="code">\dfrac{1}{2}</div>
+</div><div class="card"><h3>frac-text</h3>
+<div class="row">
+<div class="col"><div class="col-label">AlphaEqt</div><img src="frac-text.png"></div>
+<div class="col"><div class="col-label">KaTeX</div><div class="katex-out" id="k-frac-text"></div></div>
+</div>
+<div class="code">\tfrac{1}{2}</div>
+</div><div class="card"><h3>sqrt-3</h3>
+<div class="row">
+<div class="col"><div class="col-label">AlphaEqt</div><img src="sqrt-3.png"></div>
+<div class="col"><div class="col-label">KaTeX</div><div class="katex-out" id="k-sqrt-3"></div></div>
+</div>
+<div class="code">\sqrt[3]{x}</div>
+</div><div class="card"><h3>greek</h3>
+<div class="row">
+<div class="col"><div class="col-label">AlphaEqt</div><img src="greek.png"></div>
+<div class="col"><div class="col-label">KaTeX</div><div class="katex-out" id="k-greek"></div></div>
+</div>
+<div class="code">\alpha\beta\gamma\omega</div>
+</div><div class="card"><h3>sin-cos</h3>
+<div class="row">
+<div class="col"><div class="col-label">AlphaEqt</div><img src="sin-cos.png"></div>
+<div class="col"><div class="col-label">KaTeX</div><div class="katex-out" id="k-sin-cos"></div></div>
+</div>
+<div class="code">\sin^2\theta + \cos^2\theta</div>
+</div><div class="card"><h3>sum-limits</h3>
+<div class="row">
+<div class="col"><div class="col-label">AlphaEqt</div><img src="sum-limits.png"></div>
+<div class="col"><div class="col-label">KaTeX</div><div class="katex-out" id="k-sum-limits"></div></div>
+</div>
+<div class="code">\displaystyle\sum_{i=0}^\infty \frac{1}{i}</div>
+</div></div>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script>
+document.fonts.ready.then(function(){
+  var cases=[['k-fraction','\\frac{x}{y}'],
+['k-nested-frac','\\frac{\\frac{a}{b}}{\\frac{c}{d}}'],
+['k-sqrt','\\sqrt{x+1}'],
+['k-sqrt-nested','\\sqrt{\\frac{x}{y}}'],
+['k-sup','x^2'],
+['k-sub','x_1'],
+['k-supsub','x_i^2'],
+['k-sum-display','\\displaystyle\\sum_{i=0}^n i^2'],
+['k-sum-inline','\\textstyle\\sum_{i=0}^n i^2'],
+['k-integral','\\displaystyle\\int_0^\\infty f(x)dx'],
+['k-matrix','\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}'],
+['k-leftright','\\left(\\frac{x}{y}\\right)'],
+['k-accent-hat','\\hat{x}'],
+['k-accent-vec','\\vec{x}'],
+['k-accent-bar','\\bar{x}'],
+['k-accent-bar-multi','\\bar{ab}'],
+['k-accent-widehat','\\widehat{AB}'],
+['k-accent-tilde','\\tilde{x}'],
+['k-accent-dot','\\dot{x}'],
+['k-accent-ddot','\\ddot{x}'],
+['k-color','\\textcolor{red}{x}'],
+['k-colorbox','\\colorbox{yellow}{x+y}'],
+['k-frac-display','\\dfrac{1}{2}'],
+['k-frac-text','\\tfrac{1}{2}'],
+['k-sqrt-3','\\sqrt[3]{x}'],
+['k-greek','\\alpha\\beta\\gamma\\omega'],
+['k-sin-cos','\\sin^2\\theta + \\cos^2\\theta'],
+['k-sum-limits','\\displaystyle\\sum_{i=0}^\\infty \\frac{1}{i}'],
+  ];
+  cases.forEach(function(x){
+    try{katex.render(x[1],document.getElementById(x[0]),{displayMode:true,throwOnError:false,trust:true})}
+    catch(e){document.getElementById(x[0]).textContent='⚠ '+e.message}
+  });
+});
+</script></body></html>

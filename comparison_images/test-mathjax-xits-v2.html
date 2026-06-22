@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>MathJax 3 + XITS Math (Local)</title>
+<script>
+MathJax = {
+  options: {
+    renderActions: {
+      findScript: [10, function (doc) {
+        for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+          const display = !!node.type.match(/; *mode=display/);
+          const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+          const text = document.createTextNode('');
+          node.parentNode.replaceChild(text, node);
+          math.start = {node: text, delim: '', n: 0};
+          math.end = {node: text, delim: '', n: 0};
+          doc.math.push(math);
+        }
+      }, '']
+    }
+  },
+  chtml: {
+    fontFamily: 'xits',
+    scale: 1
+  },
+  tex: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\\[','\\]']]
+  }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<style>
+body { font-family: system-ui; background: #1a1a2e; color: #eee; margin: 20body 
+hhhhhhhhhhhhhhhhhhh; }
+.math { background: #fff; border-radius: 6px; padding: 16px; margin: 10px 0; color: #000; font-size: 50px; }
+.code { font-family: monospace; color: #888; font-size: 12px; margin-top: 4px; }
+</style>
+</head>
+<body>
+<h1>MathJax 3 + XITS Math Test (fontFamily: "xits")</h1>
+
+<script type="math/tex; mode=display">x + y</script>
+<div class="math" id="eq0"></div><div class="code">x + y</div>
+
+<script type="math/tex; mode=display">\frac{x}{y}</script>
+<div class="math" id="eq1"></div><div class="code">\frac{x}{y}</div>
+
+<script type="math/tex; mode=display">\sqrt{x+1}</script>
+<div class="math" id="eq2"></div><div class="code">\sqrt{x+1}</div>
+
+<script type="math/tex;<script type="math/t{i=0}^\infty \frac{1}{i}</script>
+<div class="math" id="eq3"></div><div class="code">\sum_{i=0}^\infty \frac{1}{i}</div>
+
+<sc<ipt>
+// After MathJax renders, check if XITS Math was loaded
+MathJax.startup.promise.then(function() {
+  console.log('MathJax rendered successfully');
+  console.log('CHTML fontFamily:', MathJax.config.chtml.fontFamily);
+  
+  // Check if the font loaded
+  document.fonts.ready.then(function() {
+    var xitsLoaded = fals    var xitsLoaded = fals    var xitsLoaded = fals    var xitsLoaded = fals   ndexOf('xits') >= 0)    v      var xitsLoaded = fals    var xitsLoaded = fals   .stat    var xitsLoaded = fals    var      }
+    });
+    if (!xitsLoaded) {
+      console.log('⚠ XITS Math font not foun      console.log('⚠ XITS Math font not foun  
+</body>
+</html>

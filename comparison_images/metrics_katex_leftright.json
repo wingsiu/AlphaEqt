@@ -1,0 +1,87 @@
+{
+  "expression": "\\left(\\frac{x}{y}\\right)",
+  "parseTree": [
+    {
+      "kind": "leftright",
+      "depth": 0
+    },
+    {
+      "kind": "genfrac",
+      "depth": 1
+    },
+    {
+      "kind": "ordgroup",
+      "depth": 2
+    },
+    {
+      "kind": "mathord",
+      "depth": 3,
+      "text": "x"
+    },
+    {
+      "kind": "ordgroup",
+      "depth": 2
+    },
+    {
+      "kind": "mathord",
+      "depth": 3,
+      "text": "y"
+    }
+  ],
+  "parseTreeCount": 6,
+  "htmlSpans": [
+    {
+      "classes": "strut",
+      "heightEm": 2.4,
+      "text": ""
+    },
+    {
+      "classes": "mopen delimcenter",
+      "topEm": 0,
+      "text": "("
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 1.1076,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 3,
+      "text": ""
+    },
+    {
+      "classes": "mord mathnormal",
+      "marginRightEm": 0.0359,
+      "text": "y"
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 3,
+      "text": ""
+    },
+    {
+      "classes": "frac-line",
+      "widthEm": 0.04,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 3,
+      "text": ""
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 0.8804,
+      "text": ""
+    },
+    {
+      "classes": "mclose delimcenter",
+      "topEm": 0,
+      "text": ")"
+    }
+  ],
+  "htmlSpanCount": 10,
+  "htmlPreview": "<span class=\"katex-display\"><span class=\"katex\"><span class=\"katex-mathml\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><mo fence=\"true\">(</mo><mfrac><mi>x</mi><mi>y</mi></mfrac><mo fence=\"true\">)</mo></mrow><annotation encoding=\"application/x-tex\">\\left(\\frac{x}{y}\\right)</annotation></semantics></math></span><span class=\"katex-html\" aria-hidden=\"true\"><span c",
+  "totalHeightEm": 2.4
+}

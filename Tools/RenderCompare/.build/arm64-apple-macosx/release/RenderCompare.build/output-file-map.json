@@ -1,0 +1,12 @@
+{
+  "": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/release/RenderCompare.build/RenderCompare.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/release/RenderCompare.build/RenderCompare.o",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/release/RenderCompare.build/master.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/main.swift": {
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/release/RenderCompare.build/main.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/release/RenderCompare.build/main~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/release/RenderCompare.build/main.swiftdeps"
+  }
+}

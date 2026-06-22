@@ -1,0 +1,49 @@
+{
+  "expression": "x_{1}",
+  "parseTree": [
+    {
+      "kind": "supsub",
+      "depth": 0
+    },
+    {
+      "kind": "mathord",
+      "depth": 1,
+      "text": "x"
+    },
+    {
+      "kind": "ordgroup",
+      "depth": 1
+    },
+    {
+      "kind": "textord",
+      "depth": 2,
+      "text": "1"
+    }
+  ],
+  "parseTreeCount": 4,
+  "htmlSpans": [
+    {
+      "classes": "strut",
+      "heightEm": 0.5806,
+      "text": ""
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 0.3011,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 2.7,
+      "text": ""
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 0.15,
+      "text": ""
+    }
+  ],
+  "htmlSpanCount": 4,
+  "htmlPreview": "<span class=\"katex-display\"><span class=\"katex\"><span class=\"katex-mathml\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><msub><mi>x</mi><mn>1</mn></msub></mrow><annotation encoding=\"application/x-tex\">x_{1}</annotation></semantics></math></span><span class=\"katex-html\" aria-hidden=\"true\"><span class=\"base\"><span class=\"strut\" style=\"height:0.5806em;vertical-ali",
+  "totalHeightEm": 0.5806
+}

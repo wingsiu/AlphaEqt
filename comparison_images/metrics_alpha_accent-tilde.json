@@ -1,0 +1,57 @@
+{
+  "label": "accent-tilde",
+  "expression": "\\tilde{x}",
+  "itemCount": 5,
+  "items": [
+    {
+      "descent": 0.45,
+      "depth": 0,
+      "ascent": 31.900000000000002,
+      "y": 0,
+      "width": 27.5,
+      "kind": "MTMathListDisplay",
+      "x": 0
+    },
+    {
+      "kind": "MTAccentDisplay",
+      "width": 27.5,
+      "x": 0,
+      "ascent": 31.900000000000002,
+      "y": 0,
+      "descent": 0.45,
+      "depth": 1
+    },
+    {
+      "x": 25.25,
+      "ascent": 31.900000000000002,
+      "rawAscent": 31.900000000000002,
+      "glyph": 545,
+      "rawDescent": 0,
+      "depth": 2,
+      "y": 0,
+      "descent": 0,
+      "kind": "MTGlyphDisplay",
+      "width": 0,
+      "shiftDown": 0
+    },
+    {
+      "kind": "MTMathListDisplay",
+      "ascent": 22.05,
+      "descent": 0.45,
+      "depth": 2,
+      "width": 27.5,
+      "y": 0,
+      "x": 0
+    },
+    {
+      "x": 0,
+      "kind": "MTCTLineDisplay",
+      "y": 0,
+      "text": "x",
+      "depth": 3,
+      "width": 27.5,
+      "descent": 0.45,
+      "ascent": 22.05
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "label": "sqrt-3",
+  "expression": "\\sqrt[3]{x}",
+  "items": [
+    {
+      "ascent": 44.95,
+      "descent": 19.950000000000003,
+      "depth": 0,
+      "x": 0,
+      "kind": "MTMathListDisplay",
+      "y": 0,
+      "width": 75
+    },
+    {
+      "descent": 19.950000000000003,
+      "width": 75,
+      "x": 0,
+      "ascent": 44.95,
+      "kind": "MTRadicalDisplay",
+      "y": 0,
+      "depth": 1,
+      "topKern": 3.3,
+      "lineThickness": 3.3
+    },
+    {
+      "ascent": 22.05,
+      "descent": 0.45,
+      "x": 47.50000000000001,
+      "depth": 2,
+      "y": 0,
+      "text": "x",
+      "kind": "MTCTLineDisplay",
+      "width": 27.5
+    },
+    {
+      "width": 15,
+      "x": 13.85,
+      "y": 17.5,
+      "ascent": 20.279999999999998,
+      "kind": "MTCTLineDisplay",
+      "text": "3",
+      "depth": 2,
+      "descent": 0.42
+    }
+  ],
+  "itemCount": 4
+}

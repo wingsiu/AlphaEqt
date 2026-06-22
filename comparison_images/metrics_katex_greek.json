@@ -1,0 +1,56 @@
+{
+  "expression": "\\alpha\\beta\\gamma\\omega",
+  "parseTree": [
+    {
+      "kind": "mathord",
+      "depth": 0,
+      "text": "\\alpha"
+    },
+    {
+      "kind": "mathord",
+      "depth": 0,
+      "text": "\\beta"
+    },
+    {
+      "kind": "mathord",
+      "depth": 0,
+      "text": "\\gamma"
+    },
+    {
+      "kind": "mathord",
+      "depth": 0,
+      "text": "\\omega"
+    }
+  ],
+  "parseTreeCount": 4,
+  "htmlSpans": [
+    {
+      "classes": "strut",
+      "heightEm": 0.8889,
+      "text": ""
+    },
+    {
+      "classes": "mord mathnormal",
+      "marginRightEm": 0.0037,
+      "text": "\u03b1"
+    },
+    {
+      "classes": "mord mathnormal",
+      "marginRightEm": 0.0528,
+      "text": "\u03b2"
+    },
+    {
+      "classes": "mord mathnormal",
+      "marginRightEm": 0.0556,
+      "text": "\u03b3"
+    },
+    {
+      "classes": "mord mathnormal",
+      "marginRightEm": 0.0359,
+      "text": "\u03c9"
+    }
+  ],
+  "htmlSpanCount": 5,
+  "htmlPreview": "<span class=\"katex-display\"><span class=\"katex\"><span class=\"katex-mathml\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><mi>\u03b1</mi><mi>\u03b2</mi><mi>\u03b3</mi><mi>\u03c9</mi></mrow><annotation encoding=\"application/x-tex\">\\alpha\\beta\\gamma\\omega</annotation></semantics></math></span><span class=\"katex-html\" aria-hidden=\"true\"><span class=\"base\"><span class=\"strut\" style=\"hei",
+  "totalHeightEm": 0.8889
+}

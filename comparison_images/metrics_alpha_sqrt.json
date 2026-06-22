@@ -1,0 +1,66 @@
+{
+  "expression": "\\sqrt{x+1}",
+  "label": "sqrt",
+  "itemCount": 6,
+  "items": [
+    {
+      "y": 0,
+      "depth": 0,
+      "kind": "MTMathListDisplay",
+      "ascent": 50.825,
+      "x": 0,
+      "descent": 14.075000000000003,
+      "width": 155.37222222222223
+    },
+    {
+      "depth": 1,
+      "kind": "MTRadicalDisplay",
+      "descent": 14.075000000000003,
+      "x": 0,
+      "ascent": 50.825,
+      "lineThickness": 3.3,
+      "topKern": 3.3,
+      "y": 0,
+      "width": 155.37222222222223
+    },
+    {
+      "descent": 2.0500000000000003,
+      "y": 0,
+      "kind": "MTMathListDisplay",
+      "depth": 2,
+      "ascent": 33.800000000000004,
+      "width": 108.97222222222223,
+      "x": 46.400000000000006
+    },
+    {
+      "descent": 0.45,
+      "kind": "MTCTLineDisplay",
+      "depth": 3,
+      "width": 27.5,
+      "y": 0,
+      "ascent": 22.05,
+      "x": 0,
+      "text": "x"
+    },
+    {
+      "y": 0,
+      "ascent": 27.35,
+      "depth": 3,
+      "kind": "MTCTLineDisplay",
+      "x": 38.611111111111114,
+      "descent": 2.0500000000000003,
+      "width": 34.25,
+      "text": "+"
+    },
+    {
+      "kind": "MTCTLineDisplay",
+      "depth": 3,
+      "descent": 0,
+      "y": 0,
+      "ascent": 33.800000000000004,
+      "x": 83.97222222222223,
+      "text": "1",
+      "width": 25
+    }
+  ]
+}

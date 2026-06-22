@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>KaTeX + XITS Math Test</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<style>
+@font-face {
+  font-family: "KaTeX_Main";
+  src: url("xits-math-comparison.otf") format("opentype");
+}
+@font-face {
+  font-family: "KaTeX_Math";
+  src: url("xits-math-comparison.otf") format("opentype");
+}
+@font-face {
+  font-family: "KaTeX_AMS";
+  src: url("xits-math-comparison.otf") format("opentype");
+}
+@font-face {
+  font-family: "KaTeX_Script";
+  src: url("xits-math-comparison.otf") format("opentype");
+}
+@font-face {
+  font-family: "KaTeX_Size1";
+  src: url("xits-math-comparison.otf") format("opentype");
+}
+@font-face {
+  font-family: "KaTeX_Size2";
+  src: url("xits-math-comparison.otf") format("opentype");
+}
+@font-face {
+  font-family: "KaTeX_Size3";
+  src: url("xits-math-comparison.otf") format("opentype");
+}
+@font-face {
+  font-family: "KaTeX_Size4";
+  src: url("xits-math-comparison.otf") format("opentype");
+}
+@font-face {
+  font-family: "KaTeX_Caligraphic";
+  src: url("xits-math-comparison.otf") format("opentype");
+}
+@font-face {
+  font-family: "KaTeX_Fraktur";
+  src: url("xits-math-comparison.otf") format("opentype");
+}
+@font-face {
+  font-family: "KaTeX_SansSerif";
+  src: url("xits-math-comparison.otf") format("opentype");
+}
+@font-face {
+  font-family: "KaTeX_Typewriter";
+  src: url("xits-math-comparison.otf") format("opentype");
+}
+.katex, .katex * { font-size: 50px !important; }
+body {
+  font-family: system-ui, sans-serif;
+  background: #1a1a2e;
+  color: #eee;
+  margin: 20px;
+}
+h1 { color: #e94560; }
+.card {
+  background: #16213e;
+  border-radius: 8px;
+  padding: 12px;
+  margin: 8px 0;
+}
+.kx {
+  background: #fff;
+  border-radius: 4px;
+  padding: 8px;
+  min-height: 30px;
+  color: #000;
+}
+.code { font-family: monospace; font-size: 12px; color: #888; margin-top: 4px; }
+.status { font-size: 11px; margin-top: 4px; }
+.status .ok { color: #4ade80; }
+.status .fail { color: #f87171; }
+</style></head><body>
+<h1>KaTeX + XITS Math Font Test</h1>
+<p style="color:#888">All expressions below should render using XITS Math glyphs.</p>
+<div class="card">
+  <h3>Basic Math</h3>
+  <div class="kx" id="k0"></div><div class="code">x + y</div>
+  <div class="status" id="s0"></div>
+</div>
+<div class="card">
+  <h3>Fraction</h3>
+  <div class="kx" id="k1"></div><div class="code">\frac{x}{y}</div>
+  <div class="status" id="s1"></div>
+</div>
+<div class="card">
+  <h3>Square Root</h3>
+  <div class="kx" id="k2"></div><div class="code">\sqrt{x+1}</div>
+  <div class="status" id="s2"></div>
+</div>
+<div class="card">
+  <h3>Superscript / Subscript</h3>
+  <div class="kx" id="k3"></div><div class="code">x_i^2</div>
+  <div class="status" id="s3"></div>
+</div>
+<div class="card">
+  <h3>Sum with Limits</h3>
+  <div class="kx" id="k4"></div><div class="code">\sum_{i=0}^\infty \frac{1}{i}</div>
+  <div class="status" id="s4"></div>
+</div>
+<div class="card">
+  <h3>Accents</h3>
+  <div class="kx" id="k5"></div><div class="code">\vec{x} + \hat{x} + \bar{x} + \tilde{x}</div>
+  <div class="status" id="s5"></div>
+</div>
+<div class="card">
+  <h3>Greek Letters</h3>
+  <div class="kx" id="k6"></div><div class="code">\alpha\beta\gamma\omega</div>
+  <div class="status" id="s6"></div>
+</div>
+<div class="card">
+  <h3>Wide Accent</h3>
+  <div class="kx" id="k7"></div><div class="code">\widehat{AB}</div>
+  <div class="status" id="s7"></div>
+</div>
+<div class="card">
+  <h3>Integral</h3>
+  <div class="kx" id="k8"></div><div class="code">\int_0^\infty f(x)\,dx</div>
+  <div class="status" id="s8"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script>
+// After font loading, render all expressions
+document.fonts.ready.then(function() {
+  var cases = [
+    ['k0', 'x + y'],
+    ['k1', '\\frac{x}{y}'],
+    ['k2', '\\sqrt{x+1}'],
+    ['k3', 'x_i^2'],
+    ['k4', '\\displaystyle\\sum_{i=0}^\\infty \\frac{1}{i}'],
+    ['k5', '\\vec{x} + \\hat{x} + \\bar{x} + \\tilde{x}'],
+    ['k6', '\\alpha\\beta\\gamma\\omega'],
+    ['k7', '\\widehat{AB}'],
+    ['k8', '\\int_0^\\infty f(x)\\,dx']
+  ];
+  cases.forEach(function(x) {
+    try {
+      katex.render(x[1], document.getElementById(x[0]), {displayMode: true, throwOnError: false});
+      document.getElementById('s' + cases.indexOf(x)).innerHTML = '<span class="ok">✅ Rendered</span>';
+    } catch(e) {
+      document.getElementById('s' + cases.indexOf(x)).innerHTML = '<span class="fail">⚠ ' + e.message + '</span>';
+    }
+  });
+});
+
+// Also try immediate render (fallback if fonts.load fails)
+setTimeout(function() {
+  if (document.getElementById('k8').textContent.trim() === '') {
+    var cases = [
+      ['k0', 'x + y'], ['k1', '\\frac{x}{y}'],
+      ['k2', '\\sqrt{x+1}'], ['k3', 'x_i^2'],
+      ['k4', '\\displaystyle\\sum_{i=0}^\\infty \\frac{1}{i}'],
+      ['k5', '\\vec{x} + \\hat{x} + \\bar{x} + \\tilde{x}'],
+      ['k6', '\\alpha\\beta\\gamma\\omega'],
+      ['k7', '\\widehat{AB}'],
+      ['k8', '\\int_0^\\infty f(x)\\,dx']
+    ];
+    cases.forEach(function(x, i) {
+      try {
+        katex.render(x[1], document.getElementById(x[0]), {displayMode: true, throwOnError: false});
+        document.getElementById('s' + i).innerHTML = '<span class="ok">✅ Rendered (fallback)</span>';
+      } catch(e) {
+        document.getElementById('s' + i).innerHTML = '<span class="fail">⚠ ' + e.message + '</span>';
+      }
+    });
+  }
+}, 2000);
+</script>
+</body></html>

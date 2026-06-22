@@ -1,0 +1,108 @@
+{
+  "expression": "\\textstyle\\sum_{i=0}^n i^2",
+  "parseTree": [
+    {
+      "kind": "styling",
+      "depth": 0,
+      "style": "text"
+    },
+    {
+      "kind": "supsub",
+      "depth": 1
+    },
+    {
+      "kind": "op",
+      "depth": 2,
+      "limits": true
+    },
+    {
+      "kind": "mathord",
+      "depth": 2,
+      "text": "n"
+    },
+    {
+      "kind": "ordgroup",
+      "depth": 2
+    },
+    {
+      "kind": "mathord",
+      "depth": 3,
+      "text": "i"
+    },
+    {
+      "kind": "atom",
+      "depth": 3,
+      "text": "="
+    },
+    {
+      "kind": "textord",
+      "depth": 3,
+      "text": "0"
+    },
+    {
+      "kind": "supsub",
+      "depth": 1
+    },
+    {
+      "kind": "mathord",
+      "depth": 2,
+      "text": "i"
+    },
+    {
+      "kind": "textord",
+      "depth": 2,
+      "text": "2"
+    }
+  ],
+  "parseTreeCount": 11,
+  "htmlSpans": [
+    {
+      "classes": "strut",
+      "heightEm": 1.1138,
+      "text": ""
+    },
+    {
+      "classes": "mop op-symbol small-op",
+      "topEm": 0,
+      "text": "\u2211"
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 0.8043,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 2.7,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 2.7,
+      "text": ""
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 0.2997,
+      "text": ""
+    },
+    {
+      "classes": "mspace",
+      "marginRightEm": 0.1667,
+      "text": ""
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 0.8141,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 2.7,
+      "text": ""
+    }
+  ],
+  "htmlSpanCount": 9,
+  "htmlPreview": "<span class=\"katex-display\"><span class=\"katex\"><span class=\"katex-mathml\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><mstyle scriptlevel=\"0\" displaystyle=\"false\"><msubsup><mo>\u2211</mo><mrow><mi>i</mi><mo>=</mo><mn>0</mn></mrow><mi>n</mi></msubsup><msup><mi>i</mi><mn>2</mn></msup></mstyle></mrow><annotation encoding=\"application/x-tex\">\\textstyle\\sum_{i=0}^n i^2",
+  "totalHeightEm": 1.1138
+}

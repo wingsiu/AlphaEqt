@@ -1,0 +1,116 @@
+{
+  "label": "sum-inline",
+  "items": [
+    {
+      "kind": "MTMathListDisplay",
+      "y": 0,
+      "x": 0,
+      "ascent": 45.349999999999994,
+      "depth": 0,
+      "descent": 19.074999999999996,
+      "width": 144.43333333333334
+    },
+    {
+      "ascent": 38.05,
+      "depth": 1,
+      "x": 0,
+      "kind": "MTSupSubDisplay",
+      "y": 0,
+      "width": 101.80000000000001,
+      "descent": 19.074999999999996
+    },
+    {
+      "kind": "MTGlyphDisplay",
+      "x": 0,
+      "y": 0,
+      "glyph": 1150,
+      "rawAscent": 38.15,
+      "descent": 13.049999999999999,
+      "rawDescent": 12.950000000000001,
+      "shiftDown": 0.09999999999999787,
+      "ascent": 38.05,
+      "depth": 2,
+      "width": 45.7
+    },
+    {
+      "y": 20.3,
+      "ascent": 16.537499999999998,
+      "descent": 0.3,
+      "x": 45.7,
+      "depth": 2,
+      "width": 18.6375,
+      "text": "",
+      "kind": "MTCTLineDisplay"
+    },
+    {
+      "kind": "MTMathListDisplay",
+      "ascent": 25.349999999999998,
+      "descent": 0.525,
+      "width": 56.1,
+      "depth": 2,
+      "y": -18.549999999999997,
+      "x": 45.7
+    },
+    {
+      "descent": 0.4125,
+      "depth": 3,
+      "text": "i",
+      "kind": "MTCTLineDisplay",
+      "ascent": 23.099999999999998,
+      "y": 0,
+      "width": 11.6625,
+      "x": 0
+    },
+    {
+      "width": 25.6875,
+      "depth": 3,
+      "y": 0,
+      "ascent": 14.475,
+      "kind": "MTCTLineDisplay",
+      "descent": 0,
+      "text": "=",
+      "x": 11.6625
+    },
+    {
+      "y": 0,
+      "text": "0",
+      "descent": 0.525,
+      "depth": 3,
+      "width": 18.75,
+      "x": 37.35,
+      "ascent": 25.349999999999998,
+      "kind": "MTCTLineDisplay"
+    },
+    {
+      "depth": 1,
+      "y": 0,
+      "ascent": 45.349999999999994,
+      "kind": "MTSupSubDisplay",
+      "x": 110.13333333333334,
+      "descent": 0.55,
+      "width": 34.3
+    },
+    {
+      "text": "i",
+      "y": 0,
+      "ascent": 30.8,
+      "kind": "MTCTLineDisplay",
+      "descent": 0.55,
+      "width": 15.55,
+      "depth": 2,
+      "x": 0
+    },
+    {
+      "descent": 0,
+      "width": 18.75,
+      "text": "",
+      "x": 15.55,
+      "kind": "MTCTLineDisplay",
+      "depth": 2,
+      "ascent": 25.349999999999998,
+      "y": 20
+    }
+  ],
+  "expression": "\\textstyle\\sum_{i=0}^n i^2",
+  "itemCount": 11
+}

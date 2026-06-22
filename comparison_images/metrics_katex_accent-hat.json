@@ -1,0 +1,46 @@
+{
+  "expression": "\\hat{x}",
+  "parseTree": [
+    {
+      "kind": "accent",
+      "depth": 0,
+      "accentLabel": "\\hat"
+    },
+    {
+      "kind": "mathord",
+      "depth": 1,
+      "text": "x"
+    }
+  ],
+  "parseTreeCount": 2,
+  "htmlSpans": [
+    {
+      "classes": "strut",
+      "heightEm": 0.6944,
+      "text": ""
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 0.6944,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 3,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 3,
+      "text": ""
+    },
+    {
+      "classes": "accent-body",
+      "leftEm": -0.2222,
+      "text": "^"
+    }
+  ],
+  "htmlSpanCount": 5,
+  "htmlPreview": "<span class=\"katex-display\"><span class=\"katex\"><span class=\"katex-mathml\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><mover accent=\"true\"><mi>x</mi><mo>^</mo></mover></mrow><annotation encoding=\"application/x-tex\">\\hat{x}</annotation></semantics></math></span><span class=\"katex-html\" aria-hidden=\"true\"><span class=\"base\"><span class=\"strut\" style=\"height:0.6",
+  "totalHeightEm": 0.6944
+}

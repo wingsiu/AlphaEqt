@@ -1,0 +1,162 @@
+{
+  "expression": "\\frac{\\frac{a}{b}}{\\frac{c}{d}}",
+  "parseTree": [
+    {
+      "kind": "genfrac",
+      "depth": 0
+    },
+    {
+      "kind": "ordgroup",
+      "depth": 1
+    },
+    {
+      "kind": "genfrac",
+      "depth": 2
+    },
+    {
+      "kind": "ordgroup",
+      "depth": 3
+    },
+    {
+      "kind": "mathord",
+      "depth": 4,
+      "text": "a"
+    },
+    {
+      "kind": "ordgroup",
+      "depth": 3
+    },
+    {
+      "kind": "mathord",
+      "depth": 4,
+      "text": "b"
+    },
+    {
+      "kind": "ordgroup",
+      "depth": 1
+    },
+    {
+      "kind": "genfrac",
+      "depth": 2
+    },
+    {
+      "kind": "ordgroup",
+      "depth": 3
+    },
+    {
+      "kind": "mathord",
+      "depth": 4,
+      "text": "c"
+    },
+    {
+      "kind": "ordgroup",
+      "depth": 3
+    },
+    {
+      "kind": "mathord",
+      "depth": 4,
+      "text": "d"
+    }
+  ],
+  "parseTreeCount": 13,
+  "htmlSpans": [
+    {
+      "classes": "strut",
+      "heightEm": 2.4614,
+      "text": ""
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 1.4304,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 3,
+      "text": ""
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 0.6954,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 3,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 3,
+      "text": ""
+    },
+    {
+      "classes": "frac-line",
+      "widthEm": 0.04,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 3,
+      "text": ""
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 0.345,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 3,
+      "text": ""
+    },
+    {
+      "classes": "frac-line",
+      "widthEm": 0.04,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 3,
+      "text": ""
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 0.6954,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 3,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 3,
+      "text": ""
+    },
+    {
+      "classes": "frac-line",
+      "widthEm": 0.04,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 3,
+      "text": ""
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 0.345,
+      "text": ""
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 1.031,
+      "text": ""
+    }
+  ],
+  "htmlSpanCount": 19,
+  "htmlPreview": "<span class=\"katex-display\"><span class=\"katex\"><span class=\"katex-mathml\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><mfrac><mfrac><mi>a</mi><mi>b</mi></mfrac><mfrac><mi>c</mi><mi>d</mi></mfrac></mfrac></mrow><annotation encoding=\"application/x-tex\">\\frac{\\frac{a}{b}}{\\frac{c}{d}}</annotation></semantics></math></span><span class=\"katex-html\" aria-hidden=\"tr",
+  "totalHeightEm": 2.4614
+}

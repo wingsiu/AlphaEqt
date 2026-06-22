@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>MathJax XITS Render Test</title>
+<style>
+body { font-family: system-ui; background: #1a1a2e; color: #eee; margin: 20px; }
+h1 { color: #e94560; }
+.card { background: #16213e; border-radius: 8px; padding: 12px; margin: 8px 0; }
+.math { background: #fff; border-radius: 4px; padding: 12px; min-height: 30px; color: #000; }
+.code { font-family: monospace; font-size: 12px; color: #888; margin-top: 4px; }
+</style>
+<script>
+MathJax = {
+  chtml: {
+    fontFamily: "xits",
+    scale: 1,
+    minScale: 1
+  },
+  tex: { displayMath: [['\\[','\\]'], ['$$','$$']] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<h1>MathJax XITS Math Test</h1>
+<p style="color:#888">Using built-in xits-math font via MathJax fontFamily setting.</p>
+
+<div class="card"><div class="math">\[x + y\]</div><div class="code">x + y</div></div>
+<div class="card"><div class="math">\[\frac{x}{y}\]</div><div class="code">\frac{x}{y}</div></div>
+<div class="card"><div class="math">\[\sqrt{x+1}\]</div><div class="code">\sqrt{x+1}</div></div>
+<div class="card"><div class="math">\[x_i^2\]</div><div class="code">x_i^2</div></div>
+<div class="card"><div class="math">\[\sum_{i=0}^\infty \frac{1}{i}\]</div><div class="code">\sum_{i=0}^\infty \frac{1}{i}</div></div>
+<div class="card"><div class="math">\[\vec{x} + \hat{x} + \bar{x} + \tilde{x}\]</div><div class="code">\vec{x} + \hat{x} + \bar{x} + \tilde{x}</div></div>
+<div class="card"><div c<div class="card"><a\beta\gamma\omega\]</div><div clas<dicode">\alpha\beta\gamma\omega</div></div>
+<div class="card"><div cla<div class="card"><div cla<div class="card"><div cla<div class="card"><div cdiv <divs="card"><div class="math">\[\int_0^\infty f(x)\,dx\]</div><div class="code">\int_0^\infty f(x)\,dx</div></div>
+</body></html>

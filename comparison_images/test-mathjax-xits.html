@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>MathJax + XITS Math Test</title>
+<style>
+body {
+  font-family: system-ui, sans-serif;
+  background: #1a1a2e;
+  color: #eee;
+  margin: 20px;
+}
+h1 { color: #e94560; }
+.card {
+  background: #16213e;
+  border-radius: 8px;
+  padding: 12px;
+  margin: 8px 0;
+}
+.math {
+  background: #fff;
+  border-radius: 4px;
+  padding: 12px;
+  min-height: 30px;
+  color: #000;
+  font-size: 50px !important;
+}
+.code { font-family: monospace; font-size: 12px; color: #888; margin-top: 4px; }
+.status { font-size: 11px; margin-top: 4px; }
+.status .ok { color: #4ade80; }
+.status .fail { color: #f87171; }
+
+/* Force MathJax output to use XITS Math */
+mjx-container[jax="CHTML"] mjx-utext,
+mjx-container[jax="CHTML"] mjx-mo,
+mjx-container[jax="CHTML"] mjx-mi,
+mjx-container[jax="CHTML"] mjx-mn,
+mjx-container[jax="CHTML"] mjx-mtext,
+mjx-container[jax="CHTML"] mjx-mspace,
+mjx-container[jax="CHTML"] mjx-merror,
+mjx-container[jax="CHTML"] mjx-msup,
+mjx-container[jax="CHTML"] mjx-msub,
+mjx-container[jax="CHTML"] mjx-msubsup,
+mjx-container[jax="CHTML"] mjx-mfrac,
+mjx-container[jax="CHTML"] mjx-msqrt,
+mjx-container[jax="CHTML"] mjx-mroot,
+mjx-container[jax="CHTML"] mjx-munderover,
+mjx-container[jax="CHTML"] mjx-munder,
+mjx-container[jax="CHTML"] mjx-mover,
+mjx-container[jax="CHTML"] mjx-menclose {
+  font-family: "XITS Math", math, serif !important;
+}
+</style>
+
+<!-- MathJax 3 with local XITS Math font -->
+<script>
+MathJax = {
+  loader: {load: ['[chtml]/fontdata-extra.js']},
+  chtml: {
+    fontURL: '/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Fonts',
+    fontFamily: 'xits-math',
+    scale: 1,
+    minScale: 1,
+    matchFontHeight: false,
+    adaptiveCSS: false,
+    displayAlign: 'left',
+    displayIndent: '0',
+    exFactor: 0.5
+  },
+  options: {
+    renderActions: {
+      addMenu: [],
+      checkLoading: []
+    }
+  },
+  tex: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\\[','\\]']]
+  }
+};
+</script>
+<script>
+MathJax = {
+  loader: {load: ['[chtml]/fontdata-extra.js']},
+  chtml: {
+    fontURL: '/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Fonts',
+    fontFamily: 'xits-math',
+    scale: 1,
+    minScale: 1,
+    matchFontHeight: false,
+    adaptiveCSS: false
+  },
+  tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<h1>MathJax + XITS Math Font Test</h1>
+<p style="color:#888">MathJax configured to use xits-math.otf from local font directory.</p>
+
+<div class="card">
+  <h3>Basic Math</h3>
+  <div class="math">\[x + y\]</div>
+  <div class="code">x + y</div>
+</div>
+
+<div class="card">
+  <h3>Fraction</h3>
+  <div class="math">\[\frac{x}{y}\]</div>
+  <div class="code">\frac{x}{y}</div>
+</div>
+
+<div class="card">
+  <h3>Square Root</h3>
+  <div class="math">\[\sqrt{x+1}\]</div>
+  <div class="code">\sqrt{x+1}</div>
+</div>
+
+<div class="card">
+  <h3>Superscript / Subscript</h3>
+  <div class="math">\[x_i^2\]</div>
+  <div class="code">x_i^2</div>
+</div>
+
+<div class="card">
+  <h3>Sum with Limits</h3>
+  <div class="math">\[\sum_{i=0}^\infty \frac{1}{i}\]</div>
+  <div class="code">\sum_{i=0}^\infty \frac{1}{i}</div>
+</div>
+
+<div class="card">
+  <h3>Accents</h3>
+  <div class="math">\[\vec{x} + \hat{x} + \bar{x} + \tilde{x}\]</div>
+  <div class="code">\vec{x} + \hat{x} + \bar{x} + \tilde{x}</div>
+</div>
+
+<div class="card">
+  <h3>Greek Letters</h3>
+  <div class="math">\[\alpha\beta\gamma\omega\]</div>
+  <div class="code">\alpha\beta\gamma\omega</div>
+</div>
+
+<div class="card">
+  <h3>Wide Accent</h3>
+  <div class="math">\[\widehat{AB}\]</div>
+  <div class="code">\widehat{AB}</div>
+</div>
+
+<div class="card">
+  <h3>Integral</h3>
+  <div class="math">\[\int_0^\infty f(x)\,dx\]</div>
+  <div class="code">\int_0^\infty f(x)\,dx</div>
+</div>
+
+<script>
+// Wait for MathJax to finish rendering, then force XITS Math font on all elements
+MathJax.startup.promise.then(function() {
+  document.querySelectorAll('.math [data-c]').forEach(function(el) {
+    el.style.fontFamily = '"XITS Math", math, serif';
+  });
+});
+</script>
+</body></html>

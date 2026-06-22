@@ -21,6 +21,9 @@ public class LatexParser {
         commandHandlers["\\textstyle"] = handleSizingCommand
         commandHandlers["\\scriptstyle"] = handleSizingCommand
         commandHandlers["\\scriptscriptstyle"] = handleSizingCommand
+        // \dfrac = displaystyle fraction, \tfrac = textstyle fraction
+        commandHandlers["\\dfrac"] = handleFracSizingCommand(style: "displaystyle")
+        commandHandlers["\\tfrac"] = handleFracSizingCommand(style: "textstyle")
         // Large operator commands
         let largeOps = ["\\sum", "\\prod", "\\coprod", "\\int", "\\iint", "\\iiint", "\\iiiint",
                         "\\oint", "\\bigcap", "\\bigcup", "\\bigvee", "\\bigwedge",

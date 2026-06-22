@@ -146,6 +146,148 @@ All TeX Appendix G style and cramped propagation rules are now implemented acros
 
 ---
 
+## June 21, 2026 — Accent Positioning Fixes ✅
+
+| File | Change |
+|------|--------|
+| `Sources/AlphaEqt/Render/MTTypesetter.swift` | `getSkew` now extracts math-italic rendered glyph from `MTCTLineDisplay`/`MTGlyphDisplay` for correct `Atop(nucleus)` lookup (TeX Rule 12); multi-char `\bar` uses `MTRuleDisplay` positioned via combining macron `bbox.origin.y` |
+| `Sources/AlphaEqt/Render/DisplayAtoms.swift` | Added `MTRuleDisplay` class (simple filled rectangle) |
+
+Accepts P1‑1 is now complete: `\hat`, `\bar`, `\tilde`, `\dot`, `\ddot`, `\vec`, `\widehat`, `\widetilde`, `\check`, `\breve`, `\acute`, `\grave`, `\arc` — all parsed and rendered.
+
+---
+
+## June 21, 2026 — KaTeX/TeX Complete Function Audit
+
+Full cross-reference of `ASTNodeType` enum, parser `commandHandlers`, renderer `renderNode()` dispatch,
+and KaTeX's complete function catalog (`src/functions/*`).
+
+### ✅ Fully Implemented (Parser + Renderer)
+
+| # | Feature | AST Node | Handler | Renderer |
+|---|---------|----------|---------|----------|
+| 1 | `\frac` | `.frac` | `handleFracCommand` | `renderFraction` |
+| 2 | `\sqrt` / `\root` | `.sqrt` / `.root` | `handleSqrtCommand` | `renderRadical` |
+| 3 | Large operators (56) | `.op` | `handleLargeOpCommand` | `renderLargeOp` + limits |
+| 4 | `\limits` / `\nolimits` | `.op.limitMode` | inline in `parse()` | `renderLargeOp` |
+| 5 | `\left(...\right)` | `.leftright` | `handleLeftRightCommand` | `renderLeftRight` |
+| 6 | Spaces (`\quad`, `\,`, `\;`, `\!`) | `.spacing` | `handleSpacingCommand` | `renderSpacing` |
+| 7 | Accents (13) | `.accent` | `handleAccentCommand` | `renderAccent` |
+| 8 | `\color` / `\textcolor` | `.color` | `handleColorCommand` | `renderColor` |
+| 9 | `\colorbox` / `\fcolorbox` | `.colorbox` | `handleColorboxCommand` | `renderColorbox` |
+| 10 | `\text` | `.text` | `handleTextCommand` | `renderTextNode` |
+| 11 | Greek + 280+ symbols | `.mathord`/`.bin`/`.rel` | `handleSymbolCommand` | `renderTextNode` |
+| 12 | Style sizing | `.sizing` | `handleSizingCommand` | `renderStyle` |
+| 13 | Supsub (`^`, `_`) | `.supsub` | `consumeSupSub` | `renderSupSub` |
+| 14 | Matrix (6 variants) | `.array` | `handleBeginMatrixCommand` | `renderMatrix` |
+| 15 | Braced groups | `.ordgroup` | inline `parse()` | `renderOrdGroup` |
+| 16 | Math italic (a-z, A-Z, α-ω) | `.mathord` | — | `mathItalicize` |
+
+### ⚠️ Stub Implementation (Parser exists, renderer pass-through only)
+
+| # | Feature | AST Node | What's Missing |
+|---|---------|----------|----------------|
+| S1 | `\mathbf`, `\mathrm`, `\mathit`, `\mathsf`, `\mathtt`, `\mathcal`, `\mathbb`, `\mathfrak`, `\mathbfit`, `\bm`, `\boldsymbol`, `\mathnormal` | `.styling` (pass-through to content) | Actual font switching via CTFont / Unicode math alphanumerics |
+| S2 | Legacy: `\rm`, `\bf`, `\cal`, `\mit`, `\frak`, `\Bbb` | `.styling` (same handler) | Same — no real style change |
+| S3 | `\textsf`, `\texttt`, `\textit`, `\textbf` | `.styling` (same handler) | Same |
+
+### ❌ Not Implemented (AST type defined, no handler, no renderer)
+
+| # | Feature | AST Type | KaTeX File | Effort |
+|---|---------|----------|------------|--------|
+| N1 | `\overline` | `.overline` | `overline.js` | Medium |
+| N2 | `\underline` | `.underline` | `underline.js` | Medium |
+| N3 | `\overrightarrow` | — | `enclose.js` | Medium |
+| N4 | `\overleftarrow` | — | `enclose.js` | Medium |
+| N5 | `\overleftrightarrow` | — | `enclose.js` | Medium |
+| N6 | `\binom{n}{k}` | `.genfrac` | `genfrac.js` | Small |
+| N7 | `\operatorname` | `.operatorname` | `operatorname.js` | Small |
+| N8 | `\genfrac` | `.genfrac` | `genfrac.js` | Medium |
+| N9 | `\phantom`, `\vphantom`, `\hphantom` | `.phantom` | `phantom.js` | Small |
+| N10 | `\hbox` | `.hbox` | `hbox.js` | Small |
+| N11 | `\overbrace` | — | `horizBrace.js` | Large |
+| N12 | `\underbrace` | — | `horizBrace.js` | Large |
+| N13 | `\raisebox` | `.raise` | `raisebox.js` | Medium |
+| N14 | `\mathchoice` | `.mathchoice` | `mathchoice.js` | Large |
+| N15 | `\mod` / `\pmod` | — | `mod.js` | Small |
+| N16 | `\not` | — | `not.js` | Small |
+| N17 | `\tag{n}` | `.tag` | `tag.js` | Small |
+| N18 | `\rule` | `.rule` | `rule.js` | Small |
+| N19 | `\kern` / `\mkern` | `.kern` | `kern.js` | Small |
+| N20 | `\pmb{x}` | `.pmb` | `pmb.js` | Small |
+| N21 | `\llap` / `\rlap` | `.lap` | `lap.js` | Small |
+| N22 | `\verb` / `\verb*` | `.verb` | `verb.js` | Small |
+| N23 | `\overset` / `\underset` | — | `op.js` helpers | Medium |
+| N24 | `\stackrel` | — | `stackrel.js` | Small |
+| N25 | `\xleftarrow` / `\xrightarrow` | — | `xArrow.js` | Large |
+| N26 | `\smash` | — | `smash.js` | Small |
+| N27 | `\mathop`, `\mathbin`, `\mathrel`, `\mathopen`, `\mathclose`, `\mathpunct`, `\mathinner` | `.mclass`? | `mclass.js` | Small |
+| N28 | `\mathstrut` | — | (inline def) | Small |
+| N29 | Legacy primitives (`\over`, `\atop`, `\choose`, `\brack`, `\brace`) | `.infix` | (TeX prims) | Low |
+| N30 | `\operatorname*` (limits) | `.operatorname` | `operatorname.js` | Small |
+| N31 | `\href` | — | `href.js` | Low |
+| N32 | `\htmlClass`, `\htmlId`, `\htmlStyle` | — | `html.js` | Low |
+| N33 | `\cr` / `\crcr` / `\hdashline` / `\hline` (array internals) | — | `cr.js`, `hline.js` | Medium |
+| N34 | `\unit` (physical units) | — | `unit.js` | Low |
+
+### 📊 Updated Priority List (June 21, 2026)
+
+```
+P0 — All Done ✅
+
+P1 — Critical User-Visible Gaps:
+  P1-1: Accents ✅ (June 21)
+  P1-2: Real font styles (\mathbf, \mathbb, \mathcal, \mathfrak, etc.)
+  P1-3: \color / \textcolor ✅
+  P1-4: \colorbox / \fcolorbox ✅
+  P1-5: \overline / \underline [promoted — heavily used in practice]
+  P1-6: \overrightarrow / \overleftarrow / \overleftrightarrow [accent arrows]
+
+P2 — Medium Priority (Completeness):
+  P2-1: \binom{n}{k}
+  P2-2: \operatorname / \operatorname*
+  P2-3: \genfrac (generalized fraction)
+  P2-4: \phantom / \vphantom / \hphantom
+  P2-5: \hbox
+  P2-6: \stackrel
+  P2-7: \overset / \underset
+  P2-8: \mod / \pmod
+  P2-9: \not
+
+P3 — Lower Priority:
+  P3-1: \overbrace / \underbrace
+  P3-2: \xleftarrow / \xrightarrow
+  P3-3: \raisebox
+  P3-4: \mathchoice
+  P3-5: \tag{n}
+  P3-6: \rule
+  P3-7: \kern / \mkern
+  P3-8: \pmb
+  P3-9: \llap / \rlap
+  P3-10: \smash / \mathstrut
+  P3-11: \mathop / \mathbin / \mathrel etc.
+  P3-12: \verb
+  P3-13: Real font styles (stub→real, P1-2)
+  P3-14: Latin Modern Math font compat
+  P3-15: Legacy font commands (stub→real)
+  P3-16: Error recovery
+  P3-17: Test coverage
+  P3-18: Performance tuning
+```
+
+### Files Reviewed This Audit
+| File | Purpose |
+|------|---------|
+| `Sources/AlphaEqt/AST/ASTNode.swift` | All 40+ AST node types |
+| `Sources/AlphaEqt/Parser/LatexParser.swift` | All registered command handlers |
+| `Sources/AlphaEqt/Parser/CommandHandler/Symbols.swift` | 280+ symbol mappings |
+| `Sources/AlphaEqt/Parser/CommandHandler/Accent.swift` | 13 accent commands |
+| `Sources/AlphaEqt/Render/MTTypesetter.swift` | All render dispatch paths |
+| `PROGRESS.md` | Prior state for diff |
+| `ALPHAEQT_CHECKLIST.MD` | Historical checklist |
+
+---
+
 ## June 20, 2026 (late session) — Color Rendering Wired + Bugfixes
 
 ### Color / Colorbox Rendering (P1-3, P1-4 — actually working now)

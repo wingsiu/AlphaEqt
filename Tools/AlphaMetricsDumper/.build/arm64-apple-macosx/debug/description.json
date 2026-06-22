@@ -1,0 +1,976 @@
+{
+  "builtTestProducts" : [
+
+  ],
+  "copyCommands" : {
+    "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt_AlphaEqt.bundle/latinmodern-math.otf" : {
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Fonts/latinmodern-math.otf"
+        }
+      ],
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt_AlphaEqt.bundle/latinmodern-math.otf"
+        }
+      ]
+    },
+    "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt_AlphaEqt.bundle/latinmodern-math.plist" : {
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Fonts/latinmodern-math.plist"
+        }
+      ],
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt_AlphaEqt.bundle/latinmodern-math.plist"
+        }
+      ]
+    },
+    "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt_AlphaEqt.bundle/xits-math.otf" : {
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Fonts/xits-math.otf"
+        }
+      ],
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt_AlphaEqt.bundle/xits-math.otf"
+        }
+      ]
+    },
+    "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt_AlphaEqt.bundle/xits-math.plist" : {
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Fonts/xits-math.plist"
+        }
+      ],
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt_AlphaEqt.bundle/xits-math.plist"
+        }
+      ]
+    }
+  },
+  "explicitTargetDependencyImportCheckingMode" : {
+    "none" : {
+
+    }
+  },
+  "generatedSourceTargetSet" : [
+
+  ],
+  "pluginDescriptions" : [
+
+  ],
+  "swiftCommands" : {
+    "C.AlphaEqt-arm64-apple-macosx15.0-debug.module" : {
+      "executable" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "fileList" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/sources",
+      "importPath" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/AST/ASTNode.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Lexer/Lexer.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Lexer/Token.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/MathView/MathView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/MathView/SwiftMathView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Accent.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Color.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Frac.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/LargeOp.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/LeftRight.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Matrix.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Radical.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Sizing.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Symbols.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Text.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/LatexParser.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/DisplayAtoms.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/MTCTLineDisplay.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/MTColor.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/MTConfig.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/MTDisplay.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/MTFont.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/MTFontMathTable.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/MTTypesetter.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/Spaces.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Utils/AccentUtils.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Utils/MTMathAtomFactory.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/DerivedSources/resource_bundle_accessor.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+        },
+        {
+          "kind" : "virtual",
+          "name" : "<AlphaEqt-arm64-apple-macosx15.0-debug.module-resources>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/sources"
+        }
+      ],
+      "isLibrary" : true,
+      "moduleName" : "AlphaEqt",
+      "moduleOutputPath" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/Modules/AlphaEqt.swiftmodule",
+      "objects" : [
+        "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/ASTNode.swift.o",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/Lexer.swift.o",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/Token.swift.o",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/MathView.swift.o",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/SwiftMathView.swift.o",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/Accent.swift.o",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/Color.swift.o",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/Frac.swift.o",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/LargeOp.swift.o",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/LeftRight.swift.o",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/Matrix.swift.o",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/Radical.swift.o",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/Sizing.swift.o",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/Symbols.swift.o",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/Text.swift.o",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/LatexParser.swift.o",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/DisplayAtoms.swift.o",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTCTLineDisplay.swift.o",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTColor.swift.o",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTConfig.swift.o",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTDisplay.swift.o",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTFont.swift.o",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTFontMathTable.swift.o",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTTypesetter.swift.o",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/Spaces.swift.o",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/AccentUtils.swift.o",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTMathAtomFactory.swift.o",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/resource_bundle_accessor.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx12.0",
+        "-enable-batch-mode",
+        "-index-store-path",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/index/store",
+        "-Onone",
+        "-enable-testing",
+        "-j8",
+        "-DSWIFT_PACKAGE",
+        "-DDEBUG",
+        "-module-cache-path",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/ModuleCache",
+        "-parseable-output",
+        "-parse-as-library",
+        "-emit-objc-header",
+        "-emit-objc-header-path",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/AlphaEqt-Swift.h",
+        "-swift-version",
+        "6",
+        "-sdk",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-I",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-L",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-package-name",
+        "alphaeqt"
+      ],
+      "outputFileMapPath" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/ASTNode.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/Lexer.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/Token.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/MathView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/SwiftMathView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/Accent.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/Color.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/Frac.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/LargeOp.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/LeftRight.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/Matrix.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/Radical.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/Sizing.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/Symbols.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/Text.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/LatexParser.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/DisplayAtoms.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTCTLineDisplay.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTColor.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTConfig.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTDisplay.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTFont.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTFontMathTable.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTTypesetter.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/Spaces.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/AccentUtils.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTMathAtomFactory.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/resource_bundle_accessor.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/Modules/AlphaEqt.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/AST/ASTNode.swift",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Lexer/Lexer.swift",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Lexer/Token.swift",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/MathView/MathView.swift",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/MathView/SwiftMathView.swift",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Accent.swift",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Color.swift",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Frac.swift",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/LargeOp.swift",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/LeftRight.swift",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Matrix.swift",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Radical.swift",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Sizing.swift",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Symbols.swift",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Text.swift",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/LatexParser.swift",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/DisplayAtoms.swift",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/MTCTLineDisplay.swift",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/MTColor.swift",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/MTConfig.swift",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/MTDisplay.swift",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/MTFont.swift",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/MTFontMathTable.swift",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/MTTypesetter.swift",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/Spaces.swift",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Utils/AccentUtils.swift",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Utils/MTMathAtomFactory.swift",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/DerivedSources/resource_bundle_accessor.swift"
+      ],
+      "tempsPath" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build",
+      "wholeModuleOptimization" : false
+    },
+    "C.AlphaMetricsDumper-arm64-apple-macosx15.0-debug.module" : {
+      "executable" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "fileList" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaMetricsDumper.build/sources",
+      "importPath" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/main.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/Modules/AlphaEqt.swiftmodule"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaMetricsDumper.build/sources"
+        }
+      ],
+      "isLibrary" : false,
+      "moduleName" : "AlphaMetricsDumper",
+      "moduleOutputPath" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/Modules/AlphaMetricsDumper.swiftmodule",
+      "objects" : [
+        "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaMetricsDumper.build/main.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx12.0",
+        "-enable-batch-mode",
+        "-index-store-path",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/index/store",
+        "-Onone",
+        "-enable-testing",
+        "-j8",
+        "-DSWIFT_PACKAGE",
+        "-DDEBUG",
+        "-module-cache-path",
+        "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/ModuleCache",
+        "-parseable-output",
+        "-Xfrontend",
+        "-entry-point-function-name",
+        "-Xfrontend",
+        "AlphaMetricsDumper_main",
+        "-swift-version",
+        "6",
+        "-sdk",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-I",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-L",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-package-name",
+        "alphametricsdumper"
+      ],
+      "outputFileMapPath" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaMetricsDumper.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaMetricsDumper.build/main.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/Modules/AlphaMetricsDumper.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/main.swift"
+      ],
+      "tempsPath" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaMetricsDumper.build",
+      "wholeModuleOptimization" : false
+    }
+  },
+  "swiftFrontendCommands" : {
+
+  },
+  "swiftTargetScanArgs" : {
+    "AlphaEqt" : [
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "-module-name",
+      "AlphaEqt",
+      "-package-name",
+      "alphaeqt",
+      "-incremental",
+      "-c",
+      "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/AST/ASTNode.swift",
+      "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Lexer/Lexer.swift",
+      "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Lexer/Token.swift",
+      "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/MathView/MathView.swift",
+      "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/MathView/SwiftMathView.swift",
+      "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Accent.swift",
+      "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Color.swift",
+      "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Frac.swift",
+      "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/LargeOp.swift",
+      "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/LeftRight.swift",
+      "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Matrix.swift",
+      "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Radical.swift",
+      "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Sizing.swift",
+      "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Symbols.swift",
+      "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Text.swift",
+      "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/LatexParser.swift",
+      "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/DisplayAtoms.swift",
+      "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/MTCTLineDisplay.swift",
+      "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/MTColor.swift",
+      "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/MTConfig.swift",
+      "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/MTDisplay.swift",
+      "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/MTFont.swift",
+      "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/MTFontMathTable.swift",
+      "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/MTTypesetter.swift",
+      "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/Spaces.swift",
+      "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Utils/AccentUtils.swift",
+      "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Utils/MTMathAtomFactory.swift",
+      "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/DerivedSources/resource_bundle_accessor.swift",
+      "-I",
+      "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/Modules",
+      "-target",
+      "arm64-apple-macosx12.0",
+      "-enable-batch-mode",
+      "-index-store-path",
+      "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/index/store",
+      "-Onone",
+      "-enable-testing",
+      "-j8",
+      "-DSWIFT_PACKAGE",
+      "-DDEBUG",
+      "-module-cache-path",
+      "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/ModuleCache",
+      "-parseable-output",
+      "-parse-as-library",
+      "-emit-objc-header",
+      "-emit-objc-header-path",
+      "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/AlphaEqt-Swift.h",
+      "-swift-version",
+      "6",
+      "-sdk",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-I",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-L",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-package-name",
+      "alphaeqt",
+      "-driver-use-frontend-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ],
+    "AlphaMetricsDumper" : [
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "-module-name",
+      "AlphaMetricsDumper",
+      "-package-name",
+      "alphametricsdumper",
+      "-incremental",
+      "-c",
+      "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/main.swift",
+      "-I",
+      "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/Modules",
+      "-target",
+      "arm64-apple-macosx12.0",
+      "-enable-batch-mode",
+      "-index-store-path",
+      "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/index/store",
+      "-Onone",
+      "-enable-testing",
+      "-j8",
+      "-DSWIFT_PACKAGE",
+      "-DDEBUG",
+      "-module-cache-path",
+      "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/ModuleCache",
+      "-parseable-output",
+      "-Xfrontend",
+      "-entry-point-function-name",
+      "-Xfrontend",
+      "AlphaMetricsDumper_main",
+      "-swift-version",
+      "6",
+      "-sdk",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-I",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-L",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-package-name",
+      "alphametricsdumper",
+      "-driver-use-frontend-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ]
+  },
+  "targetDependencyMap" : {
+    "AlphaEqt" : [
+
+    ],
+    "AlphaMetricsDumper" : [
+      "AlphaEqt"
+    ]
+  },
+  "testDiscoveryCommands" : {
+
+  },
+  "testEntryPointCommands" : {
+
+  },
+  "writeCommands" : {
+    "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/AST/ASTNode.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Lexer/Lexer.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Lexer/Token.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/MathView/MathView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/MathView/SwiftMathView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Accent.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Color.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Frac.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/LargeOp.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/LeftRight.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Matrix.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Radical.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Sizing.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Symbols.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Text.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/LatexParser.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/DisplayAtoms.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/MTCTLineDisplay.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/MTColor.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/MTConfig.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/MTDisplay.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/MTFont.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/MTFontMathTable.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/MTTypesetter.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/Spaces.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Utils/AccentUtils.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Utils/MTMathAtomFactory.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/DerivedSources/resource_bundle_accessor.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/sources"
+    },
+    "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaMetricsDumper-entitlement.plist" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<entitlement-plist>"
+        },
+        {
+          "kind" : "virtual",
+          "name" : "<com.apple.security.get-task-allow>"
+        }
+      ],
+      "outputFilePath" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaMetricsDumper-entitlement.plist"
+    },
+    "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaMetricsDumper.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/main.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaMetricsDumper.build/sources"
+    },
+    "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaMetricsDumper.product/Objects.LinkFileList" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<link-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/ASTNode.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/Accent.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/AccentUtils.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/Color.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/DisplayAtoms.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/Frac.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/LargeOp.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/LatexParser.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/LeftRight.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/Lexer.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTCTLineDisplay.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTColor.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTConfig.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTDisplay.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTFont.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTFontMathTable.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTMathAtomFactory.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTTypesetter.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/MathView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/Matrix.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/Radical.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/Sizing.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/Spaces.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/SwiftMathView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/Symbols.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/Text.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/Token.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaEqt.build/resource_bundle_accessor.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaMetricsDumper.build/main.swift.o"
+        }
+      ],
+      "outputFilePath" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/AlphaMetricsDumper.product/Objects.LinkFileList"
+    },
+    "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt" : {
+      "alwaysOutOfDate" : true,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<swift-get-version>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+        }
+      ],
+      "outputFilePath" : "/Users/alpha/Desktop/swift/AlphaEqt/Tools/AlphaMetricsDumper/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+    }
+  }
+}

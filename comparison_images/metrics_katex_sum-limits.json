@@ -1,0 +1,136 @@
+{
+  "expression": "\\displaystyle\\sum_{i=0}^\\infty \\frac{1}{i}",
+  "parseTree": [
+    {
+      "kind": "styling",
+      "depth": 0,
+      "style": "display"
+    },
+    {
+      "kind": "supsub",
+      "depth": 1
+    },
+    {
+      "kind": "op",
+      "depth": 2,
+      "limits": true
+    },
+    {
+      "kind": "textord",
+      "depth": 2,
+      "text": "\\infty"
+    },
+    {
+      "kind": "ordgroup",
+      "depth": 2
+    },
+    {
+      "kind": "mathord",
+      "depth": 3,
+      "text": "i"
+    },
+    {
+      "kind": "atom",
+      "depth": 3,
+      "text": "="
+    },
+    {
+      "kind": "textord",
+      "depth": 3,
+      "text": "0"
+    },
+    {
+      "kind": "genfrac",
+      "depth": 1
+    },
+    {
+      "kind": "ordgroup",
+      "depth": 2
+    },
+    {
+      "kind": "textord",
+      "depth": 3,
+      "text": "1"
+    },
+    {
+      "kind": "ordgroup",
+      "depth": 2
+    },
+    {
+      "kind": "mathord",
+      "depth": 3,
+      "text": "i"
+    }
+  ],
+  "parseTreeCount": 13,
+  "htmlSpans": [
+    {
+      "classes": "strut",
+      "heightEm": 2.9291,
+      "text": ""
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 1.6514,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 3.05,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 3.05,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 3.05,
+      "text": ""
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 1.2777,
+      "text": ""
+    },
+    {
+      "classes": "mspace",
+      "marginRightEm": 0.1667,
+      "text": ""
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 1.3214,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 3,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 3,
+      "text": ""
+    },
+    {
+      "classes": "frac-line",
+      "widthEm": 0.04,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 3,
+      "text": ""
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 0.686,
+      "text": ""
+    }
+  ],
+  "htmlSpanCount": 13,
+  "htmlPreview": "<span class=\"katex-display\"><span class=\"katex\"><span class=\"katex-mathml\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><mstyle scriptlevel=\"0\" displaystyle=\"true\"><munderover><mo>\u2211</mo><mrow><mi>i</mi><mo>=</mo><mn>0</mn></mrow><mi mathvariant=\"normal\">\u221e</mi></munderover><mfrac><mn>1</mn><mi>i</mi></mfrac></mstyle></mrow><annotation encoding=\"application/x-tex",
+  "totalHeightEm": 2.9291
+}

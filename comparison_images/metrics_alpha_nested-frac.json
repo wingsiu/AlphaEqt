@@ -1,0 +1,92 @@
+{
+  "itemCount": 8,
+  "label": "nested-frac",
+  "expression": "\\frac{\\frac{a}{b}}{\\frac{c}{d}}",
+  "items": [
+    {
+      "x": 0,
+      "ascent": 89,
+      "depth": 0,
+      "kind": "MTMathListDisplay",
+      "descent": 64.0375,
+      "y": 0,
+      "width": 19.95
+    },
+    {
+      "depth": 1,
+      "denominatorDown": 39.58749999999999,
+      "ascent": 89,
+      "descent": 64.0375,
+      "kind": "MTFractionDisplay",
+      "y": 0,
+      "x": 0,
+      "numeratorUp": 48.462500000000006,
+      "width": 19.95,
+      "lineThickness": 3.3
+    },
+    {
+      "depth": 2,
+      "lineThickness": 3.3,
+      "ascent": 40.537499999999994,
+      "numeratorUp": 24,
+      "denominatorDown": 24,
+      "width": 18.825,
+      "x": 0.5625,
+      "descent": 24.4125,
+      "y": 48.462500000000006,
+      "kind": "MTFractionDisplay"
+    },
+    {
+      "text": "a",
+      "x": 0,
+      "width": 18.825,
+      "y": 24,
+      "kind": "MTCTLineDisplay",
+      "depth": 3,
+      "ascent": 16.537499999999998,
+      "descent": 0.375
+    },
+    {
+      "x": 0.5999999999999996,
+      "width": 17.625,
+      "ascent": 25.05,
+      "descent": 0.4125,
+      "kind": "MTCTLineDisplay",
+      "y": -24,
+      "text": "b",
+      "depth": 3
+    },
+    {
+      "numeratorUp": 24,
+      "width": 19.95,
+      "kind": "MTFractionDisplay",
+      "depth": 2,
+      "descent": 24.45,
+      "x": 0,
+      "ascent": 40.537499999999994,
+      "y": -39.58749999999999,
+      "denominatorDown": 24,
+      "lineThickness": 3.3
+    },
+    {
+      "kind": "MTCTLineDisplay",
+      "descent": 0.4125,
+      "y": 24,
+      "text": "c",
+      "ascent": 16.537499999999998,
+      "depth": 3,
+      "x": 2.1937499999999996,
+      "width": 15.5625
+    },
+    {
+      "y": -24,
+      "ascent": 25.05,
+      "kind": "MTCTLineDisplay",
+      "text": "d",
+      "depth": 3,
+      "descent": 0.44999999999999996,
+      "x": 0,
+      "width": 19.95
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+version: "Apple Swift version 6.0 (swiftlang-6.0.0.9.10 clang-1600.0.26.2)"
+options: "0c5d71961bf49087026356597ee60c0be63a5b113e93be1950657eee8e14527f"
+build_start_time: [1782073688, 723159000]
+build_end_time: [1782073689, 325756000]
+inputs:
+  "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/main.swift": [1782073675, 587112890]

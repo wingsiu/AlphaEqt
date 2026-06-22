@@ -1,0 +1,73 @@
+{
+  "expression": "\\dfrac{1}{2}",
+  "parseTree": [
+    {
+      "kind": "styling",
+      "depth": 0,
+      "style": "display"
+    },
+    {
+      "kind": "genfrac",
+      "depth": 1
+    },
+    {
+      "kind": "ordgroup",
+      "depth": 2
+    },
+    {
+      "kind": "textord",
+      "depth": 3,
+      "text": "1"
+    },
+    {
+      "kind": "ordgroup",
+      "depth": 2
+    },
+    {
+      "kind": "textord",
+      "depth": 3,
+      "text": "2"
+    }
+  ],
+  "parseTreeCount": 6,
+  "htmlSpans": [
+    {
+      "classes": "strut",
+      "heightEm": 2.0074,
+      "text": ""
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 1.3214,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 3,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 3,
+      "text": ""
+    },
+    {
+      "classes": "frac-line",
+      "widthEm": 0.04,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 3,
+      "text": ""
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 0.686,
+      "text": ""
+    }
+  ],
+  "htmlSpanCount": 7,
+  "htmlPreview": "<span class=\"katex-display\"><span class=\"katex\"><span class=\"katex-mathml\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><mstyle scriptlevel=\"0\" displaystyle=\"true\"><mfrac><mn>1</mn><mn>2</mn></mfrac></mstyle></mrow><annotation encoding=\"application/x-tex\">\\dfrac{1}{2}</annotation></semantics></math></span><span class=\"katex-html\" aria-hidden=\"true\"><span class=",
+  "totalHeightEm": 2.0074
+}

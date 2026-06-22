@@ -1,0 +1,173 @@
+{
+  "": {
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/master.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/AST/ASTNode.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/ASTNode.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/ASTNode.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/ASTNode~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/ASTNode.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Lexer/Lexer.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Lexer.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Lexer.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Lexer~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Lexer.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Lexer/Token.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Token.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Token.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Token~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Token.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/MathView/MathView.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/MathView.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/MathView.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/MathView~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/MathView.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/MathView/SwiftMathView.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/SwiftMathView.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/SwiftMathView.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/SwiftMathView~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/SwiftMathView.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Accent.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Accent.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Accent.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Accent~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Accent.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Color.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Color.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Color.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Color~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Color.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Frac.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Frac.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Frac.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Frac~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Frac.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/LargeOp.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/LargeOp.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/LargeOp.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/LargeOp~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/LargeOp.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/LeftRight.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/LeftRight.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/LeftRight.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/LeftRight~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/LeftRight.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Matrix.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Matrix.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Matrix.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Matrix~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Matrix.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Radical.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Radical.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Radical.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Radical~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Radical.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Sizing.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Sizing.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Sizing.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Sizing~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Sizing.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Symbols.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Symbols.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Symbols.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Symbols~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Symbols.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/CommandHandler/Text.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Text.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Text.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Text~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Text.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Parser/LatexParser.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/LatexParser.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/LatexParser.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/LatexParser~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/LatexParser.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/DisplayAtoms.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/DisplayAtoms.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/DisplayAtoms.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/DisplayAtoms~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/DisplayAtoms.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/MTCTLineDisplay.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTCTLineDisplay.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTCTLineDisplay.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTCTLineDisplay~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTCTLineDisplay.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/MTColor.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTColor.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTColor.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTColor~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTColor.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/MTConfig.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTConfig.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTConfig.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTConfig~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTConfig.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/MTDisplay.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTDisplay.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTDisplay.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTDisplay~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTDisplay.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/MTFont.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTFont.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTFont.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTFont~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTFont.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/MTFontMathTable.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTFontMathTable.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTFontMathTable.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTFontMathTable~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTFontMathTable.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/MTTypesetter.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTTypesetter.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTTypesetter.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTTypesetter~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTTypesetter.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Render/Spaces.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Spaces.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Spaces.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Spaces~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/Spaces.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Utils/AccentUtils.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/AccentUtils.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/AccentUtils.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/AccentUtils~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/AccentUtils.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/AlphaEqt/Sources/AlphaEqt/Utils/MTMathAtomFactory.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTMathAtomFactory.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTMathAtomFactory.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTMathAtomFactory~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/MTMathAtomFactory.swiftdeps"
+  },
+  "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/DerivedSources/resource_bundle_accessor.swift": {
+    "dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/resource_bundle_accessor.d",
+    "object": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/resource_bundle_accessor.swift.o",
+    "swiftmodule": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/resource_bundle_accessor~partial.swiftmodule",
+    "swift-dependencies": "/Users/alpha/Desktop/swift/AlphaEqt/Tools/RenderCompare/.build/arm64-apple-macosx/debug/AlphaEqt.build/resource_bundle_accessor.swiftdeps"
+  }
+}

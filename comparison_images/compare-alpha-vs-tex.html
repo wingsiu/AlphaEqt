@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AlphaEqt vs TeX Reference (XITS Math)</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #f5f5f5; font-family: -apple-system, sans-serif; padding: 20px; }
+  h1 { text-align: center; margin-bottom: 8px; font-size: 22px; }
+  .subtitle { text-align: center; color: #666; margin-bottom: 24px; font-size: 13px; }
+  .grid { display: flex; flex-wrap: wrap; gap: 16px; }
+  .card { background: white; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,.08); overflow: visible; width: fit-content; }
+  .card-header { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-bottom: 1px solid #eee; }
+  .card-label { font-weight: 600; font-size: 13px; color: #333; }
+  .card-latex { font-size: 11px; color: #888; font-family: monospace; }
+  .card-body { display: flex; flex-wrap: nowrap; }
+  .pane { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; padding: 12px 8px; min-width: 0; }
+  .pane:first-child { border-right: 1px solid #eee; }
+  .pane-label { font-size: 10px; font-weight: 600; text-transform: uppercase; color: #999; margin-bottom: 8px; letter-spacing: .5px; }
+  .pane-label.alphaEqt { color: #007aff; }
+  .pane-label.tex { color: #e74c3c; }
+  .pane img { width: auto; max-width: none; height: auto; image-rendering: pixelated; flex-shrink: 0; }
+  .legend { display: flex; justify-content: center; gap: 32px; margin-bottom: 20px; font-size: 12px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .legend-dot.alpha { background: #007aff; }
+  .legend-dot.tex { background: #e74c3c; }
+</style>
+</head>
+<body>
+<h1>AlphaEqt vs LuaLaTeX — XITS Math Font</h1>
+<p class="subtitle">Both rendered with XITS Math OTF at 50pt · 28 test cases · TeX = LuaLaTeX ground truth</p>
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot alpha"></div> AlphaEqt (Swift)</div>
+  <div class="legend-item"><div class="legend-dot tex"></div> TeX Reference (LuaLaTeX)</div>
+</div>
+<div class="grid">
+
+<!-- FRACTION -->
+<div class="card">
+  <div class="card-header"><span class="card-label">Frac</span><span class="card-latex">\frac{x}{y}</span></div>
+  <div class="card-body">
+    <div class="pane"><div class="pane-label alphaEqt">AlphaEqt</div><img src="fraction.png" alt="AlphaEqt frac"></div>
+    <div class="pane"><div class="pane-label tex">TeX Ref</div><img src="tex_ref_frac.png" alt="TeX frac"></div>
+  </div>
+</div>
+
+<!-- NESTED FRAC -->
+<div class="card">
+  <div class="card-header"><span class="card-label">Nested Frac</span><span class="card-latex">\frac{\frac{a}{b}}{\frac{c}{d}}</span></div>
+  <div class="card-body">
+    <div class="pane"><div class="pane-label alphaEqt">AlphaEqt</div><img src="nested-frac.png" alt="AlphaEqt nested-frac"></div>
+    <div class="pane"><div class="pane-label tex">TeX Ref</div><img src="tex_ref_nested-frac.png" alt="TeX nested-frac"></div>
+  </div>
+</div>
+
+<!-- SQRT -->
+<div class="card">
+  <div class="card-header"><span class="card-label">Sqrt</span><span class="card-latex">\sqrt{x+1}</span></div>
+  <div class="card-body">
+    <div class="pane"><div class="pane-label alphaEqt">AlphaEqt</div><img src="sqrt.png" alt="AlphaEqt sqrt"></div>
+    <div class="pane"><div class="pane-label tex">TeX Ref</div><img src="tex_ref_sqrt.png" alt="TeX sqrt"></div>
+  </div>
+</div>
+
+<!-- SQRT NESTED -->
+<div class="card">
+  <div class="card-header"><span class="card-label">Sqrt Nested</span><span class="card-latex">\sqrt{\frac{x}{y}}</span></div>
+  <div class="card-body">
+    <div class="pane"><div class="pane-label alphaEqt">AlphaEqt</div><img src="sqrt-nested.png" alt="AlphaEqt sqrt-nested"></div>
+    <div class="pane"><div class="pane-label tex">TeX Ref</div><img src="tex_ref_sqrt-nested.png" alt="TeX sqrt-nested"></div>
+  </div>
+</div>
+
+<!-- SUP -->
+<div class="card">
+  <div class="card-header"><span class="card-label">Superscript</span><span class="card-latex">x^{2}</span></div>
+  <div class="card-body">
+    <div class="pane"><div class="pane-label alphaEqt">AlphaEqt</div><img src="sup.png" alt="AlphaEqt sup"></div>
+    <div class="pane"><div class="pane-label tex">TeX Ref</div><img src="tex_ref_sup.png" alt="TeX sup"></div>
+  </div>
+</div>
+
+<!-- SUB -->
+<div class="card">
+  <div class="card-header"><span class="card-label">Subscript</span><span class="card-latex">x_{1}</span></div>
+  <div class="card-body">
+    <div class="pane"><div class="pane-label alphaEqt">AlphaEqt</div><img src="sub.png" alt="AlphaEqt sub"></div>
+    <div class="pane"><div class="pane-label tex">TeX Ref</div><img src="tex_ref_sub.png" alt="TeX sub"></div>
+  </div>
+</div>
+
+<!-- SUPSUB -->
+<div class="card">
+  <div class="card-header"><span class="card-label">Sup + Sub</span><span class="card-latex">x_{i}^{2}</span></div>
+  <div class="card-body">
+    <div class="pane"><div class="pane-label alphaEqt">AlphaEqt</div><img src="supsub.png" alt="AlphaEqt supsub"></div>
+    <div class="pane"><div class="pane-label tex">TeX Ref</div><img src="tex_ref_supsub.png" alt="TeX supsub"></div>
+  </div>
+</div>
+
+<!-- SUM DISPLAY -->
+<div class="card">
+  <div class="card-header"><span class="card-label">Sum (display)</span><span class="card-latex">\displaystyle\sum_{i=0}^{n} i^{2}</span></div>
+  <div class="card-body">
+    <div class="pane"><div class="pane-label alphaEqt">AlphaEqt</div><img src="sum-display.png" alt="AlphaEqt sum-display"></div>
+    <div class="pane"><div class="pane-label tex">TeX Ref</div><img src="tex_ref_sum-display.png" alt="TeX sum-display"></div>
+  </div>
+</div>
+
+<!-- SUM INLINE -->
+<div class="card">
+  <div class="card-header"><span class="card-label">Sum (inline)</span><span class="card-latex">\textstyle\sum_{i=0}^{n} i^{2}</span></div>
+  <div class="card-body">
+    <div class="pane"><div class="pane-label alphaEqt">AlphaEqt</div><img src="sum-inline.png" alt="AlphaEqt sum-inline"></div>
+    <div class="pane"><div class="pane-label tex">TeX Ref</div><img src="tex_ref_sum-inline.png" alt="TeX sum-inline"></div>
+  </div>
+</div>
+
+<!-- INTEGRAL -->
+<div class="card">
+  <div class="card-header"><span class="card-label">Integral</span><span class="card-latex">\int_{0}^{\infty} f(x)\,dx</span></div>
+  <div class="card-body">
+    <div class="pane"><div class="pane-label alphaEqt">AlphaEqt</div><img src="integral.png" alt="AlphaEqt integral"></div>
+    <div class="pane"><div class="pane-label tex">TeX Ref</div><img src="tex_ref_integral.png" alt="TeX integral"></div>
+  </div>
+</div>
+
+<!-- MATRIX -->
+<div class="card">
+  <div class="card-header"><span class="card-label">Matrix</span><span class="card-latex">\begin{pmatrix} a & b \\ c & d \end{pmatrix}</span></div>
+  <div class="card-body">
+    <div class="pane"><div class="pane-label alphaEqt">AlphaEqt</div><img src="matrix.png" alt="AlphaEqt matrix"></div>
+    <div class="pane"><div class="pane-label tex">TeX Ref</div><img src="tex_ref_matrix.png" alt="TeX matrix"></div>
+  </div>
+</div>
+
+<!-- LEFTRIGHT -->
+<div class="card">
+  <div class="card-header"><span class="card-label">Left-Right</span><span class="card-latex">\left(\frac{x}{y}\right)</span></div>
+  <div class="card-body">
+    <div class="pane"><div class="pane-label alphaEqt">AlphaEqt</div><img src="leftright.png" alt="AlphaEqt leftright"></div>
+    <div class="pane"><div class="pane-label tex">TeX Ref</div><img src="tex_ref_leftright.png" alt="TeX leftright"></div>
+  </div>
+</div>
+
+<!-- ACCENT - hat -->
+<div class="card">
+  <div class="card-header"><span class="card-label">Accent: Hat</span><span class="card-latex">\hat{x}</span></div>
+  <div class="card-body">
+    <div class="pane"><div class="pane-label alphaEqt">AlphaEqt</div><img src="accent-hat.png" alt="AlphaEqt accent-hat"></div>
+    <div class="pane"><div class="pane-label tex">TeX Ref</div><img src="tex_ref_accent-hat.png" alt="TeX accent-hat"></div>
+  </div>
+</div>
+
+<!-- ACCENT - vec -->
+<div class="card">
+  <div class="card-header"><span class="card-label">Accent: Vec</span><span class="card-latex">\vec{x}</span></div>
+  <div class="card-body">
+    <div class="pane"><div class="pane-label alphaEqt">AlphaEqt</div><img src="accent-vec.png" alt="AlphaEqt accent-vec"></div>
+    <div class="pane"><div class="pane-label tex">TeX Ref</div><img src="tex_ref_accent-vec.png" alt="TeX accent-vec"></div>
+  </div>
+</div>
+
+<!-- ACCENT - bar -->
+<div class="card">
+  <div class="card-header"><span class="card-label">Accent: Bar (1 char)</span><span class="card-latex">\bar{x}</span></div>
+  <div class="card-body">
+    <div class="pane"><div class="pane-label alphaEqt">AlphaEqt</div><img src="accent-bar.png" alt="AlphaEqt accent-bar"></div>
+    <div class="pane"><div class="pane-label tex">TeX Ref</div><img src="tex_ref_accent-bar.png" alt="TeX accent-bar"></div>
+  </div>
+</div>
+
+<!-- ACCENT - bar multi -->
+<div class="card">
+  <div class="card-header"><span class="card-label">Accent: Bar (multi)</span><span class="card-latex">\bar{ab}</span></div>
+  <div class="card-body">
+    <div class="pane"><div class="pane-label alphaEqt">AlphaEqt</div><img src="accent-bar-multi.png" alt="AlphaEqt accent-bar-multi"></div>
+    <div class="pane"><div class="pane-label tex">TeX Ref</div><img src="tex_ref_accent-bar-multi.png" alt="TeX accent-bar-multi"></div>
+  </div>
+</div>
+
+<!-- ACCENT - widehat -->
+<div class="card">
+  <div class="card-header"><span class="card-label">Accent: Widehat</span><span class="card-latex">\widehat{AB}</span></div>
+  <div class="card-body">
+    <div class="pane"><div class="pane-label alphaEqt">AlphaEqt</div><img src="accent-widehat.png" alt="AlphaEqt accent-widehat"></div>
+    <div class="pane"><div class="pane-label tex">TeX Ref</div><img src="tex_ref_accent-widehat.png" alt="TeX accent-widehat"></div>
+  </div>
+</div>
+
+<!-- ACCENT - tilde -->
+<div class="card">
+  <div class="card-header"><span class="card-label">Accent: Tilde</span><span class="card-latex">\tilde{x}</span></div>
+  <div class="card-body">
+    <div class="pane"><div class="pane-label alphaEqt">AlphaEqt</div><img src="accent-tilde.png" alt="AlphaEqt accent-tilde"></div>
+    <div class="pane"><div class="pane-label tex">TeX Ref</div><img src="tex_ref_accent-tilde.png" alt="TeX accent-tilde"></div>
+  </div>
+</div>
+
+<!-- ACCENT - dot -->
+<div class="card">
+  <div class="card-header"><span class="card-label">Accent: Dot</span><span class="card-latex">\dot{x}</span></div>
+  <div class="card-body">
+    <div class="pane"><div class="pane-label alphaEqt">AlphaEqt</div><img src="accent-dot.png" alt="AlphaEqt accent-dot"></div>
+    <div class="pane"><div class="pane-label tex">TeX Ref</div><img src="tex_ref_accent-dot.png" alt="TeX accent-dot"></div>
+  </div>
+</div>
+
+<!-- ACCENT - ddot -->
+<div class="card">
+  <div class="card-header"><span class="card-label">Accent: Ddot</span><span class="card-latex">\ddot{x}</span></div>
+  <div class="card-body">
+    <div class="pane"><div class="pane-label alphaEqt">AlphaEqt</div><img src="accent-ddot.png" alt="AlphaEqt accent-ddot"></div>
+    <div class="pane"><div class="pane-label tex">TeX Ref</div><img src="tex_ref_accent-ddot.png" alt="TeX accent-ddot"></div>
+  </div>
+</div>
+
+<!-- COLOR -->
+<div class="card">
+  <div class="card-header"><span class="card-label">Text Color</span><span class="card-latex">\textcolor{red}{x}</span></div>
+  <div class="card-body">
+    <div class="pane"><div class="pane-label alphaEqt">AlphaEqt</div><img src="color.png" alt="AlphaEqt color"></div>
+    <div class="pane"><div class="pane-label tex">TeX Ref</div><img src="tex_ref_color.png" alt="TeX color"></div>
+  </div>
+</div>
+
+<!-- COLORBOX -->
+<div class="card">
+  <div class="card-header"><span class="card-label">Color Box</span><span class="card-latex">\colorbox{yellow}{x+y}</span></div>
+  <div class="card-body">
+    <div class="pane"><div class="pane-label alphaEqt">AlphaEqt</div><img src="colorbox.png" alt="AlphaEqt colorbox"></div>
+    <div class="pane"><div class="pane-label tex">TeX Ref</div><img src="tex_ref_colorbox.png" alt="TeX colorbox"></div>
+  </div>
+</div>
+
+<!-- FRAC DISPLAY -->
+<div class="card">
+  <div class="card-header"><span class="card-label">Frac Display</span><span class="card-latex">\dfrac{1}{2}</span></div>
+  <div class="card-body">
+    <div class="pane"><div class="pane-label alphaEqt">AlphaEqt</div><img src="frac-display.png" alt="AlphaEqt frac-display"></div>
+    <div class="pane"><div class="pane-label tex">TeX Ref</div><img src="tex_ref_frac-display.png" alt="TeX frac-display"></div>
+  </div>
+</div>
+
+<!-- FRAC TEXT -->
+<div class="card">
+  <div class="card-header"><span class="card-label">Frac Text</span><span class="card-latex">\tfrac{1}{2}</span></div>
+  <div class="card-body">
+    <div class="pane"><div class="pane-label alphaEqt">AlphaEqt</div><img src="frac-text.png" alt="AlphaEqt frac-text"></div>
+    <div class="pane"><div class="pane-label tex">TeX Ref</div><img src="tex_ref_frac-text.png" alt="TeX frac-text"></div>
+  </div>
+</div>
+
+<!-- SQRT 3 -->
+<div class="card">
+  <div class="card-header"><span class="card-label">Sqrt[3]</span><span class="card-latex">\sqrt[3]{x}</span></div>
+  <div class="card-body">
+    <div class="pane"><div class="pane-label alphaEqt">AlphaEqt</div><img src="sqrt-3.png" alt="AlphaEqt sqrt-3"></div>
+    <div class="pane"><div class="pane-label tex">TeX Ref</div><img src="tex_ref_sqrt-3.png" alt="TeX sqrt-3"></div>
+  </div>
+</div>
+
+<!-- GREEK -->
+<div class="card">
+  <div class="card-header"><span class="card-label">Greek</span><span class="card-latex">\alpha\beta\gamma\omega</span></div>
+  <div class="card-body">
+    <div class="pane"><div class="pane-label alphaEqt">AlphaEqt</div><img src="greek.png" alt="AlphaEqt greek"></div>
+    <div class="pane"><div class="pane-label tex">TeX Ref</div><img src="tex_ref_greek.png" alt="TeX greek"></div>
+  </div>
+</div>
+
+<!-- SIN COS -->
+<div class="card">
+  <div class="card-header"><span class="card-label">Trig Identity</span><span class="card-latex">\sin^{2}\theta + \cos^{2}\theta</span></div>
+  <div class="card-body">
+    <div class="pane"><div class="pane-label alphaEqt">AlphaEqt</div><img src="sin-cos.png" alt="AlphaEqt sin-cos"></div>
+    <div class="pane"><div class="pane-label tex">TeX Ref</div><img src="tex_ref_sin-cos.png" alt="TeX sin-cos"></div>
+  </div>
+</div>
+
+<!-- SUM LIMITS -->
+<div class="card">
+  <div class="card-header"><span class="card-label">Sum Limits</span><span class="card-latex">\displaystyle\sum_{i=0}^{\infty} \frac{1}{i}</span></div>
+  <div class="card-body">
+    <div class="pane"><div class="pane-label alphaEqt">AlphaEqt</div><img src="sum-limits.png" alt="AlphaEqt sum-limits"></div>
+    <div class="pane"><div class="pane-label tex">TeX Ref</div><img src="tex_ref_sum-limits.png" alt="TeX sum-limits"></div>
+  </div>
+</div>
+
+</div><!-- grid -->
+<p style="text-align:center; margin-top:24px; color:#999; font-size:11px;">Both rendered with XITS Math OTF · 50pt · Display style · AlphaEqt (Swift CoreGraphics) vs LuaLaTeX (TeX Live 2026)</p>
+</body>
+</html>

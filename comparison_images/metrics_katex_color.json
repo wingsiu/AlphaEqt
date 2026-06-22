@@ -1,0 +1,30 @@
+{
+  "expression": "\\textcolor{red}{x}",
+  "parseTree": [
+    {
+      "kind": "color",
+      "depth": 0,
+      "color": "red"
+    },
+    {
+      "kind": "mathord",
+      "depth": 1,
+      "text": "x"
+    }
+  ],
+  "parseTreeCount": 2,
+  "htmlSpans": [
+    {
+      "classes": "strut",
+      "heightEm": 0.4306,
+      "text": ""
+    },
+    {
+      "classes": "mord mathnormal",
+      "text": "x"
+    }
+  ],
+  "htmlSpanCount": 2,
+  "htmlPreview": "<span class=\"katex-display\"><span class=\"katex\"><span class=\"katex-mathml\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><mstyle mathcolor=\"red\"><mi>x</mi></mstyle></mrow><annotation encoding=\"application/x-tex\">\\textcolor{red}{x}</annotation></semantics></math></span><span class=\"katex-html\" aria-hidden=\"true\"><span class=\"base\"><span class=\"strut\" style=\"heigh",
+  "totalHeightEm": 0.4306
+}

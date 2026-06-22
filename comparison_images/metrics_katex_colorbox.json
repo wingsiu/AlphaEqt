@@ -1,0 +1,70 @@
+{
+  "expression": "\\colorbox{yellow}{x+y}",
+  "parseTree": [
+    {
+      "kind": "enclose",
+      "depth": 0,
+      "accentLabel": "\\colorbox"
+    },
+    {
+      "kind": "styling",
+      "depth": 1,
+      "style": "text"
+    },
+    {
+      "kind": "ordgroup",
+      "depth": 2
+    },
+    {
+      "kind": "textord",
+      "depth": 3,
+      "text": "x"
+    },
+    {
+      "kind": "textord",
+      "depth": 3,
+      "text": "+"
+    },
+    {
+      "kind": "textord",
+      "depth": 3,
+      "text": "y"
+    }
+  ],
+  "parseTreeCount": 6,
+  "htmlSpans": [
+    {
+      "classes": "strut",
+      "heightEm": 1.3778,
+      "text": ""
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 0.8833,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 3.3778,
+      "text": ""
+    },
+    {
+      "classes": "stretchy colorbox",
+      "heightEm": 1.3778,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 3.3778,
+      "text": ""
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 0.4944,
+      "text": ""
+    }
+  ],
+  "htmlSpanCount": 6,
+  "htmlPreview": "<span class=\"katex-display\"><span class=\"katex\"><span class=\"katex-mathml\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><mpadded width=\"+6pt\" height=\"+6pt\" lspace=\"3pt\" voffset=\"3pt\" mathbackground=\"yellow\"><mstyle scriptlevel=\"0\" displaystyle=\"false\"><mtext>x+y</mtext></mstyle></mpadded></mrow><annotation encoding=\"application/x-tex\">\\colorbox{yellow}{x+y}</an",
+  "totalHeightEm": 1.3778
+}

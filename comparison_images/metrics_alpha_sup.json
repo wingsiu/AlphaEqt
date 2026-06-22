@@ -1,0 +1,45 @@
+{
+  "expression": "x^{2}",
+  "label": "sup",
+  "itemCount": 4,
+  "items": [
+    {
+      "y": 0,
+      "kind": "MTMathListDisplay",
+      "depth": 0,
+      "descent": 0.45,
+      "width": 46.25,
+      "x": 0,
+      "ascent": 45.349999999999994
+    },
+    {
+      "depth": 1,
+      "width": 46.25,
+      "y": 0,
+      "x": 0,
+      "ascent": 45.349999999999994,
+      "descent": 0.45,
+      "kind": "MTSupSubDisplay"
+    },
+    {
+      "depth": 2,
+      "ascent": 22.05,
+      "descent": 0.45,
+      "width": 27.5,
+      "x": 0,
+      "text": "x",
+      "y": 0,
+      "kind": "MTCTLineDisplay"
+    },
+    {
+      "ascent": 25.349999999999998,
+      "x": 27.5,
+      "y": 20,
+      "text": "",
+      "kind": "MTCTLineDisplay",
+      "depth": 2,
+      "descent": 0,
+      "width": 18.75
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "items": [
+    {
+      "kind": "MTMathListDisplay",
+      "x": 0,
+      "width": 27.5,
+      "ascent": 22.05,
+      "y": 0,
+      "depth": 0,
+      "descent": 0.45
+    },
+    {
+      "width": 27.5,
+      "kind": "MTMathListDisplay",
+      "depth": 1,
+      "y": 0,
+      "descent": 0.45,
+      "x": 0,
+      "ascent": 22.05
+    },
+    {
+      "kind": "MTCTLineDisplay",
+      "x": 0,
+      "depth": 2,
+      "width": 27.5,
+      "text": "x",
+      "y": 0,
+      "descent": 0.45,
+      "ascent": 22.05
+    }
+  ],
+  "label": "color",
+  "itemCount": 3,
+  "expression": "\\textcolor{red}{x}"
+}

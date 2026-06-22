@@ -1,0 +1,117 @@
+{
+  "expression": "\\int_{0}^{\\infty} f(x)\\,dx",
+  "parseTree": [
+    {
+      "kind": "supsub",
+      "depth": 0
+    },
+    {
+      "kind": "op",
+      "depth": 1
+    },
+    {
+      "kind": "ordgroup",
+      "depth": 1
+    },
+    {
+      "kind": "textord",
+      "depth": 2,
+      "text": "\\infty"
+    },
+    {
+      "kind": "ordgroup",
+      "depth": 1
+    },
+    {
+      "kind": "textord",
+      "depth": 2,
+      "text": "0"
+    },
+    {
+      "kind": "mathord",
+      "depth": 0,
+      "text": "f"
+    },
+    {
+      "kind": "atom",
+      "depth": 0,
+      "text": "("
+    },
+    {
+      "kind": "mathord",
+      "depth": 0,
+      "text": "x"
+    },
+    {
+      "kind": "atom",
+      "depth": 0,
+      "text": ")"
+    },
+    {
+      "kind": "kern",
+      "depth": 0
+    },
+    {
+      "kind": "mathord",
+      "depth": 0,
+      "text": "d"
+    },
+    {
+      "kind": "mathord",
+      "depth": 0,
+      "text": "x"
+    }
+  ],
+  "parseTreeCount": 13,
+  "htmlSpans": [
+    {
+      "classes": "strut",
+      "heightEm": 2.3262,
+      "text": ""
+    },
+    {
+      "classes": "mop op-symbol large-op",
+      "topEm": -0.0011,
+      "marginRightEm": 0.4445,
+      "text": "\u222b"
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 1.4143,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 2.7,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 2.7,
+      "text": ""
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 0.9119,
+      "text": ""
+    },
+    {
+      "classes": "mspace",
+      "marginRightEm": 0.1667,
+      "text": ""
+    },
+    {
+      "classes": "mord mathnormal",
+      "marginRightEm": 0.1076,
+      "text": "f"
+    },
+    {
+      "classes": "mspace",
+      "marginRightEm": 0.1667,
+      "text": ""
+    }
+  ],
+  "htmlSpanCount": 9,
+  "htmlPreview": "<span class=\"katex-display\"><span class=\"katex\"><span class=\"katex-mathml\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><msubsup><mo>\u222b</mo><mn>0</mn><mi mathvariant=\"normal\">\u221e</mi></msubsup><mi>f</mi><mo stretchy=\"false\">(</mo><mi>x</mi><mo stretchy=\"false\">)</mo><mtext>\u2009</mtext><mi>d</mi><mi>x</mi></mrow><annotation encoding=\"application/x-tex\">\\int_{0}^{\\inft",
+  "totalHeightEm": 2.3262
+}

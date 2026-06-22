@@ -1,0 +1,57 @@
+{
+  "label": "accent-hat",
+  "items": [
+    {
+      "x": 0,
+      "width": 27.5,
+      "kind": "MTMathListDisplay",
+      "y": 0,
+      "depth": 0,
+      "ascent": 33.7,
+      "descent": 0.45
+    },
+    {
+      "y": 0,
+      "depth": 1,
+      "descent": 0.45,
+      "width": 27.5,
+      "ascent": 33.7,
+      "kind": "MTAccentDisplay",
+      "x": 0
+    },
+    {
+      "depth": 2,
+      "kind": "MTGlyphDisplay",
+      "rawDescent": 0,
+      "glyph": 544,
+      "x": 25.25,
+      "shiftDown": 0,
+      "descent": 0,
+      "rawAscent": 33.7,
+      "ascent": 33.7,
+      "y": 0,
+      "width": 0
+    },
+    {
+      "width": 27.5,
+      "kind": "MTMathListDisplay",
+      "descent": 0.45,
+      "y": 0,
+      "depth": 2,
+      "ascent": 22.05,
+      "x": 0
+    },
+    {
+      "depth": 3,
+      "text": "x",
+      "ascent": 22.05,
+      "x": 0,
+      "y": 0,
+      "kind": "MTCTLineDisplay",
+      "descent": 0.45,
+      "width": 27.5
+    }
+  ],
+  "expression": "\\hat{x}",
+  "itemCount": 5
+}

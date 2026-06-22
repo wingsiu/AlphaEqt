@@ -1,0 +1,59 @@
+{
+  "items": [
+    {
+      "width": 83.7,
+      "depth": 0,
+      "x": 0,
+      "kind": "MTMathListDisplay",
+      "y": 0,
+      "descent": 51.75,
+      "ascent": 74.55000000000001
+    },
+    {
+      "depth": 1,
+      "width": 83.7,
+      "y": 0,
+      "kind": "MTRadicalDisplay",
+      "x": 0,
+      "topKern": 3.3,
+      "lineThickness": 3.3,
+      "ascent": 74.55000000000001,
+      "descent": 51.75
+    },
+    {
+      "ascent": 51.05,
+      "kind": "MTFractionDisplay",
+      "width": 27.5,
+      "descent": 44.15,
+      "denominatorDown": 35,
+      "depth": 2,
+      "x": 56.2,
+      "y": 0,
+      "lineThickness": 3.3,
+      "numeratorUp": 29
+    },
+    {
+      "x": 0,
+      "y": 29,
+      "width": 27.5,
+      "depth": 3,
+      "descent": 0.45,
+      "kind": "MTCTLineDisplay",
+      "text": "x",
+      "ascent": 22.05
+    },
+    {
+      "width": 24.8,
+      "descent": 9.15,
+      "kind": "MTCTLineDisplay",
+      "y": -35,
+      "ascent": 22,
+      "x": 1.3499999999999996,
+      "depth": 3,
+      "text": "y"
+    }
+  ],
+  "expression": "\\sqrt{\\frac{x}{y}}",
+  "label": "sqrt-nested",
+  "itemCount": 5
+}

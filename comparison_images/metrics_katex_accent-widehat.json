@@ -1,0 +1,60 @@
+{
+  "expression": "\\widehat{AB}",
+  "parseTree": [
+    {
+      "kind": "accent",
+      "depth": 0,
+      "accentLabel": "\\widehat"
+    },
+    {
+      "kind": "ordgroup",
+      "depth": 1
+    },
+    {
+      "kind": "mathord",
+      "depth": 2,
+      "text": "A"
+    },
+    {
+      "kind": "mathord",
+      "depth": 2,
+      "text": "B"
+    }
+  ],
+  "parseTreeCount": 4,
+  "htmlSpans": [
+    {
+      "classes": "strut",
+      "heightEm": 0.9833,
+      "text": ""
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 0.9833,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 3,
+      "text": ""
+    },
+    {
+      "classes": "mord mathnormal",
+      "marginRightEm": 0.0502,
+      "text": "B"
+    },
+    {
+      "classes": "svg-align",
+      "topEm": -3.6833,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 3,
+      "text": ""
+    }
+  ],
+  "htmlSpanCount": 6,
+  "htmlPreview": "<span class=\"katex-display\"><span class=\"katex\"><span class=\"katex-mathml\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><mover accent=\"true\"><mrow><mi>A</mi><mi>B</mi></mrow><mo stretchy=\"true\">^</mo></mover></mrow><annotation encoding=\"application/x-tex\">\\widehat{AB}</annotation></semantics></math></span><span class=\"katex-html\" aria-hidden=\"true\"><span class=",
+  "totalHeightEm": 0.9833
+}

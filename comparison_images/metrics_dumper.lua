@@ -1,0 +1,79 @@
+-- metrics_dumper.lua -- loaded by dump_tex_metrics.tex
+-- Dumps glyph/rule positions from math node tree to log as JSON.
+
+local metrics = {}
+metrics.items = {}
+local sp_per_pt = 65536
+
+local function round(v)
+  return math.floor(v * 100 + 0.5) / 100
+end
+
+local function sp_to_pt(sp)
+  return sp / sp_per_pt
+end
+
+local function add_item(kind, x, y, w, h, d, extra)
+  if w == 0 then return end
+  table.insert(metrics.items, {
+    kind = kind,
+    x = round(sp_to_pt(x)),
+    y = round(sp_to_pt(y)),
+    w = round(sp_to_pt(w)),
+    h = round(sp_to_pt(h)),
+    d = round(sp_to_pt(d)),
+    extra = extra or ""
+  })
+end
+
+local function walk_hlist(head)
+  for n in node.traverse(head) do
+    local id = n.id
+    if id == node.id("glyph") and not n.components then
+      local ch = n.char or 0
+      add_item("glyph", n.xoffset or 0, n.yoffset or 0,
+               n.width or 0, n.height or 0, n.depth or 0,
+               string.format("U+%04X", ch))
+    elseif id == node.id("rule") then
+      add_item("rule", n.xoffset or 0, n.yoffset or 0,
+               n.width or 0, n.height or 0, n.depth or 0, "")
+    elseif id == node.id("hlist") then
+      walk_hlist(n.head)
+    elseif id == node.id("vlist") then
+      walk_hlist(n.head)
+    end
+  end
+end
+
+local function format_json(t, indent)
+  local function val_to_str(v, lev)
+    if type(v) == "number" then return tostring(v)
+    elseif type(v) == "string" then return string.format("%q", v)
+    elseif type(v) == "table" then
+      local sp = string.rep("  ", lev)
+      local lines = {"{"}
+      for k, val in pairs(v) do
+        local kstr
+        if type(k) == "number" then
+          kstr = string.format("[%d] = ", k)
+        else
+          kstr = string.format("%q = ", k)
+        end
+        table.insert(lines, sp .. "  " .. kstr .. val_to_str(val, lev + 1))
+      end
+      table.insert(lines, sp .. "}")
+      return table.concat(lines, ",\n")
+    else return "null" end
+  end
+  return val_to_str(t, indent)
+end
+
+callback.register("mlist_to_hlist", function(head, display_type, penalties)
+  metrics = {items = {}}
+  walk_hlist(head)
+  local json_str = format_json(metrics, 0)
+  texio.write_nl("METRICS_BEGIN")
+  texio.write_nl(json_str)
+  texio.write_nl("METRICS_END")
+  return head
+end)

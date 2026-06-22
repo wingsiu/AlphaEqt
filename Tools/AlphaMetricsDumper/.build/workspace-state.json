@@ -1,0 +1,24 @@
+{
+  "object" : {
+    "artifacts" : [
+
+    ],
+    "dependencies" : [
+      {
+        "basedOn" : null,
+        "packageRef" : {
+          "identity" : "alphaeqt",
+          "kind" : "fileSystem",
+          "location" : "/Users/alpha/Desktop/swift/AlphaEqt",
+          "name" : "AlphaEqt"
+        },
+        "state" : {
+          "name" : "fileSystem",
+          "path" : "/Users/alpha/Desktop/swift/AlphaEqt"
+        },
+        "subpath" : "alphaeqt"
+      }
+    ]
+  },
+  "version" : 6
+}

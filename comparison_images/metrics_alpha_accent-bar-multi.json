@@ -1,0 +1,63 @@
+{
+  "label": "accent-bar-multi",
+  "items": [
+    {
+      "depth": 0,
+      "x": 0,
+      "y": 0,
+      "descent": 0.55,
+      "ascent": 41.55,
+      "width": 48.6,
+      "kind": "MTMathListDisplay"
+    },
+    {
+      "x": 0,
+      "width": 48.6,
+      "descent": 0.55,
+      "kind": "MTAccentDisplay",
+      "depth": 1,
+      "y": 0,
+      "ascent": 41.55
+    },
+    {
+      "width": 48.6,
+      "ascent": 3.3,
+      "kind": "MTRuleDisplay",
+      "descent": 0,
+      "x": 0,
+      "depth": 2,
+      "y": 38.25
+    },
+    {
+      "kind": "MTMathListDisplay",
+      "width": 48.6,
+      "ascent": 33.4,
+      "x": 0,
+      "y": 0,
+      "descent": 0.55,
+      "depth": 2
+    },
+    {
+      "depth": 3,
+      "descent": 0.5,
+      "y": 0,
+      "ascent": 22.05,
+      "width": 25.1,
+      "x": 0,
+      "kind": "MTCTLineDisplay",
+      "text": "a"
+    },
+    {
+      "ascent": 33.4,
+      "width": 23.5,
+      "x": 25.1,
+      "descent": 0.55,
+      "kind": "MTCTLineDisplay",
+      "y": 0,
+      "text": "b",
+      "depth": 3
+    }
+  ],
+  "expression": "\\bar{ab}",
+  "itemCount": 6
+}

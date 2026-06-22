@@ -1,0 +1,56 @@
+{
+  "expression": "\\alpha\\beta\\gamma\\omega",
+  "items": [
+    {
+      "ascent": 33.4,
+      "kind": "MTMathListDisplay",
+      "descent": 9.35,
+      "depth": 0,
+      "x": 0,
+      "width": 106.30000000000001,
+      "y": 0
+    },
+    {
+      "text": "\u03b1",
+      "depth": 1,
+      "descent": 0.5,
+      "x": 0,
+      "ascent": 22.05,
+      "kind": "MTCTLineDisplay",
+      "y": 0,
+      "width": 26.200000000000003
+    },
+    {
+      "y": 0,
+      "x": 26.200000000000003,
+      "ascent": 33.4,
+      "text": "\u03b2",
+      "depth": 1,
+      "descent": 9.15,
+      "kind": "MTCTLineDisplay",
+      "width": 24.650000000000002
+    },
+    {
+      "ascent": 22.049999999999997,
+      "descent": 9.35,
+      "y": 0,
+      "depth": 1,
+      "kind": "MTCTLineDisplay",
+      "width": 21.400000000000002,
+      "text": "\u03b3",
+      "x": 50.85000000000001
+    },
+    {
+      "y": 0,
+      "descent": 0.55,
+      "text": "\u03c9",
+      "depth": 1,
+      "width": 34.050000000000004,
+      "ascent": 22.05,
+      "kind": "MTCTLineDisplay",
+      "x": 72.25000000000001
+    }
+  ],
+  "label": "greek",
+  "itemCount": 5
+}

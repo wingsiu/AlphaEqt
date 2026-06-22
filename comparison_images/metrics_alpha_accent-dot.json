@@ -1,0 +1,57 @@
+{
+  "expression": "\\dot{x}",
+  "items": [
+    {
+      "kind": "MTMathListDisplay",
+      "depth": 0,
+      "x": 0,
+      "y": 0,
+      "ascent": 31.1,
+      "descent": 0.45,
+      "width": 27.5
+    },
+    {
+      "width": 27.5,
+      "x": 0,
+      "descent": 0.45,
+      "ascent": 31.1,
+      "kind": "MTAccentDisplay",
+      "depth": 1,
+      "y": 0
+    },
+    {
+      "depth": 2,
+      "x": 25.25,
+      "rawAscent": 31.1,
+      "ascent": 31.1,
+      "glyph": 549,
+      "rawDescent": 0,
+      "width": 0,
+      "descent": 0,
+      "y": 0,
+      "shiftDown": 0,
+      "kind": "MTGlyphDisplay"
+    },
+    {
+      "width": 27.5,
+      "x": 0,
+      "depth": 2,
+      "descent": 0.45,
+      "kind": "MTMathListDisplay",
+      "y": 0,
+      "ascent": 22.05
+    },
+    {
+      "descent": 0.45,
+      "x": 0,
+      "depth": 3,
+      "width": 27.5,
+      "text": "x",
+      "y": 0,
+      "kind": "MTCTLineDisplay",
+      "ascent": 22.05
+    }
+  ],
+  "itemCount": 5,
+  "label": "accent-dot"
+}

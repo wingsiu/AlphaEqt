@@ -1,0 +1,117 @@
+{
+  "expression": "\\sqrt{\\frac{x}{y}}",
+  "parseTree": [
+    {
+      "kind": "sqrt",
+      "depth": 0
+    },
+    {
+      "kind": "ordgroup",
+      "depth": 1
+    },
+    {
+      "kind": "genfrac",
+      "depth": 2
+    },
+    {
+      "kind": "ordgroup",
+      "depth": 3
+    },
+    {
+      "kind": "mathord",
+      "depth": 4,
+      "text": "x"
+    },
+    {
+      "kind": "ordgroup",
+      "depth": 3
+    },
+    {
+      "kind": "mathord",
+      "depth": 4,
+      "text": "y"
+    }
+  ],
+  "parseTreeCount": 7,
+  "htmlSpans": [
+    {
+      "classes": "strut",
+      "heightEm": 2.44,
+      "text": ""
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 1.4474,
+      "text": ""
+    },
+    {
+      "classes": "svg-align",
+      "topEm": -4.4,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 4.4,
+      "text": ""
+    },
+    {
+      "classes": "mord",
+      "leftEm": 1,
+      "text": ""
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 1.1076,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 3,
+      "text": ""
+    },
+    {
+      "classes": "mord mathnormal",
+      "marginRightEm": 0.0359,
+      "text": "y"
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 3,
+      "text": ""
+    },
+    {
+      "classes": "frac-line",
+      "widthEm": 0.04,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 3,
+      "text": ""
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 0.8804,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 4.4,
+      "text": ""
+    },
+    {
+      "classes": "hide-tail",
+      "heightEm": 2.48,
+      "widthEm": 1.02,
+      "text": ""
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 0.9926,
+      "text": ""
+    }
+  ],
+  "htmlSpanCount": 15,
+  "htmlPreview": "<span class=\"katex-display\"><span class=\"katex\"><span class=\"katex-mathml\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><msqrt><mfrac><mi>x</mi><mi>y</mi></mfrac></msqrt></mrow><annotation encoding=\"application/x-tex\">\\sqrt{\\frac{x}{y}}</annotation></semantics></math></span><span class=\"katex-html\" aria-hidden=\"true\"><span class=\"base\"><span class=\"strut\" style",
+  "totalHeightEm": 2.44
+}

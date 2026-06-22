@@ -1,0 +1,45 @@
+{
+  "expression": "x_{1}",
+  "label": "sub",
+  "itemCount": 4,
+  "items": [
+    {
+      "kind": "MTMathListDisplay",
+      "x": 0,
+      "y": 0,
+      "descent": 12.5,
+      "width": 46.25,
+      "depth": 0,
+      "ascent": 22.05
+    },
+    {
+      "depth": 1,
+      "x": 0,
+      "descent": 12.5,
+      "y": 0,
+      "width": 46.25,
+      "ascent": 22.05,
+      "kind": "MTSupSubDisplay"
+    },
+    {
+      "descent": 0.45,
+      "kind": "MTCTLineDisplay",
+      "depth": 2,
+      "width": 27.5,
+      "text": "x",
+      "ascent": 22.05,
+      "y": 0,
+      "x": 0
+    },
+    {
+      "x": 27.5,
+      "descent": 0,
+      "width": 18.75,
+      "y": -12.5,
+      "depth": 2,
+      "ascent": 25.349999999999998,
+      "kind": "MTCTLineDisplay",
+      "text": ""
+    }
+  ]
+}

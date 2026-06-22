@@ -1,0 +1,52 @@
+{
+  "expression": "\\vec{x}",
+  "parseTree": [
+    {
+      "kind": "accent",
+      "depth": 0,
+      "accentLabel": "\\vec"
+    },
+    {
+      "kind": "mathord",
+      "depth": 1,
+      "text": "x"
+    }
+  ],
+  "parseTreeCount": 2,
+  "htmlSpans": [
+    {
+      "classes": "strut",
+      "heightEm": 0.714,
+      "text": ""
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 0.714,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 3,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 3,
+      "text": ""
+    },
+    {
+      "classes": "accent-body",
+      "leftEm": -0.2077,
+      "text": ""
+    },
+    {
+      "classes": "overlay",
+      "heightEm": 0.714,
+      "widthEm": 0.471,
+      "text": ""
+    }
+  ],
+  "htmlSpanCount": 6,
+  "htmlPreview": "<span class=\"katex-display\"><span class=\"katex\"><span class=\"katex-mathml\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><mover accent=\"true\"><mi>x</mi><mo>\u20d7</mo></mover></mrow><annotation encoding=\"application/x-tex\">\\vec{x}</annotation></semantics></math></span><span class=\"katex-html\" aria-hidden=\"true\"><span class=\"base\"><span class=\"strut\" style=\"height:0.7",
+  "totalHeightEm": 0.714
+}

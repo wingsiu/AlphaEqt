@@ -1,0 +1,92 @@
+{
+  "expression": "\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}",
+  "parseTree": [
+    {
+      "kind": "leftright",
+      "depth": 0
+    },
+    {
+      "kind": "array",
+      "depth": 1
+    },
+    {
+      "kind": "unknown",
+      "depth": 2
+    },
+    {
+      "kind": "unknown",
+      "depth": 2
+    }
+  ],
+  "parseTreeCount": 4,
+  "htmlSpans": [
+    {
+      "classes": "strut",
+      "heightEm": 2.4,
+      "text": ""
+    },
+    {
+      "classes": "mopen delimcenter",
+      "topEm": 0,
+      "text": "("
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 1.45,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 3,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 3,
+      "text": ""
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 0.95,
+      "text": ""
+    },
+    {
+      "classes": "arraycolsep",
+      "widthEm": 0.5,
+      "text": ""
+    },
+    {
+      "classes": "arraycolsep",
+      "widthEm": 0.5,
+      "text": ""
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 1.45,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 3,
+      "text": ""
+    },
+    {
+      "classes": "pstrut",
+      "heightEm": 3,
+      "text": ""
+    },
+    {
+      "classes": "vlist",
+      "heightEm": 0.95,
+      "text": ""
+    },
+    {
+      "classes": "mclose delimcenter",
+      "topEm": 0,
+      "text": ")"
+    }
+  ],
+  "htmlSpanCount": 13,
+  "htmlPreview": "<span class=\"katex-display\"><span class=\"katex\"><span class=\"katex-mathml\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><mo fence=\"true\">(</mo><mtable rowspacing=\"0.16em\" columnalign=\"center center\" columnspacing=\"1em\"><mtr><mtd><mstyle scriptlevel=\"0\" displaystyle=\"false\"><mi>a</mi></mstyle></mtd><mtd><mstyle scriptlevel=\"0\" displaystyle=\"false\"><mi>b</mi></ms",
+  "totalHeightEm": 2.4
+}

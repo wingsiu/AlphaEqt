@@ -268,23 +268,39 @@ public class Typesetter: @unchecked Sendable {
         let text = collectText(node)
         guard !text.isEmpty else { return nil }
         let displayText: String
+        let isTextMode: Bool
         switch node.type {
         case .mathord, .unicode:
             displayText = mathItalicize(text)
+            isTextMode = false
         case .text, .textord:
             displayText = text
+            isTextMode = true
         case .bin, .rel:
             displayText = text.replacingOccurrences(of: "-", with: "\u{2212}")
+            isTextMode = false
         default:
             displayText = text
+            isTextMode = false
         }
         let scaledFont = styleFont
+        // Use upright system font for \text{} content so letters appear
+        // in roman/upright style, matching standard LaTeX \text{} behaviour.
+        let ctFont = isTextMode ? uprightSystemFont(size: scaledFont.size) : scaledFont.ctFont
         let ctDisplay = MTCTLineDisplay(
-            attrString: makeAttributedString(displayText, font: scaledFont.ctFont),
+            attrString: makeAttributedString(displayText, font: ctFont),
             position: .zero, range: node.indexRange, font: scaledFont, atoms: [node]
         )
         node.display = ctDisplay
         return ctDisplay
+    }
+
+    /// Returns an upright (non-italic) system font at the given size,
+    /// used for `\text{}` content which should render in roman style.
+    private func uprightSystemFont(size: CGFloat) -> CTFont {
+        // Times New Roman is an upright serif font matching LaTeX \text{} behavior.
+        // CTFontCreateWithName falls back to system font if not found on the platform.
+        CTFontCreateWithName("Times New Roman" as CFString, size, nil)
     }
 
     private func makeAttributedString(_ text: String, font ctFont: CTFont) -> NSAttributedString {
@@ -319,8 +335,20 @@ public class Typesetter: @unchecked Sendable {
             let limitsOps: Set<String> = ["\u{2211}", "\u{220F}", "\u{2210}",
                 "\u{22C2}", "\u{22C3}", "\u{22C1}", "\u{22C0}",
                 "\u{2A00}", "\u{2A01}", "\u{2A02}", "\u{2A06}", "\u{2A04}"]
-            isLimitsOp = limitsOps.contains(String(nucleusText.prefix(1)))
-                || nucleusText.unicodeScalars.count > 1
+            if limitsOps.contains(String(nucleusText.prefix(1))) {
+                isLimitsOp = true
+            } else if nucleusText.unicodeScalars.count > 1 {
+                // Multi-char operators: only "lim", "limsup", "liminf", "max", "min",
+                // "sup", "inf", "det", "gcd", "Pr" get limits. All others (sin, cos,
+                // tan, log, ln, etc.) are no-limits per standard LaTeX.
+                let wordLimitsOps: Set<String> = [
+                    "lim", "lim sup", "lim inf", "max", "min",
+                    "sup", "inf", "det", "gcd", "Pr"
+                ]
+                isLimitsOp = wordLimitsOps.contains(nucleusText)
+            } else {
+                isLimitsOp = false
+            }
         } else {
             isLimitsOp = false
         }
@@ -1175,7 +1203,23 @@ public class Typesetter: @unchecked Sendable {
         // Single‑char: extract the actual rendered (math‑italic) glyph
         // and get its TopAccentAttachment value (Atop in TeX notation).
         var accenteeAdjustment: CGFloat = accentee.width / 2
-        if let ctDisplay = accentee as? MTCTLineDisplay,
+
+        // Walk display tree to find the leaf glyph — the accentee may be
+        // wrapped in MTMathListDisplay, MTAccentDisplay, etc.
+        let leafGlyph = findLeafGlyph(in: accentee)
+        if let leaf = leafGlyph {
+            accenteeAdjustment = mt.getTopAccentAdjustment(leaf)
+        }
+
+        // TeX Rule 12: accent x‑position = Atop(nucleus) − Atop(accent)
+        return accenteeAdjustment - accentAdjustment
+    }
+
+    /// Recursively walks a display tree to find the first leaf glyph.
+    /// Returns nil if no glyph can be extracted (falls back to center).
+    private func findLeafGlyph(in display: MTDisplay) -> CGGlyph? {
+        // Direct CTLine: extract from glyph runs
+        if let ctDisplay = display as? MTCTLineDisplay,
            let line = ctDisplay.line,
            let runs = CTLineGetGlyphRuns(line) as? [CTRun] {
             for run in runs.reversed() {
@@ -1183,17 +1227,33 @@ public class Typesetter: @unchecked Sendable {
                 if glyphCount > 0 {
                     var glyphs = [CGGlyph](repeating: 0, count: glyphCount)
                     CTRunGetGlyphs(run, CFRange(location: 0, length: 0), &glyphs)
-                    let lastGlyph = glyphs[glyphCount - 1]
-                    accenteeAdjustment = mt.getTopAccentAdjustment(lastGlyph)
-                    break
+                    return glyphs[glyphCount - 1]
                 }
             }
-        } else if let gd = accentee as? MTGlyphDisplay {
-            accenteeAdjustment = mt.getTopAccentAdjustment(gd.glyph)
         }
-
-        // TeX Rule 12: accent x‑position = Atop(nucleus) − Atop(accent)
-        return accenteeAdjustment - accentAdjustment
+        // Direct glyph display
+        if let gd = display as? MTGlyphDisplay {
+            return gd.glyph
+        }
+        // Walk into wrapper displays
+        if let list = display as? MTMathListDisplay {
+            for sub in list.subDisplays {
+                if let glyph = findLeafGlyph(in: sub) { return glyph }
+            }
+        }
+        if let accent = display as? MTAccentDisplay {
+            if let aee = accent.accentee, let glyph = findLeafGlyph(in: aee) { return glyph }
+        }
+        if let rad = display as? MTRadicalDisplay {
+            if let radicand = rad.radicand, let glyph = findLeafGlyph(in: radicand) { return glyph }
+        }
+        if let frac = display as? MTFractionDisplay {
+            if let n = frac.numerator, let glyph = findLeafGlyph(in: n) { return glyph }
+        }
+        if let ss = display as? MTSupSubDisplay {
+            if let b = ss.base, let glyph = findLeafGlyph(in: b) { return glyph }
+        }
+        return nil
     }
 
     private func findHorizontalVariantGlyph(_ glyph: CGGlyph, withMaxWidth maxWidth: CGFloat,

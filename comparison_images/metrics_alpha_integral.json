@@ -1,0 +1,127 @@
+{
+  "expression": "\\int_{0}^{\\infty} f(x)\\,dx",
+  "label": "integral",
+  "itemCount": 12,
+  "items": [
+    {
+      "depth": 0,
+      "kind": "MTMathListDisplay",
+      "x": 0,
+      "y": 0,
+      "ascent": 69.225,
+      "width": 250.79166666666666,
+      "descent": 47.25
+    },
+    {
+      "descent": 47.25,
+      "x": 0,
+      "width": 91.475,
+      "depth": 1,
+      "kind": "MTSupSubDisplay",
+      "y": 0,
+      "ascent": 69.225
+    },
+    {
+      "y": 0,
+      "ascent": 69.225,
+      "width": 56.75,
+      "shiftDown": 30.775,
+      "kind": "MTGlyphDisplay",
+      "rawDescent": 13.450000000000001,
+      "x": 0,
+      "depth": 2,
+      "descent": 44.225,
+      "glyph": 3584,
+      "rawAscent": 100
+    },
+    {
+      "descent": 0,
+      "text": "",
+      "y": 50.474999999999994,
+      "width": 34.725,
+      "kind": "MTCTLineDisplay",
+      "depth": 2,
+      "x": 56.75,
+      "ascent": 16.125
+    },
+    {
+      "x": 29.25,
+      "y": -46.725,
+      "descent": 0.525,
+      "kind": "MTCTLineDisplay",
+      "depth": 2,
+      "ascent": 25.349999999999998,
+      "text": "",
+      "width": 18.75
+    },
+    {
+      "width": 27.75,
+      "depth": 1,
+      "y": 0,
+      "kind": "MTCTLineDisplay",
+      "descent": 9.35,
+      "text": "f",
+      "x": 99.80833333333332,
+      "ascent": 33.4
+    },
+    {
+      "width": 16.650000000000002,
+      "y": 0,
+      "kind": "MTCTLineDisplay",
+      "depth": 1,
+      "x": 127.55833333333332,
+      "ascent": 33.800000000000004,
+      "descent": 8.85,
+      "text": "("
+    },
+    {
+      "depth": 1,
+      "kind": "MTCTLineDisplay",
+      "y": 0,
+      "ascent": 22.05,
+      "width": 27.5,
+      "x": 144.20833333333331,
+      "text": "x",
+      "descent": 0.45
+    },
+    {
+      "descent": 8.85,
+      "ascent": 33.800000000000004,
+      "x": 171.70833333333331,
+      "width": 16.650000000000002,
+      "kind": "MTCTLineDisplay",
+      "depth": 1,
+      "text": ")",
+      "y": 0
+    },
+    {
+      "descent": 0,
+      "width": 8.333333333333332,
+      "x": 188.35833333333332,
+      "y": 0,
+      "ascent": 0,
+      "kind": "MTDisplay",
+      "depth": 1
+    },
+    {
+      "kind": "MTCTLineDisplay",
+      "width": 26.6,
+      "text": "d",
+      "ascent": 33.4,
+      "depth": 1,
+      "descent": 0.6000000000000001,
+      "y": 0,
+      "x": 196.69166666666666
+    },
+    {
+      "depth": 1,
+      "descent": 0.45,
+      "text": "x",
+      "kind": "MTCTLineDisplay",
+      "width": 27.5,
+      "x": 223.29166666666666,
+      "y": 0,
+      "ascent": 22.05
+    }
+  ]
+}
