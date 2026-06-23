@@ -14,6 +14,7 @@ public enum MathFont: String, CaseIterable, Identifiable {
 
     case latinModernFont = "latinmodern-math"
     case xitsFont = "xits-math"
+    case stix2Font = "stix2-math"
 
     /// Fast cached font creation, concurrency-safe.
     public func mtfont(size: CGFloat) -> MTFont {

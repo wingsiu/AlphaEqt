@@ -313,6 +313,7 @@ final class RenderingTests: XCTestCase {
             ("accent-widehat", #"\widehat{AB}"#),
             ("color", #"\textcolor{red}{x}"#),
             ("colorbox", #"\colorbox{yellow}{x+y}"#),
+            ("deep-root", #"\sqrt[n]{x+y^2-\frac{\frac{z}{1-7v^2}}{\frac{3r^3}{\frac 1{2+\frac xy}}}}"#),
         ]
 
         for (label, latex) in cases {
@@ -361,12 +362,16 @@ final class RenderingTests: XCTestCase {
             ("greek",           #"\alpha\beta\gamma\omega"#),
             ("sin-cos",         #"\sin^2\theta + \cos^2\theta"#),
             ("sum-limits",      #"\displaystyle\sum_{i=0}^\infty \frac{1}{i}"#),
+            ("text",            #"\text{Hello world}"#),
+            ("complex-frac1",   #"\frac{a}{b+\frac{c}{d+\frac{5}{y-\frac{x^2}{3}}}}"#),
+            ("complex-int",     #"\sqrt[3]{a+\frac{3}{x^2}}\int_0^1\frac{{\int y}^3+\frac{x}{5}-1}{x^4-4\sqrt[3]{x}+\frac{\frac{3+x}{4-y}}{\frac{3+x}{\sqrt{c^2}+y}}}= \int_0^1 a \cos x 😃dx"#),
+            ("complex-mix",     #"12x3^{\int 2}+\frac{\int a}{b}-\sqrt[n]{x+y^2-\frac{\frac{z}{1-7v^2}}{\frac{3r^3}{\frac 1{2+\frac xy}}}}+\int_0^1 \sum aa+3a"#),
         ]
 
-        let fontSize: CGFloat = 50
-        let scale: CGFloat = 2
-        let padding: CGFloat = 12
-        let font = MathFont.xitsFont.mtfont(size: fontSize)
+        let fontSize: CGFloat = 30
+        let scale: CGFloat = 1
+        let padding: CGFloat = 0
+        let font = MathFont.stix2Font.mtfont(size: fontSize)
         var entries: [(label: String, latex: String, width: Int, height: Int)] = []
 
         for (label, latex) in allCases {

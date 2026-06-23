@@ -113,6 +113,8 @@ public class MTFractionDisplay: MTDisplay {
     public var lineThickness: CGFloat = 0
 
     /// Initialize with TeX MATH table parameters.
+    /// - Parameter barPadding: TeX \nulldelimiterspace applied on each side of the fraction bar.
+    ///   Scales with font size: default 1.2pt at 10pt design → `fontSize * 0.12`.
     public init(numerator: MTDisplay?,
                 denominator: MTDisplay?,
                 ruleThickness: CGFloat,
@@ -120,7 +122,9 @@ public class MTFractionDisplay: MTDisplay {
                 numeratorShiftUp: CGFloat,
                 denominatorShiftDown: CGFloat,
                 numeratorGapMin: CGFloat,
-                denominatorGapMin: CGFloat) {
+                denominatorGapMin: CGFloat,
+                barOverhang: CGFloat = 0,
+                fractionPadding: CGFloat = 0) {
         self.numerator = numerator
         self.denominator = denominator
         self.lineThickness = ruleThickness
@@ -134,6 +138,10 @@ public class MTFractionDisplay: MTDisplay {
         let barY = axisHeight
         let halfRule = ruleThickness / 2
 
+        // Check clearance to the bar; expand shifts to meet gap-minimums only.
+        // With TeX em-based shift parameters, the shifts are already reasonable
+        // and do not need compression (unlike STIX2 MATH table values which were
+        // 48-70% larger than TeX defaults for text-style fractions).
         let distanceFromNumToBar = (numUp - num.descent) - (barY + halfRule)
         if distanceFromNumToBar < numeratorGapMin {
             numUp += numeratorGapMin - distanceFromNumToBar
@@ -146,22 +154,32 @@ public class MTFractionDisplay: MTDisplay {
 
         self.numeratorUp = numUp
         self.denominatorDown = denDown
-        let maxWidth = max(num.width, den.width)
-        self.width = maxWidth
+        // Bar overhang: extends the rule line beyond content on each side
+        let overhang = ruleThickness > 0 ? barOverhang : 0
+        let contentWidth = max(num.width, den.width)
+        let barFullWidth = contentWidth + 2 * overhang
+        // Container padding: \nulldelimiterspace
+        let pad = ruleThickness > 0 ? fractionPadding : 0
+        self.width = barFullWidth + 2 * pad
+        self._padding = pad
+        self._barOverhang = overhang
         self.ascent = num.ascent + numUp
         self.descent = den.descent + denDown
         updateNumeratorPosition()
         updateDenominatorPosition()
     }
 
+    private var _barOverhang: CGFloat = 0
+    private var _padding: CGFloat = 0
+
     private func updateNumeratorPosition() {
         guard let num = numerator else { return }
-        num.position = CGPoint(x: (width - num.width) / 2, y: numeratorUp)
+        num.position = CGPoint(x: _padding + (width - 2 * _padding - num.width) / 2, y: numeratorUp)
     }
 
     private func updateDenominatorPosition() {
         guard let den = denominator else { return }
-        den.position = CGPoint(x: (width - den.width) / 2, y: -denominatorDown)
+        den.position = CGPoint(x: _padding + (width - 2 * _padding - den.width) / 2, y: -denominatorDown)
     }
 
     override public func draw(_ ctx: CGContext) {
@@ -178,8 +196,10 @@ public class MTFractionDisplay: MTDisplay {
         if lineThickness > 0 {
             textColor?.setStroke()
             let path = CGMutablePath()
-            path.move(to: CGPoint(x: 0, y: linePosition))
-            path.addLine(to: CGPoint(x: width, y: linePosition))
+            let barX = _padding
+            let barW = width - 2 * _padding
+            path.move(to: CGPoint(x: barX, y: linePosition))
+            path.addLine(to: CGPoint(x: barX + barW, y: linePosition))
             ctx.setLineWidth(lineThickness)
             ctx.addPath(path)
             ctx.strokePath()

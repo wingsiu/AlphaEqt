@@ -357,6 +357,15 @@ public class Typesetter: @unchecked Sendable {
         let supSubFontSize = Self.getStyleSize(style, baseFont: font)
         let mt = font.copy(withSize: supSubFontSize).mathTable
 
+        // TeX Appendix G, Rule 18: subscript shift depends on style.
+        // OpenType MATH table provides only one SubscriptShiftDown (single value),
+        // but TeX distinguishes: σ16=0.15em (display) vs σ17=0.247em (non-display).
+        // Use TeX em-based parameters like MathJax does, producing more compact
+        // subscript placement for display-style operators (∑, ∫, etc.).
+        let texSub1: CGFloat = 0.15     // display-style subscript shift
+        let texSub2: CGFloat = 0.247    // non-display subscript shift
+        let texSubShift = (style == .display ? texSub1 : texSub2) * supSubFontSize
+
         let supDisplay: MTDisplay?
         let subDisplay: MTDisplay?
         // Font for plain text scripts: always scale from the top-level
@@ -438,11 +447,22 @@ public class Typesetter: @unchecked Sendable {
 
         if !(base is MTCTLineDisplay) {
             supShift = base.ascent - mt.superscriptBaselineDropMax
-            subShift = base.descent + mt.subscriptBaselineDropMin
+            // For glyph bases, subscript starts at the glyph's visual descent
+            // (which includes axis-centering shiftDown). The texSubShift
+            // and subscriptTopMax constraints applied later ensure clearance.
+            // subscriptBaselineDropMin is omitted for glyph bases to avoid
+            // excessive gap between the operator body and its subscript.
+            let baseDescent: CGFloat
+            if let gd = base as? MTGlyphDisplay {
+                baseDescent = gd.descent
+            } else {
+                baseDescent = base.descent + mt.subscriptBaselineDropMin
+            }
+            subShift = baseDescent
         }
 
         if let sub = subDisplay, supDisplay == nil {
-            subShift = max(subShift, mt.subscriptShiftDown)
+            subShift = max(subShift, texSubShift)
             subShift = max(subShift, sub.ascent - mt.subscriptTopMax)
             sub.position = CGPoint(x: base.width + scriptHOffset - subXDelta, y: -subShift)
             return MTSupSubDisplay(base: base, superscript: nil, subscript: sub,
@@ -455,7 +475,7 @@ public class Typesetter: @unchecked Sendable {
         supShift = max(supShift, sup.descent + mt.superscriptBottomMin)
 
         if let sub = subDisplay {
-            subShift = max(subShift, mt.subscriptShiftDown)
+            subShift = max(subShift, texSubShift)
             let gap = (supShift - sup.descent) + (subShift - sub.ascent)
             if gap < mt.subSuperscriptGapMin {
                 subShift += mt.subSuperscriptGapMin - gap
@@ -518,17 +538,28 @@ public class Typesetter: @unchecked Sendable {
         guard let num, let den else { return nil }
 
         // Per TeX: shift/gap values depend on the fraction's own style level.
-        // Scale the math table to the current style's font size so that shifts
-        // are proportional (e.g., a fraction in scriptstyle uses smaller
-        // shifts than one in displaystyle).
         let fracFontSize = Self.getStyleSize(style, baseFont: font)
         let mt = font.copy(withSize: fracFontSize).mathTable
         let isDisplay = style == .display
-        let numShiftUp = isDisplay ? mt.fractionNumeratorDisplayStyleShiftUp : mt.fractionNumeratorShiftUp
-        let denShiftDown = isDisplay ? mt.fractionDenominatorDisplayStyleShiftDown : mt.fractionDenominatorShiftDown
+
+        // TeX Appendix G: use em-based shift parameters (like MathJax).
+        // These are the classic TeX font parameters, not OpenType MATH table values.
+        // They scale linearly with fontSize and produce compact fractions.
+        let texNum1: CGFloat = 0.676; let texNum2: CGFloat = 0.394
+        let texDenom1: CGFloat = 0.686; let texDenom2: CGFloat = 0.345
+        let numShiftUp = (isDisplay ? texNum1 : texNum2) * fracFontSize
+        let denShiftDown = (isDisplay ? texDenom1 : texDenom2) * fracFontSize
+        // Keep gap min, axis, and rule from MATH table (font-specific)
         let numGapMin = isDisplay ? mt.fractionNumeratorDisplayStyleGapMin : mt.fractionNumeratorGapMin
         let denGapMin = isDisplay ? mt.fractionDenominatorDisplayStyleGapMin : mt.fractionDenominatorGapMin
 
+        // Bar overhang: extends rule beyond content (matches original computation)
+        let barOverhang = fracFontSize * 0.1
+        // Container padding: \nulldelimiterspace (0.12em)
+        let fractionPadding = fracFontSize * 0.12
+        let styleLabel = isDisplay ? "D" : (style == .text ? "T" : (style == .script ? "S" : "SS"))
+        print("[FRAC \(styleLabel)] fontSize=\(fracFontSize) numAscent=\(num.ascent) numDescent=\(num.descent) denAscent=\(den.ascent) denDescent=\(den.descent)")
+        print("[FRAC \(styleLabel)] shiftUp=\(numShiftUp) shiftDown=\(denShiftDown) gapMinNum=\(numGapMin) gapMinDen=\(denGapMin) axis=\(mt.axisHeight) rule=\(mt.fractionRuleThickness)")
         return MTFractionDisplay(
             numerator: num, denominator: den,
             ruleThickness: mt.fractionRuleThickness,
@@ -536,7 +567,9 @@ public class Typesetter: @unchecked Sendable {
             numeratorShiftUp: numShiftUp,
             denominatorShiftDown: denShiftDown,
             numeratorGapMin: numGapMin,
-            denominatorGapMin: denGapMin
+            denominatorGapMin: denGapMin,
+            barOverhang: barOverhang,
+            fractionPadding: fractionPadding
         )
     }
 
@@ -733,6 +766,33 @@ public class Typesetter: @unchecked Sendable {
         let radicalFont = font.copy(withSize: radicalFontSize)
         guard let glyph = getRadicalGlyph(withHeight: radicalHeight,
                                            mt: mt, radicalFont: radicalFont) else { return nil }
+        print("[RADICAL] selected glyph=\(glyph.glyph) rawAscent=\(glyph.rawAscent) rawDescent=\(glyph.rawDescent) width=\(glyph.width)")
+        print("[RADICAL] radicalHeight=\(radicalHeight) radicand(a=\(radicand.ascent) d=\(radicand.descent)) clearance=\(clearance) ruleThickness=\(ruleThickness)")
+        // Dump the path of the selected glyph at design units
+        if let path = CTFontCreatePathForGlyph(radicalFont.ctFont, glyph.glyph, nil) {
+            var lastRisingDy: CGFloat = 0, lastRisingDx: CGFloat = 0
+            var px: CGFloat?=nil, py: CGFloat?=nil
+            path.applyWithBlock { e in
+                let el = e.pointee
+                func add(x: CGFloat, y: CGFloat) {
+                    if let x0 = px, let y0 = py {
+                        let dx = x-x0, dy = y-y0
+                        if dy > 0 { lastRisingDy=dy; lastRisingDx=dx }
+                    }
+                    px=x; py=y
+                }
+                switch el.type {
+                case .moveToPoint: px=el.points[0].x; py=el.points[0].y
+                case .addLineToPoint: add(x:el.points[0].x, y:el.points[0].y)
+                case .addCurveToPoint: add(x:el.points[2].x, y:el.points[2].y)
+                default: break
+                }
+            }
+            if lastRisingDx > 0 {
+                print("[RADICAL] last rising edge: dy=\(lastRisingDy) dx=\(lastRisingDx) slope=\(lastRisingDy/lastRisingDx)")
+                print("[RADICAL] → radicalSlope = \(lastRisingDy)/\(lastRisingDx) = \(lastRisingDy/lastRisingDx)")
+            }
+        }
 
         // Shift glyph to cover radicand's descent first.
         glyph.shiftDown = max(0, radicand.descent - glyph.rawDescent)
@@ -751,34 +811,45 @@ public class Typesetter: @unchecked Sendable {
 
         if needsExtender {
             // ---- Extender path ----
-            // The √ glyph is anchored so its visual bottom aligns with the
-            // radicand's bottom (or its own bottom, whichever is lower).
-            // This ensures the glyph doesn't float above the radicand when
-            // the radicand has significant descent (e.g. a fraction).
-            // A diagonal connector of constant slope bridges the gap from
-            // the glyph's visual top-right corner up to the horizontal bar.
+            // Replace the radical glyph with XITS construction glyph.
+            // STIX2 radical variants have a flat horizontal top that breaks the
+            // extender diagonal connector geometry. XITS variants have the
+            // classic check-mark body shape. Use the XITS glyph for both the
+            // visible √ symbol and the extender geometry math.
+            let xitsConstructionFont = MathFont.xitsFont.mtfont(size: radicalFontSize)
+            let xitsMT = xitsConstructionFont.mathTable
+            if let constGlyph = getRadicalGlyph(withHeight: radicalHeight,
+                                                 mt: xitsMT, radicalFont: xitsConstructionFont) {
+                glyph.glyph = constGlyph.glyph
+                glyph.rawAscent = constGlyph.rawAscent
+                glyph.rawDescent = constGlyph.rawDescent
+                glyph.width = constGlyph.width
+                glyph.font = xitsConstructionFont
+            }
+
+            // Anchor XITS construction body to radicand's descent.
+            glyph.shiftDown = max(0, radicand.descent - glyph.rawDescent)
+
             let origGlyphWidth = glyph.width
             let origGlyphAscent = glyph.rawAscent
-
-            // Anchor bottom to radicand's descent.
-            glyph.shiftDown = max(0, radicand.descent - glyph.rawDescent)
 
             // barY in MTRadicalDisplay draw space.
             let barY = adjustedRadicalAscent - ruleThickness / 2
 
-            // Visual top of the glyph after bottom-anchoring.
+            // Visual top of the construction glyph after bottom-anchoring.
             let visualTop = origGlyphAscent - glyph.shiftDown
 
             // Gap from visual top to bar center.
             let deltaY = barY - visualTop
 
             if deltaY > 0 {
-                let deltaX = deltaY / Self.radicalSlope
+                let slope = Self.radicalSlope
+                let deltaX = deltaY / slope
 
                 glyph.rawAscent = origGlyphAscent + deltaY
                 glyph.width = origGlyphWidth + deltaX
 
-                // Diagonal from visual top-right of original glyph body to bar start.
+                // Diagonal from visual top-right of construction glyph body to bar start.
                 let extStartX = origGlyphWidth
                 let extStartY = visualTop
                 let barStartX = glyph.width
@@ -806,9 +877,8 @@ public class Typesetter: @unchecked Sendable {
                 return radical
             }
 
-            // deltaY <= 0: glyph top is already at or above the bar.
-            // This shouldn't happen when needsExtender is true, but handle
-            // gracefully by falling through to the non-extender path.
+            // deltaY <= 0: construction glyph is tall enough — skip extender.
+            // Fall through to the non-extender path with original glyph geometry.
             glyph.rawAscent = origGlyphAscent
             glyph.width = origGlyphWidth
         }
