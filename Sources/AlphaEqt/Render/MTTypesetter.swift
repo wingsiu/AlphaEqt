@@ -1101,10 +1101,9 @@ public class Typesetter: @unchecked Sendable {
 
     /// Renders an array/matrix node using TeX `\vcenter` semantics:
     ///   - Each row's cells are baseline-aligned and centered horizontally in columns
-    ///   - Rows are stacked top-to-bottom with `rowGap` between content edges
+    ///   - Each row enforces `\@arstrut` minimum height/depth (0.7/0.3 × baselineskip)
+    ///   - Rows are stacked using `\normalbaselines` (`\baselineskip` / `\lineskip`)
     ///   - The entire array is axis-centered so its vertical midpoint sits on the math axis
-    ///
-    /// This matches the behaviour of KaTeX, iOSMath, and TeX's `\vcenter` for matrices.
     private func renderArray(_ node: ASTNode) -> MTDisplay? {
         guard let rows = node.childNodes, !rows.isEmpty else { return nil }
 
@@ -1155,9 +1154,18 @@ public class Typesetter: @unchecked Sendable {
             allCells.append(rowCells)
         }
 
+        // TeX \@arstrutbox (lttab.dtx): every array row gets minimum height 0.7×baselineskip
+        // and depth 0.3×baselineskip so short cells still occupy a full text line.
+        let arstrutHeight = baselineSkip * 0.7
+        let arstrutDepth = baselineSkip * 0.3
+        for ri in 0..<rows.count {
+            rowAscent[ri] = max(rowAscent[ri], arstrutHeight)
+            rowDescent[ri] = max(rowDescent[ri], arstrutDepth)
+        }
+
         // Build rows: cells baseline-aligned (position.y = 0 in row space)
         var rowDisplays = [MTDisplay]()
-        for cells in allCells {
+        for (ri, cells) in allCells.enumerated() {
             var rowElements = [MTDisplay]()
             var x: CGFloat = 0
             for ci in 0..<numCols {
@@ -1171,6 +1179,8 @@ public class Typesetter: @unchecked Sendable {
                                          range: NSRange(location: NSNotFound, length: 0))
             row.width = w
             row.position = .zero
+            row.ascent = rowAscent[ri]
+            row.descent = rowDescent[ri]
             rowDisplays.append(row)
         }
 
