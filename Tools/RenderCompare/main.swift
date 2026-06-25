@@ -66,28 +66,33 @@ func dumpMetrics(_ latex: String) {
     print(String(data: data, encoding: .utf8)!)
 }
 
-func renderToPNG(_ latex: String, outputPath: String) -> Bool {
+struct RenderResult {
+    var displayWidth: CGFloat
+    var displayHeight: CGFloat
+}
+
+func renderToPNG(_ latex: String, outputPath: String) -> RenderResult? {
     let font = MathFont.stix2Font.mtfont(size: logicalFontSize)
     let lexer = Lexer(input: latex)
     let tokens = lexer.tokenize()
     let parser = LatexParser()
     let nodes = parser.parse(tokens: tokens)
-    guard !nodes.isEmpty else { print("  parse empty"); return false }
+    guard !nodes.isEmpty else { print("  parse empty"); return nil }
     let ts = Typesetter(font: font, style: .display)
-    guard let display = ts.createDisplay(nodes) else { print("  render nil"); return false }
+    guard let display = ts.createDisplay(nodes) else { print("  render nil"); return nil }
 
     let padding: CGFloat = 0
     let logicalW = display.width + padding * 2
     let logicalH = display.ascent + display.descent + padding * 2
     let width = Int(logicalW * pixelScale)
     let height = Int(logicalH * pixelScale)
-    guard width > 0, height > 0 else { print("  zero size"); return false }
+    guard width > 0, height > 0 else { print("  zero size"); return nil }
 
     let colorSpace = CGColorSpace(name: CGColorSpace.sRGB)!
     guard let ctx = CGContext(data: nil, width: width, height: height,
                                bitsPerComponent: 8, bytesPerRow: width * 4,
                                space: colorSpace,
-                               bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { return false }
+                               bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { return nil }
     ctx.scaleBy(x: pixelScale, y: pixelScale)
     ctx.setFillColor(CGColor(red: 1, green: 1, blue: 1, alpha: 1))
     ctx.fill(CGRect(x: 0, y: 0, width: logicalW, height: logicalH))
@@ -101,18 +106,18 @@ func renderToPNG(_ latex: String, outputPath: String) -> Bool {
     ctx.setLineWidth(1 / pixelScale)
     ctx.stroke(CGRect(x: padding, y: padding, width: display.width, height: display.ascent + display.descent))
 
-    guard let image = ctx.makeImage() else { return false }
+    guard let image = ctx.makeImage() else { return nil }
 
     let url = URL(fileURLWithPath: outputPath)
-    guard let dest = CGImageDestinationCreateWithURL(url as CFURL, "public.png" as CFString, 1, nil) else { return false }
-    let dpi: CGFloat = 72 * pixelScale
+    guard let dest = CGImageDestinationCreateWithURL(url as CFURL, "public.png" as CFString, 1, nil) else { return nil }
+    // 72 DPI — logical size comes from compare-cases.json displayWidth/Height, not PNG metadata.
     let props: [CFString: Any] = [
-        kCGImagePropertyDPIWidth: dpi,
-        kCGImagePropertyDPIHeight: dpi,
+        kCGImagePropertyDPIWidth: 72,
+        kCGImagePropertyDPIHeight: 72,
     ]
     CGImageDestinationAddImage(dest, image, props as CFDictionary)
     CGImageDestinationFinalize(dest)
-    return true
+    return RenderResult(displayWidth: logicalW, displayHeight: logicalH)
 }
 
 let cases: [(String, String)] = [
@@ -135,6 +140,10 @@ let cases: [(String, String)] = [
     ("overline",        #"\overline{AB}"#),
     ("underline",       #"\underline{x}"#),
     ("accent-widehat",  #"\widehat{AB}"#),
+    ("accent-overrightarrow", #"\overrightarrow{AB}"#),
+    ("accent-overleftarrow",  #"\overleftarrow{AB}"#),
+    ("accent-overleftrightarrow", #"\overleftrightarrow{AB}"#),
+    ("accent-arrows",       #"\overrightarrow{AB}\;\overleftarrow{CD}\;\overleftrightarrow{EF}"#),
     ("accent-tilde",    #"\tilde{x}"#),
     ("accent-dot",      #"\dot{x}"#),
     ("accent-ddot",     #"\ddot{x}"#),
@@ -178,24 +187,32 @@ if CommandLine.arguments.count >= 3, CommandLine.arguments[1] == "--metrics" {
 
 print("Rendering \(cases.count) expressions...")
 var success = 0
+var casesJSON: [[String: Any]] = []
 for (label, latex) in cases {
-    if renderToPNG(latex, outputPath: "\(outputDir)/\(label).png") {
+    if let result = renderToPNG(latex, outputPath: "\(outputDir)/\(label).png") {
         success += 1
         print("  OK \(label)")
+        casesJSON.append([
+            "label": label,
+            "latex": latex,
+            "displayWidth": Double(result.displayWidth),
+            "displayHeight": Double(result.displayHeight),
+        ])
     }
 }
 print("Done: \(success)/\(cases.count)")
 
+let generatedAt = ISO8601DateFormatter().string(from: Date())
 let config: [String: Any] = [
     "logicalFontSize": Double(logicalFontSize),
     "pixelScale": Double(pixelScale),
+    "generatedAt": generatedAt,
 ]
 let configURL = URL(fileURLWithPath: "\(outputDir)/compare-config.json")
 let configData = try! JSONSerialization.data(withJSONObject: config, options: .prettyPrinted)
 try! configData.write(to: configURL)
 print("Wrote \(configURL.path)")
 
-let casesJSON: [[String: String]] = cases.map { ["label": $0.0, "latex": $0.1] }
 let casesURL = URL(fileURLWithPath: "\(outputDir)/compare-cases.json")
 let casesData = try! JSONSerialization.data(withJSONObject: casesJSON, options: .prettyPrinted)
 try! casesData.write(to: casesURL)

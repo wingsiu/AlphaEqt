@@ -3,7 +3,8 @@
 //  AlphaEqt
 //
 //  Parser handler for \hat, \bar, \tilde, \dot, \ddot, \vec,
-//  \widehat, \widetilde, \check, \breve, \acute, \grave.
+//  \widehat, \widetilde, \check, \breve, \acute, \grave,
+//  \overrightarrow, \overleftarrow, \overleftrightarrow.
 //
 
 import Foundation

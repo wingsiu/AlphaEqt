@@ -2,19 +2,19 @@
 <html><head><meta charset="utf-8"><title>AlphaEqt vs KaTeX</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 <style>
-@font-face{font-family:"KaTeX_AMS";src:url("xits-math-comparison.otf?v=1782328251") format("opentype")}
-@font-face{font-family:"KaTeX_Caligraphic";src:url("xits-math-comparison.otf?v=1782328251") format("opentype")}
-@font-face{font-family:"KaTeX_Fraktur";src:url("xits-math-comparison.otf?v=1782328251") format("opentype")}
-@font-face{font-family:"KaTeX_Main";src:url("xits-math-comparison.otf?v=1782328251") format("opentype")}
-@font-face{font-family:"KaTeX_Main";src:url("xits-math-comparison.otf?v=1782328251") format("opentype");font-weight:bold}
-@font-face{font-family:"KaTeX_Math";src:url("xits-math-comparison.otf?v=1782328251") format("opentype")}
-@font-face{font-family:"KaTeX_SansSerif";src:url("xits-math-comparison.otf?v=1782328251") format("opentype")}
-@font-face{font-family:"KaTeX_Script";src:url("xits-math-comparison.otf?v=1782328251") format("opentype")}
-@font-face{font-family:"KaTeX_Size1";src:url("xits-math-comparison.otf?v=1782328251") format("opentype")}
-@font-face{font-family:"KaTeX_Size2";src:url("xits-math-comparison.otf?v=1782328251") format("opentype")}
-@font-face{font-family:"KaTeX_Size3";src:url("xits-math-comparison.otf?v=1782328251") format("opentype")}
-@font-face{font-family:"KaTeX_Size4";src:url("xits-math-comparison.otf?v=1782328251") format("opentype")}
-@font-face{font-family:"KaTeX_Typewriter";src:url("xits-math-comparison.otf?v=1782328251") format("opentype")}
+@font-face{font-family:"KaTeX_AMS";src:url("xits-math-comparison.otf?v=1782401142") format("opentype")}
+@font-face{font-family:"KaTeX_Caligraphic";src:url("xits-math-comparison.otf?v=1782401142") format("opentype")}
+@font-face{font-family:"KaTeX_Fraktur";src:url("xits-math-comparison.otf?v=1782401142") format("opentype")}
+@font-face{font-family:"KaTeX_Main";src:url("xits-math-comparison.otf?v=1782401142") format("opentype")}
+@font-face{font-family:"KaTeX_Main";src:url("xits-math-comparison.otf?v=1782401142") format("opentype");font-weight:bold}
+@font-face{font-family:"KaTeX_Math";src:url("xits-math-comparison.otf?v=1782401142") format("opentype")}
+@font-face{font-family:"KaTeX_SansSerif";src:url("xits-math-comparison.otf?v=1782401142") format("opentype")}
+@font-face{font-family:"KaTeX_Script";src:url("xits-math-comparison.otf?v=1782401142") format("opentype")}
+@font-face{font-family:"KaTeX_Size1";src:url("xits-math-comparison.otf?v=1782401142") format("opentype")}
+@font-face{font-family:"KaTeX_Size2";src:url("xits-math-comparison.otf?v=1782401142") format("opentype")}
+@font-face{font-family:"KaTeX_Size3";src:url("xits-math-comparison.otf?v=1782401142") format("opentype")}
+@font-face{font-family:"KaTeX_Size4";src:url("xits-math-comparison.otf?v=1782401142") format("opentype")}
+@font-face{font-family:"KaTeX_Typewriter";src:url("xits-math-comparison.otf?v=1782401142") format("opentype")}
 
 .katex,.katex *{font-size:50px!important}
 
@@ -136,6 +136,30 @@ Browser will ask: "Allow this page to access files?" → click <b>Allow</b>
 <div class="col"><div class="col-label">KaTeX</div><div class="katex-out" id="k-accent-widehat"></div></div>
 </div>
 <div class="code">\widehat{AB}</div>
+</div><div class="card"><h3>accent-overrightarrow</h3>
+<div class="row">
+<div class="col"><div class="col-label">AlphaEqt</div><img src="accent-overrightarrow.png"></div>
+<div class="col"><div class="col-label">KaTeX</div><div class="katex-out" id="k-accent-overrightarrow"></div></div>
+</div>
+<div class="code">\overrightarrow{AB}</div>
+</div><div class="card"><h3>accent-overleftarrow</h3>
+<div class="row">
+<div class="col"><div class="col-label">AlphaEqt</div><img src="accent-overleftarrow.png"></div>
+<div class="col"><div class="col-label">KaTeX</div><div class="katex-out" id="k-accent-overleftarrow"></div></div>
+</div>
+<div class="code">\overleftarrow{AB}</div>
+</div><div class="card"><h3>accent-overleftrightarrow</h3>
+<div class="row">
+<div class="col"><div class="col-label">AlphaEqt</div><img src="accent-overleftrightarrow.png"></div>
+<div class="col"><div class="col-label">KaTeX</div><div class="katex-out" id="k-accent-overleftrightarrow"></div></div>
+</div>
+<div class="code">\overleftrightarrow{AB}</div>
+</div><div class="card"><h3>accent-arrows</h3>
+<div class="row">
+<div class="col"><div class="col-label">AlphaEqt</div><img src="accent-arrows.png"></div>
+<div class="col"><div class="col-label">KaTeX</div><div class="katex-out" id="k-accent-arrows"></div></div>
+</div>
+<div class="code">\overrightarrow{AB}\;\overleftarrow{CD}\;\overleftrightarrow{EF}</div>
 </div><div class="card"><h3>accent-tilde</h3>
 <div class="row">
 <div class="col"><div class="col-label">AlphaEqt</div><img src="accent-tilde.png"></div>
@@ -247,6 +271,10 @@ document.fonts.ready.then(function(){
 ['k-accent-bar','\\bar{x}'],
 ['k-accent-bar-multi','\\bar{ab}'],
 ['k-accent-widehat','\\widehat{AB}'],
+['k-accent-overrightarrow','\\overrightarrow{AB}'],
+['k-accent-overleftarrow','\\overleftarrow{AB}'],
+['k-accent-overleftrightarrow','\\overleftrightarrow{AB}'],
+['k-accent-arrows','\\overrightarrow{AB}\\;\\overleftarrow{CD}\\;\\overleftrightarrow{EF}'],
 ['k-accent-tilde','\\tilde{x}'],
 ['k-accent-dot','\\dot{x}'],
 ['k-accent-ddot','\\ddot{x}'],

@@ -1378,7 +1378,15 @@ public class Typesetter: @unchecked Sendable {
         var fixedWidth: CGFloat = 0
         for p in parts { if p.isExtender { extenderPart = p } else { fixedWidth += p.fullAdvance } }
         guard let ext = extenderPart else { return nil }
-        let extCount = max(1, Int(ceil(max(0, targetWidth - fixedWidth) / ext.fullAdvance)))
+        let remaining = max(0, targetWidth - fixedWidth)
+        let extCount: Int
+        if remaining <= 0 {
+            extCount = 0
+        } else if ext.fullAdvance > 0 {
+            extCount = max(1, Int(ceil(remaining / ext.fullAdvance)))
+        } else {
+            extCount = 0
+        }
         var glyphs: [CGGlyph] = []; var offsets: [CGFloat] = []; var x: CGFloat = 0
         var prev: MTFontMathTable.GlyphPart?
         for p in parts {
@@ -1401,6 +1409,76 @@ public class Typesetter: @unchecked Sendable {
         return disp
     }
 
+    private static let stretchyArrowOperators: [String: String] = [
+        "overrightarrow": "\u{2192}",
+        "overleftarrow": "\u{2190}",
+        "overleftrightarrow": "\u{2194}",
+    ]
+    private static let stretchyArrowAccentNames: Set<String> = [
+        "overrightarrow", "overleftarrow", "overleftrightarrow", "vec",
+    ]
+
+    private func glyphForCharacter(_ ch: String) -> CGGlyph? {
+        guard let scalar = ch.unicodeScalars.first else { return nil }
+        let up = UnsafeMutablePointer<UniChar>.allocate(capacity: 1); defer { up.deallocate() }
+        up[0] = UniChar(scalar.value)
+        var g: CGGlyph = 0
+        guard CTFontGetGlyphsForCharacters(font.ctFont, up, &g, 1) else { return nil }
+        return g
+    }
+
+    private func glyphBounds(_ glyphs: [CGGlyph]) -> (minY: CGFloat, maxY: CGFloat) {
+        var minY = CGFloat.infinity, maxY = -CGFloat.infinity
+        for g in glyphs {
+            var gv = g
+            let b = CTFontGetBoundingRectsForGlyphs(font.ctFont, .horizontal, &gv, nil, 1)
+            minY = min(minY, b.minY); maxY = max(maxY, b.maxY)
+        }
+        if minY == .infinity { return (0, 0) }
+        return (minY, maxY)
+    }
+
+    /// Max Y of a horizontal accent assembly (or single glyph) at `width`.
+    private func accentInkMaxY(baseGlyph: CGGlyph, targetWidth: CGFloat) -> CGFloat {
+        var ga: CGFloat = 0, gd: CGFloat = 0, gw: CGFloat = 0
+        let g = findHorizontalVariantGlyph(baseGlyph, withMaxWidth: targetWidth,
+                                           glyphAscent: &ga, glyphDescent: &gd, glyphWidth: &gw)
+        if gw < targetWidth * 0.95 {
+            let parts = font.mathTable.getHorizontalGlyphAssembly(forGlyph: baseGlyph)
+            if parts.count >= 2 {
+                var ma = ga, md = gd
+                if let asm = buildHorizontalAssemblyDisplay(parts: parts, targetWidth: targetWidth,
+                                                            ascent: &ma, descent: &md) as? MTGlyphConstructionDisplay {
+                    return glyphBounds(asm.glyphs).maxY
+                }
+            }
+        }
+        var gv = g
+        return CTFontGetBoundingRectsForGlyphs(font.ctFont, .horizontal, &gv, nil, 1).maxY
+    }
+
+    /// Operator arrows (U+219x) are axis-centered; shift up so ink matches combining marks at Rule 12 height.
+    private func applyStretchyOperatorArrowShift(accent: MTDisplay, accentName: String,
+                                                 accenteeWidth: CGFloat) {
+        guard let combChar = MTMathAtomFactory.accents[accentName],
+              let combGlyph = glyphForCharacter(combChar) else { return }
+        let combMaxY = accentInkMaxY(baseGlyph: combGlyph, targetWidth: accenteeWidth)
+        let opBounds: (minY: CGFloat, maxY: CGFloat)
+        if let construction = accent as? MTGlyphConstructionDisplay {
+            opBounds = glyphBounds(construction.glyphs)
+        } else if let glyphDisp = accent as? MTGlyphDisplay {
+            var gv = glyphDisp.glyph
+            let b = CTFontGetBoundingRectsForGlyphs(font.ctFont, .horizontal, &gv, nil, 1)
+            opBounds = (b.minY, b.maxY)
+        } else { return }
+        let topAlign = opBounds.maxY - combMaxY
+        if let construction = accent as? MTGlyphConstructionDisplay {
+            construction.shiftDown = topAlign
+        } else if let glyphDisp = accent as? MTGlyphDisplay {
+            glyphDisp.shiftDown = topAlign
+        }
+    }
+
     private func renderAccent(_ node: ASTNode) -> MTDisplay? {
         guard let children = node.childNodes, !children.isEmpty else { return nil }
         guard let accentee = createDisplay(children) else { return nil }
@@ -1410,10 +1488,15 @@ public class Typesetter: @unchecked Sendable {
         // For multi‑char accentees with \bar, use the standalone macron (U+00AF)
         // instead of the combining macron (U+0304), because the combining
         // mark has zero advance width and no horizontal variants in the MATH table.
+        // Multi-char stretchy arrows stretch U+2190/2192/2194 (MathJax-sized ink)
+        // but stay at Rule 12 height; shiftDown aligns ink with combining marks.
         let isMultiChar = !isSingleCharAccentee(node)
+        let usesOperatorArrow = isMultiChar && Self.stretchyArrowOperators[node.text ?? ""] != nil
         let effectiveAccentChar: String
         if accentName == "bar" && isMultiChar {
             effectiveAccentChar = "\u{00AF}"  // ¯  standalone macron
+        } else if usesOperatorArrow, let op = Self.stretchyArrowOperators[accentName] {
+            effectiveAccentChar = op
         } else {
             effectiveAccentChar = MTMathAtomFactory.accents[accentName] ?? ""
         }
@@ -1426,32 +1509,40 @@ public class Typesetter: @unchecked Sendable {
         let baseGlyph = accentGlyph
         let aw = accentee.width
         var ga: CGFloat = 0, gd: CGFloat = 0, gw: CGFloat = 0
+        let accentBase: MTDisplay
         if isSingleCharAccentee(node) {
             var gv = accentGlyph; let a = CTFontGetAdvancesForGlyphs(font.ctFont, .horizontal, &gv, nil, 1)
             let b = CTFontGetBoundingRectsForGlyphs(font.ctFont, .horizontal, &gv, nil, 1)
             ga = max(0, b.maxY); gd = max(0, -b.minY); gw = a
+            let g = MTGlyphDisplay(glyph: accentGlyph, range: node.indexRange, font: font)
+            g.rawAscent = ga; g.rawDescent = gd; g.width = gw
+            accentBase = g
         } else {
             accentGlyph = findHorizontalVariantGlyph(accentGlyph, withMaxWidth: aw, glyphAscent: &ga, glyphDescent: &gd, glyphWidth: &gw)
+            if accentName == "bar" && gw < aw * 0.8 {
+                // Draw a custom rule using Overbar metrics from the MATH table.
+                let ruleThickness = mt.overbarRuleThickness
+                let rule = MTRuleDisplay(width: aw, thickness: ruleThickness)
+                rule.position = .zero
+                ga = ruleThickness
+                accentBase = rule
+            } else if gw < aw * 0.95 {
+                let parts = mt.getHorizontalGlyphAssembly(forGlyph: baseGlyph)
+                if parts.count >= 2,
+                   let asm = buildHorizontalAssemblyDisplay(parts: parts, targetWidth: aw,
+                                                            ascent: &ga, descent: &gd) {
+                    accentBase = asm
+                } else {
+                    let g = MTGlyphDisplay(glyph: accentGlyph, range: node.indexRange, font: font)
+                    g.rawAscent = ga; g.rawDescent = gd; g.width = gw
+                    accentBase = g
+                }
+            } else {
+                let g = MTGlyphDisplay(glyph: accentGlyph, range: node.indexRange, font: font)
+                g.rawAscent = ga; g.rawDescent = gd; g.width = gw
+                accentBase = g
+            }
         }
-        let accentBase: MTDisplay
-        if accentName == "bar" && isMultiChar && gw < aw * 0.8 {
-            // Draw a custom rule using Overbar metrics from the MATH table.
-            // The combining macron and standalone macron both lack stretchy
-            // horizontal variants in most OpenType MATH fonts.
-            // MTRuleDisplay has y=0 at the rule's bottom edge (ascent=thickness,
-            // descent=0), matching glyph display semantics.
-            let ruleThickness = mt.overbarRuleThickness
-            let rule = MTRuleDisplay(width: aw, thickness: ruleThickness)
-            rule.position = .zero
-            ga = ruleThickness
-            accentBase = rule
-        } else if isMultiChar && gw < aw * 0.8 {
-            let parts = mt.getHorizontalGlyphAssembly(forGlyph: baseGlyph)
-            if parts.count >= 2, parts.reduce(0, { $0 + $1.fullAdvance }) <= aw * 1.5,
-               let asm = buildHorizontalAssemblyDisplay(parts: parts, targetWidth: aw * 0.9, ascent: &ga, descent: &gd),
-               asm.width <= aw + 1 { accentBase = asm }
-            else { let g = MTGlyphDisplay(glyph: accentGlyph, range: node.indexRange, font: font); g.rawAscent = ga; g.rawDescent = gd; g.width = gw; accentBase = g }
-        } else { let g = MTGlyphDisplay(glyph: accentGlyph, range: node.indexRange, font: font); g.rawAscent = ga; g.rawDescent = gd; g.width = gw; accentBase = g }
         let ax: CGFloat, ay: CGFloat
         if accentBase is MTRuleDisplay {
             // Position the rule's bottom edge at the same visual height as the
@@ -1479,7 +1570,12 @@ public class Typesetter: @unchecked Sendable {
         } else {
             let delta = min(accentee.ascent, mt.accentBaseHeight)
             ax = isSingleCharAccentee(node) ? getSkew(accentNode: node, accentee: accentee, accentGlyph: accentGlyph) : (aw - accentBase.width) / 2
-            ay = accentee.ascent - delta
+            // Rule 12 + 1.5μ kern (between 0 and thinmuskip) for stretchy arrows.
+            let accentKern = Self.stretchyArrowAccentNames.contains(accentName) ? 1.5 * mt.muUnit : 0
+            ay = accentee.ascent - delta + accentKern
+        }
+        if usesOperatorArrow {
+            applyStretchyOperatorArrowShift(accent: accentBase, accentName: accentName, accenteeWidth: aw)
         }
         accentBase.position = CGPoint(x: ax, y: ay)
         let display = MTAccentDisplay(accent: accentBase, accentee: accentee, range: node.indexRange)

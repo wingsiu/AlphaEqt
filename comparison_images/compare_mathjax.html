@@ -11,16 +11,16 @@ h1{text-align:center;font-size:16px;color:#fff;margin-bottom:2px}
 .note{background:#2a4a2a;color:#8f8;padding:6px 12px;text-align:center;font-size:10px;margin-bottom:10px;border-radius:4px}
 .grid{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
 .card{background:#252525;border-radius:4px;overflow:hidden;width:fit-content}
-.card-header{padding:3px 8px;background:#333;font-size:9px;display:flex;justify-content:space-between}
-.card-label{color:#ddd;font-weight:600}
-.card-latex{color:#888;font-family:monospace;font-size:8px}
+.card-header{padding:3px 8px;background:#333;font-size:9px;display:flex;justify-content:space-between;gap:8px}
+.card-label{color:#ddd;font-weight:600;white-space:nowrap}
+.card-latex{color:#888;font-family:monospace;font-size:8px;overflow:hidden;text-overflow:ellipsis;max-width:220px}
 .panes{display:flex;background:#fff;align-items:flex-end}
 .pane{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:0;min-width:0}
 .pane:first-child{border-right:2px solid #ddd}
 .pane-label{font-size:7px;font-weight:600;text-transform:uppercase;color:#888;margin-bottom:1px}
 .pane-label.a{color:#09f}.pane-label.m{color:#f90}
-.pane img{display:block;image-rendering:-webkit-optimize-contrast;image-rendering:crisp-edges;background:white;align-self:flex-end;margin:0;padding:0}
-.pane mjx-container{font-size:30px !important;line-height:1 !important;margin:0 !important;padding:0 !important;color:#000 !important;align-self:flex-end}
+.pane img{display:block;image-rendering:-webkit-optimize-contrast;image-rendering:crisp-edges;background:white;align-self:flex-end;margin:0;padding:0;max-width:none;max-height:none}
+.pane mjx-container{line-height:1 !important;margin:0 !important;padding:0 !important;color:#000 !important;align-self:flex-end}
 .pane mjx-container mjx-math{margin:0 !important;padding:0 !important;color:#000 !important}
 .pane mjx-container[jax=CHTML][display=true]{margin:0 !important}
 .pane mjx-container *{outline:1px solid rgba(255,0,0,.35);color:#000 !important}
@@ -29,54 +29,94 @@ h1{text-align:center;font-size:16px;color:#fff;margin-bottom:2px}
 </head>
 <body>
 <h1>AlphaEqt (STIX2 Math OTF) vs MathJax v4 (STIX2)</h1>
-<p class="subtitle">AlphaEqt: 30pt @ 2× retina PNG | MathJax v4: 30px CHTML + mathjax-stix2</p>
-<div class="note">Both use STIX2 font family - metrics should match</div>
+<p class="subtitle" id="subtitle">Loading compare config…</p>
+<div class="note" id="note">Both use STIX2 — AlphaEqt PNG display size is set from renderer metrics (not raw pixel count)</div>
+<input type="search" id="search" placeholder="Filter by label or LaTeX (e.g. overrightarrow)…" style="display:block;margin:0 auto 10px;padding:6px 10px;width:min(420px,92vw);border-radius:4px;border:1px solid #444;background:#222;color:#eee;font-size:12px">
 <div class="grid" id="grid"></div>
 <div class="summary" id="status">Loading MathJax v4...</div>
 
 <script>
-var compareConfig = { logicalFontSize: 30, pixelScale: 2 };
+var compareConfig = { logicalFontSize: 30, pixelScale: 2, generatedAt: '' };
 
-function scaleAlphaImg(img) {
+function applyMathJaxFontSize() {
+  var fs = compareConfig.logicalFontSize || 30;
+  document.querySelectorAll('.pane mjx-container').forEach(function(el) {
+    el.style.fontSize = fs + 'px';
+  });
+}
+
+function sizeAlphaImg(img, item) {
+  if (item.displayWidth && item.displayHeight) {
+    img.style.width = item.displayWidth + 'px';
+    img.style.height = item.displayHeight + 'px';
+    return;
+  }
   var s = compareConfig.pixelScale || 1;
   img.style.width = (img.naturalWidth / s) + 'px';
   img.style.height = (img.naturalHeight / s) + 'px';
 }
 
-function attachAlphaImg(img) {
-  img.addEventListener('load', function() { scaleAlphaImg(img); });
-  if (img.complete) scaleAlphaImg(img);
+function attachAlphaImg(img, item) {
+  function apply() { sizeAlphaImg(img, item); }
+  img.addEventListener('load', apply);
+  if (img.complete) apply();
 }
 
 MathJax={tex:{inlineMath:[],displayMath:[['$$','$$']]},chtml:{display:true,font:'mathjax-stix2',mathmlSpacing:false,exFactor:12},startup:{typeset:false}};
 </script>
 <script src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml-nofont.js"></script>
 <script>
-fetch('compare-config.json').then(function(r){ return r.ok ? r.json() : compareConfig; })
+function fetchJSON(url) {
+  return fetch(url, { cache: 'no-store' }).then(function(r) {
+    if (!r.ok) throw new Error('HTTP ' + r.status + ' for ' + url);
+    return r.json();
+  });
+}
+
+fetchJSON('compare-config.json?t=' + Date.now())
 .catch(function(){ return compareConfig; })
 .then(function(cfg){
   compareConfig = cfg;
+  var fs = cfg.logicalFontSize || 30;
+  var ps = cfg.pixelScale || 1;
+  document.getElementById('subtitle').textContent =
+    'AlphaEqt: ' + fs + 'pt @ ' + ps + '× PNG | MathJax v4: ' + fs + 'px CHTML + mathjax-stix2';
+  if (cfg.generatedAt) {
+    document.getElementById('note').textContent =
+      cfg.generatedAt + ' — run: cd Tools/RenderCompare && swift run RenderCompare';
+  }
   return MathJax.startup.promise;
 }).then(function(){
   document.getElementById('status').textContent='MathJax v4 + mathjax-stix2 loaded';
-  return fetch('compare-cases.json').then(function(r){
-    if (!r.ok) throw new Error('compare-cases.json missing — run: cd Tools/RenderCompare && swift run RenderCompare');
-    return r.json();
-  });
+  var v = compareConfig.generatedAt ? ('?v=' + encodeURIComponent(compareConfig.generatedAt)) : ('?t=' + Date.now());
+  return fetchJSON('compare-cases.json' + v);
 }).then(function(cases){
+  var cache = compareConfig.generatedAt ? ('?v=' + encodeURIComponent(compareConfig.generatedAt)) : '';
   var g=document.getElementById('grid');
   cases.forEach(function(item){
     var label=item.label, latex=item.latex;
     var c=document.createElement('div');c.className='card';
     c.innerHTML='<div class="card-header"><span class="card-label">'+label+'</span><span class="card-latex">'+latex+'</span></div>'+
-      '<div class="panes"><div class="pane"><div class="pane-label a">AlphaEqt</div><img class="alpha-img" src="'+label+'.png"></div>'+
+      '<div class="panes"><div class="pane"><div class="pane-label a">AlphaEqt</div><img class="alpha-img" alt="'+label+'"></div>'+
       '<div class="pane"><div class="pane-label m">MathJax</div><div id="mj-'+label+'"></div></div></div>';
     g.appendChild(c);
-    attachAlphaImg(c.querySelector('.alpha-img'));
+    var img = c.querySelector('.alpha-img');
+    img.src = label + '.png' + cache;
+    attachAlphaImg(img, item);
     document.getElementById('mj-'+label).textContent='$$'+latex+'$$';
   });
-  MathJax.typesetPromise().then(function(){
-    document.getElementById('status').textContent=cases.length+' expressions - AlphaEqt vs MathJax v4 (STIX2)';
+  return MathJax.typesetPromise().then(function(){
+    applyMathJaxFontSize();
+    document.getElementById('status').textContent=cases.length+' expressions — AlphaEqt vs MathJax v4 (STIX2) · generated '+ (compareConfig.generatedAt || '?');
+    var search = document.getElementById('search');
+    search.addEventListener('input', function() {
+      var q = search.value.trim().toLowerCase();
+      g.querySelectorAll('.card').forEach(function(card) {
+        var label = (card.querySelector('.card-label') || {}).textContent || '';
+        var latex = (card.querySelector('.card-latex') || {}).textContent || '';
+        card.style.display = !q || (label + latex).toLowerCase().indexOf(q) >= 0 ? '' : 'none';
+      });
+    });
   });
 }).catch(function(err){
   document.getElementById('status').textContent='Error: '+err.message;

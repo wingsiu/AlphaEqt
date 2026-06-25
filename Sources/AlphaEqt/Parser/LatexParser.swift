@@ -59,7 +59,8 @@ public class LatexParser {
         // Accent commands
         let accentCmds = ["\\hat", "\\bar", "\\tilde", "\\dot", "\\ddot", "\\vec",
                           "\\widehat", "\\widetilde", "\\check", "\\breve", "\\acute", "\\grave",
-                          "\\arc"]
+                          "\\arc",
+                          "\\overrightarrow", "\\overleftarrow", "\\overleftrightarrow"]
         for cmd in accentCmds {
             commandHandlers[cmd] = handleAccentCommand
         }

@@ -1,194 +1,314 @@
 [
   {
-    "latex" : "\\frac{x}{y}",
-    "label" : "fraction"
+    "label" : "fraction",
+    "displayHeight" : 61.829999999999998,
+    "displayWidth" : 29.969999999999999,
+    "latex" : "\\frac{x}{y}"
   },
   {
+    "displayWidth" : 38.076000000000001,
+    "label" : "nested-frac",
     "latex" : "\\frac{\\frac{a}{b}}{\\frac{c}{d}}",
-    "label" : "nested-frac"
+    "displayHeight" : 76.923000000000002
   },
   {
+    "displayWidth" : 90.373333333333335,
+    "displayHeight" : 37.950000000000003,
     "latex" : "\\sqrt{x+1}",
     "label" : "sqrt"
   },
   {
+    "displayWidth" : 65.280000000000001,
+    "label" : "sqrt-nested",
     "latex" : "\\sqrt{\\frac{x}{y}}",
-    "label" : "sqrt-nested"
+    "displayHeight" : 73.439999999999998
   },
   {
+    "latex" : "x^2",
     "label" : "sup",
-    "latex" : "x^2"
+    "displayWidth" : 27.164999999999999,
+    "displayHeight" : 24.624000000000002
   },
   {
+    "displayHeight" : 18.869999999999997,
     "label" : "sub",
+    "displayWidth" : 27.164999999999999,
     "latex" : "x_1"
   },
   {
     "label" : "supsub",
-    "latex" : "x_i^2"
+    "latex" : "x_i^2",
+    "displayWidth" : 27.164999999999999,
+    "displayHeight" : 32.177999999999997
   },
   {
     "label" : "sum-display",
+    "displayWidth" : 56.975000000000001,
+    "displayHeight" : 79.140000000000015,
     "latex" : "\\displaystyle\\sum_{i=0}^n i^2"
   },
   {
+    "displayHeight" : 34.289999999999999,
     "latex" : "\\textstyle\\sum_{i=0}^n i^2",
-    "label" : "sum-inline"
+    "label" : "sum-inline",
+    "displayWidth" : 82.963999999999999
   },
   {
+    "displayHeight" : 72.950999999999993,
+    "latex" : "\\displaystyle\\int_0^\\infty f(x)dx",
     "label" : "integral",
-    "latex" : "\\displaystyle\\int_0^\\infty f(x)dx"
+    "displayWidth" : 144.923
   },
   {
     "label" : "matrix",
-    "latex" : "\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}"
+    "latex" : "\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}",
+    "displayWidth" : 99.756666666666646,
+    "displayHeight" : 72
   },
   {
-    "label" : "leftright",
-    "latex" : "\\left(\\frac{x}{y}\\right)"
+    "latex" : "\\left(\\frac{x}{y}\\right)",
+    "displayWidth" : 66.396666666666661,
+    "displayHeight" : 71.519999999999996,
+    "label" : "leftright"
   },
   {
-    "latex" : "\\hat{x}",
-    "label" : "accent-hat"
+    "displayHeight" : 20.52,
+    "label" : "accent-hat",
+    "displayWidth" : 16.77,
+    "latex" : "\\hat{x}"
   },
   {
+    "displayHeight" : 28.09,
+    "displayWidth" : 16.77,
     "label" : "accent-vec",
     "latex" : "\\vec{x}"
   },
   {
+    "label" : "accent-bar",
     "latex" : "\\bar{x}",
-    "label" : "accent-bar"
+    "displayWidth" : 16.77,
+    "displayHeight" : 18.600000000000001
   },
   {
     "label" : "accent-bar-multi",
-    "latex" : "\\bar{ab}"
+    "latex" : "\\bar{ab}",
+    "displayHeight" : 25.799999999999997,
+    "displayWidth" : 32.189999999999998
   },
   {
     "label" : "overline",
-    "latex" : "\\overline{AB}"
+    "displayHeight" : 29.159999999999997,
+    "latex" : "\\overline{AB}",
+    "displayWidth" : 38.219999999999999
   },
   {
-    "latex" : "\\underline{x}",
-    "label" : "underline"
+    "displayHeight" : 24,
+    "label" : "underline",
+    "displayWidth" : 16.77,
+    "latex" : "\\underline{x}"
   },
   {
+    "displayWidth" : 38.219999999999999,
     "label" : "accent-widehat",
+    "displayHeight" : 28.049999999999997,
     "latex" : "\\widehat{AB}"
   },
   {
+    "displayHeight" : 33.219999999999999,
+    "label" : "accent-overrightarrow",
+    "latex" : "\\overrightarrow{AB}",
+    "displayWidth" : 38.219999999999999
+  },
+  {
+    "latex" : "\\overleftarrow{AB}",
+    "displayHeight" : 33.219999999999999,
+    "label" : "accent-overleftarrow",
+    "displayWidth" : 38.219999999999999
+  },
+  {
+    "displayHeight" : 33.219999999999999,
+    "displayWidth" : 38.219999999999999,
+    "label" : "accent-overleftrightarrow",
+    "latex" : "\\overleftrightarrow{AB}"
+  },
+  {
+    "latex" : "\\overrightarrow{AB}\\;\\overleftarrow{CD}\\;\\overleftrightarrow{EF}",
+    "displayWidth" : 151.53666666666663,
+    "label" : "accent-arrows",
+    "displayHeight" : 33.819999999999993
+  },
+  {
+    "displayWidth" : 16.77,
     "latex" : "\\tilde{x}",
+    "displayHeight" : 19.559999999999999,
     "label" : "accent-tilde"
   },
   {
     "label" : "accent-dot",
+    "displayWidth" : 16.77,
+    "displayHeight" : 20.489999999999998,
     "latex" : "\\dot{x}"
   },
   {
+    "label" : "accent-ddot",
+    "displayWidth" : 16.77,
     "latex" : "\\ddot{x}",
-    "label" : "accent-ddot"
+    "displayHeight" : 20.460000000000001
   },
   {
     "label" : "color",
-    "latex" : "\\textcolor{red}{x}"
+    "latex" : "\\textcolor{red}{x}",
+    "displayHeight" : 14.67,
+    "displayWidth" : 16.77
   },
   {
+    "label" : "colorbox",
     "latex" : "\\colorbox{yellow}{x+y}",
-    "label" : "colorbox"
+    "displayWidth" : 67.00333333333333,
+    "displayHeight" : 23.339999999999996
   },
   {
+    "latex" : "\\dfrac{1}{2}",
     "label" : "frac-display",
-    "latex" : "\\dfrac{1}{2}"
+    "displayWidth" : 28.050000000000001,
+    "displayHeight" : 60.030000000000001
   },
   {
-    "latex" : "\\tfrac{1}{2}",
-    "label" : "frac-text"
+    "label" : "frac-text",
+    "displayWidth" : 23.595000000000002,
+    "displayHeight" : 35.588999999999999,
+    "latex" : "\\tfrac{1}{2}"
   },
   {
     "latex" : "\\sqrt[3]{x}",
+    "displayWidth" : 40.657499999999999,
+    "displayHeight" : 37.950000000000003,
     "label" : "sqrt-3"
   },
   {
+    "label" : "greek",
     "latex" : "\\alpha\\beta\\gamma\\omega",
-    "label" : "greek"
+    "displayWidth" : 68.849999999999994,
+    "displayHeight" : 27.989999999999998
   },
   {
+    "displayWidth" : 174.89333333333335,
+    "latex" : "\\sin^2\\theta + \\cos^2\\theta",
     "label" : "sin-cos",
-    "latex" : "\\sin^2\\theta + \\cos^2\\theta"
+    "displayHeight" : 25.524000000000001
   },
   {
+    "displayHeight" : 78.320999999999998,
     "latex" : "\\displaystyle\\sum_{i=0}^\\infty \\frac{1}{i}",
-    "label" : "sum-limits"
+    "label" : "sum-limits",
+    "displayWidth" : 66.409999999999997
   },
   {
     "latex" : "\\text{Hello world}",
-    "label" : "text"
+    "displayWidth" : 144.140625,
+    "label" : "text",
+    "displayHeight" : 21.240234375
   },
   {
+    "latex" : "\\frac{a}{b+\\frac{c}{d+\\frac{5}{y-\\frac{x^2}{3}}}}",
     "label" : "complex-frac1",
-    "latex" : "\\frac{a}{b+\\frac{c}{d+\\frac{5}{y-\\frac{x^2}{3}}}}"
+    "displayHeight" : 95.494500000000016,
+    "displayWidth" : 157.85533333333331
   },
   {
     "label" : "complex-int",
+    "displayWidth" : 654.72931495934938,
+    "displayHeight" : 124.2705,
     "latex" : "\\sqrt[3]{a+\\frac{3}{x^2}}\\int_0^1\\frac{{\\int y}^3+\\frac{x}{5}-1}{x^4-4\\sqrt[3]{x}+\\frac{\\frac{3+x}{4-y}}{\\frac{3+x}{\\sqrt{c^2}+y}}}= \\int_0^1 a \\cos x 😃dx"
   },
   {
     "label" : "complex-mix",
+    "displayWidth" : 672.32540682926822,
+    "displayHeight" : 115.90049999999999,
     "latex" : "12x3^{\\int 2}+\\frac{\\int a}{b}-\\sqrt[n]{x+y^2-\\frac{\\frac{z}{1-7v^2}}{\\frac{3r^3}{\\frac 1{2+\\frac xy}}}}+\\int_0^1 \\sum aa+3a"
   },
   {
+    "displayHeight" : 20.550000000000001,
+    "displayWidth" : 21.66,
     "label" : "font-mathbb",
     "latex" : "\\mathbb{R}"
   },
   {
     "label" : "font-mathbb-sets",
-    "latex" : "\\mathbb{N} \\subset \\mathbb{Z} \\subset \\mathbb{Q} \\subset \\mathbb{R}"
+    "latex" : "\\mathbb{N} \\subset \\mathbb{Z} \\subset \\mathbb{Q} \\subset \\mathbb{R}",
+    "displayWidth" : 201.47,
+    "displayHeight" : 26.460000000000001
   },
   {
+    "displayHeight" : 20.039999999999999,
+    "label" : "font-mathbf",
     "latex" : "\\mathbf{F} = m\\mathbf{a}",
-    "label" : "font-mathbf"
+    "displayWidth" : 97.546666666666667
   },
   {
     "latex" : "\\mathrm{sin}\\, x",
-    "label" : "font-mathrm"
+    "label" : "font-mathrm",
+    "displayWidth" : 59.450000000000003,
+    "displayHeight" : 20.519999999999996
   },
   {
     "label" : "font-mathcal",
-    "latex" : "\\mathcal{L}\\{f\\}"
+    "latex" : "\\mathcal{L}\\{f\\}",
+    "displayWidth" : 57.900000000000006,
+    "displayHeight" : 28.829999999999998
   },
   {
+    "label" : "font-mathfrak",
     "latex" : "\\mathfrak{SO}(3)",
-    "label" : "font-mathfrak"
+    "displayHeight" : 27.959999999999997,
+    "displayWidth" : 80.789999999999992
   },
   {
+    "displayWidth" : 52.22999999999999,
     "label" : "font-mathsf",
+    "displayHeight" : 20.399999999999999,
     "latex" : "\\mathsf{ABC}"
   },
   {
+    "label" : "font-mathtt",
     "latex" : "\\mathtt{01ab}",
-    "label" : "font-mathtt"
+    "displayHeight" : 21.539999999999999,
+    "displayWidth" : 68.400000000000006
   },
   {
+    "displayWidth" : 172.81833333333336,
+    "displayHeight" : 27.669000000000004,
     "label" : "font-mix",
     "latex" : "x \\in \\mathbb{R}, \\mathbf{v} \\in \\mathbb{R}^n"
   },
   {
+    "displayWidth" : 94.366666666666674,
     "label" : "vec-mathbf",
-    "latex" : "\\mathbf{v} = \\mathbf{A}\\mathbf{x}"
+    "latex" : "\\mathbf{v} = \\mathbf{A}\\mathbf{x}",
+    "displayHeight" : 20.07
   },
   {
+    "displayWidth" : 119.90999999999998,
     "latex" : "\\bm{\\alpha} + \\bm{\\beta} = \\bm{\\gamma}",
+    "displayHeight" : 27.990000000000002,
     "label" : "vec-bm"
   },
   {
+    "displayWidth" : 105.45333333333332,
+    "label" : "vec-field",
     "latex" : "\\oint_C \\mathbf{F} \\cdot d\\mathbf{r}",
-    "label" : "vec-field"
+    "displayHeight" : 70.61099999999999
   },
   {
     "latex" : "\\begin{pmatrix} \\mathbf{a}_1 & \\mathbf{a}_2 \\\\ \\mathbf{b}_1 & \\mathbf{b}_2 \\end{pmatrix}",
-    "label" : "matrix-bold"
+    "label" : "matrix-bold",
+    "displayWidth" : 121.17666666666666,
+    "displayHeight" : 72
   },
   {
     "label" : "linalg-mix",
-    "latex" : "A\\mathbf{x} = \\mathbf{b}, \\quad \\mathbf{x} \\in \\mathbb{R}^n"
+    "displayHeight" : 27.669000000000004,
+    "latex" : "A\\mathbf{x} = \\mathbf{b}, \\quad \\mathbf{x} \\in \\mathbb{R}^n",
+    "displayWidth" : 218.11833333333337
   }
 ]
