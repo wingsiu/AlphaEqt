@@ -32,35 +32,6 @@ private func concurrentRender(
     return (r0.value, r1.value)
 }
 
-// MARK: - Math Italic
-
-fileprivate func mathItalicize(_ text: String) -> String {
-    var result = ""
-    for ch in text {
-        guard let scalar = ch.unicodeScalars.first?.value else {
-            result.append(ch)
-            continue
-        }
-        if ch >= "a", ch <= "z" {
-            let offset = scalar - 0x61
-            result.append(Character(UnicodeScalar(0x1D44E + offset)!))
-        } else if ch >= "A", ch <= "Z" {
-            let offset = scalar - 0x41
-            result.append(Character(UnicodeScalar(0x1D434 + offset)!))
-        } else if scalar >= 0x03B1, scalar <= 0x03C9 {
-            // Greek lowercase α–ω → math italic (U+1D6FC–U+1D714)
-            // Variant forms (ϕ, ϑ, etc.) use pre-styled codepoints from
-            // the symbol table and are NOT in this range, so they pass
-            // through unchanged.
-            let offset = scalar - 0x03B1
-            result.append(Character(UnicodeScalar(0x1D6FC + offset)!))
-        } else {
-            result.append(ch)
-        }
-    }
-    return result
-}
-
 // MARK: - MTMathListDisplay
 
 public class MTMathListDisplay: MTDisplay {
@@ -126,6 +97,8 @@ public class Typesetter: @unchecked Sendable {
     let font: MTFont
     let style: MTLineStyle
     let textColor: CGColor?
+    /// Active font style from a wrapping `\mathbb{}`, `\mathbf{}`, etc.
+    let fontStyle: MTFontStyle
     /// Whether this style is cramped (TeX Appendix G prime styles).
     /// Affects superscript shift — cramped superscripts use `superscriptShiftUpCramped`.
     let cramped: Bool
@@ -139,8 +112,10 @@ public class Typesetter: @unchecked Sendable {
         return _styleFont!
     }
 
-    public init(font: MTFont, style: MTLineStyle = .display, cramped: Bool = false, textColor: CGColor? = nil) {
-        self.font = font; self.style = style; self.cramped = cramped; self.textColor = textColor
+    public init(font: MTFont, style: MTLineStyle = .display, cramped: Bool = false,
+                textColor: CGColor? = nil, fontStyle: MTFontStyle = .defaultStyle) {
+        self.font = font; self.style = style; self.cramped = cramped
+        self.textColor = textColor; self.fontStyle = fontStyle
     }
 
     func scriptStyle() -> MTLineStyle {
@@ -177,7 +152,8 @@ public class Typesetter: @unchecked Sendable {
                 currentFont = font.copy(withSize: Typesetter.getStyleSize(newStyle, baseFont: font))
                 if let children = node.childNodes, !children.isEmpty {
                     let subTS = Typesetter(font: currentFont, style: currentStyle,
-                                           cramped: self.cramped, textColor: textColor)
+                                           cramped: self.cramped, textColor: textColor,
+                                           fontStyle: fontStyle)
                     guard let display = subTS.createDisplay(children) else { continue }
                     if let last = lastType {
                         xOffset += getInterElementSpace(last, right: .inner)
@@ -190,7 +166,8 @@ public class Typesetter: @unchecked Sendable {
                 continue
             }
             let tsWithStyle = Typesetter(font: currentFont, style: currentStyle,
-                                         cramped: self.cramped, textColor: textColor)
+                                         cramped: self.cramped, textColor: textColor,
+                                         fontStyle: fontStyle)
             guard let display = tsWithStyle.renderNode(node) else { continue }
             if let last = lastType {
                 let rightAtomType: AtomType
@@ -243,8 +220,11 @@ public class Typesetter: @unchecked Sendable {
         case .leftright: return renderLeftRight(node)
         case .array:     return renderArray(node)
         case .accent:    return renderAccent(node)
+        case .overline:  return renderOverline(node)
+        case .underline: return renderUnderline(node)
         case .color:     return renderColor(node)
         case .colorbox:  return renderColorbox(node)
+        case .styling:   return renderStyling(node)
         default:         return renderTextNode(node)
         }
     }
@@ -253,10 +233,19 @@ public class Typesetter: @unchecked Sendable {
         if let children = node.childNodes, !children.isEmpty {
             let newStyle = Typesetter.styleFromSizing(node.text ?? "displaystyle")
             let newFont = font.copy(withSize: Typesetter.getStyleSize(newStyle, baseFont: font))
-            let subTS = Typesetter(font: newFont, style: newStyle, cramped: self.cramped, textColor: textColor)
+            let subTS = Typesetter(font: newFont, style: newStyle, cramped: self.cramped,
+                                   textColor: textColor, fontStyle: fontStyle)
             return subTS.createDisplay(children)
         }
         return nil
+    }
+
+    private func renderStyling(_ node: ASTNode) -> MTDisplay? {
+        guard let children = node.childNodes, !children.isEmpty else { return nil }
+        let style = node.fontStyle
+        let subTS = Typesetter(font: font, style: self.style, cramped: cramped,
+                               textColor: textColor, fontStyle: style)
+        return subTS.createDisplay(children)
     }
 
     // MARK: - Text rendering
@@ -271,7 +260,7 @@ public class Typesetter: @unchecked Sendable {
         let isTextMode: Bool
         switch node.type {
         case .mathord, .unicode:
-            displayText = mathItalicize(text)
+            displayText = applyMathFontStyle(text, style: fontStyle)
             isTextMode = false
         case .text, .textord:
             displayText = text
@@ -284,9 +273,14 @@ public class Typesetter: @unchecked Sendable {
             isTextMode = false
         }
         let scaledFont = styleFont
-        // Use upright system font for \text{} content so letters appear
-        // in roman/upright style, matching standard LaTeX \text{} behaviour.
-        let ctFont = isTextMode ? uprightSystemFont(size: scaledFont.size) : scaledFont.ctFont
+        let ctFont: CTFont
+        if isTextMode {
+            ctFont = uprightSystemFont(size: scaledFont.size)
+        } else if fontStyle == .blackboard {
+            ctFont = KaTeXFont.amsRegular(size: scaledFont.size)
+        } else {
+            ctFont = scaledFont.ctFont
+        }
         let ctDisplay = MTCTLineDisplay(
             attrString: makeAttributedString(displayText, font: ctFont),
             position: .zero, range: node.indexRange, font: scaledFont, atoms: [node]
@@ -375,12 +369,13 @@ public class Typesetter: @unchecked Sendable {
 
         if hasSup {
             if children[1].childNodes == nil {
-                let text = mathItalicize(children[1].text ?? "")
-                supDisplay = makeCTLine(text, scriptFontForText.ctFont,
+                let text = applyMathFontStyle(children[1].text ?? "", style: fontStyle)
+                supDisplay = makeCTLine(text, ctFontForMathText(size: scriptFontSize),
                                         children[1].indexRange, scriptFontForText)
             } else {
                 let subTS = Typesetter(font: font, style: scriptStyle(),
-                                       cramped: superscriptCramped(), textColor: textColor)
+                                       cramped: superscriptCramped(), textColor: textColor,
+                                       fontStyle: fontStyle)
                 supDisplay = subTS.renderNode(children[1])
             }
         } else {
@@ -389,12 +384,12 @@ public class Typesetter: @unchecked Sendable {
 
         if hasSub {
             if children[2].childNodes == nil {
-                let text = mathItalicize(children[2].text ?? "")
-                subDisplay = makeCTLine(text, scriptFontForText.ctFont,
+                let text = applyMathFontStyle(children[2].text ?? "", style: fontStyle)
+                subDisplay = makeCTLine(text, ctFontForMathText(size: scriptFontSize),
                                         children[2].indexRange, scriptFontForText)
             } else {
                 let subTS = Typesetter(font: font, style: scriptStyle(),
-                                       cramped: true, textColor: textColor)
+                                       cramped: true, textColor: textColor, fontStyle: fontStyle)
                 subDisplay = subTS.renderNode(children[2])
             }
         } else {
@@ -496,6 +491,13 @@ public class Typesetter: @unchecked Sendable {
         }
     }
 
+    private func ctFontForMathText(size: CGFloat) -> CTFont {
+        if fontStyle == .blackboard {
+            return KaTeXFont.amsRegular(size: size)
+        }
+        return font.copy(withSize: size).ctFont
+    }
+
     private func makeCTLine(_ text: String, _ ctFont: CTFont,
                              _ range: NSRange, _ f: MTFont) -> MTCTLineDisplay {
         MTCTLineDisplay(attrString: makeAttributedString(text, font: ctFont),
@@ -521,8 +523,10 @@ public class Typesetter: @unchecked Sendable {
         
         // TeX Rule 15e: numerator is cramped only if parent is cramped;
         // denominator is always cramped.
-        let numTS = Typesetter(font: font, style: innerStyle, cramped: self.cramped, textColor: textColor)
-        let denTS = Typesetter(font: font, style: innerStyle, cramped: true, textColor: textColor)
+        let numTS = Typesetter(font: font, style: innerStyle, cramped: self.cramped,
+                               textColor: textColor, fontStyle: fontStyle)
+        let denTS = Typesetter(font: font, style: innerStyle, cramped: true,
+                               textColor: textColor, fontStyle: fontStyle)
 
         let trivial = (numNode.text?.count ?? 0) + (denNode.text?.count ?? 0) <= 2
         let (num, den): (MTDisplay?, MTDisplay?)
@@ -749,7 +753,8 @@ public class Typesetter: @unchecked Sendable {
         }
 
         // Per TeX Rule 11: the radicand is always typeset in cramped style.
-        let subTS = Typesetter(font: font, style: style, cramped: true, textColor: textColor)
+        let subTS = Typesetter(font: font, style: style, cramped: true,
+                               textColor: textColor, fontStyle: fontStyle)
         guard let radicand = subTS.renderNode(radicandNode) else { return nil }
 
         var clearance: CGFloat
@@ -869,7 +874,8 @@ public class Typesetter: @unchecked Sendable {
 
                 if hasDegree, let degNode = degreeNode {
                     // TeX Rule 11: degree is in scriptscript style, not cramped.
-                    let degTS = Typesetter(font: font, style: .scriptOfScript, textColor: textColor)
+                    let degTS = Typesetter(font: font, style: .scriptOfScript,
+                                           textColor: textColor, fontStyle: fontStyle)
                     if let degree = degTS.renderNode(degNode) {
                         radical.setDegree(degree, fontMetrics: mt)
                     }
@@ -901,7 +907,8 @@ public class Typesetter: @unchecked Sendable {
 
         if hasDegree, let degNode = degreeNode {
             // TeX Rule 11: degree is in scriptscript style, not cramped.
-            let degTS = Typesetter(font: font, style: .scriptOfScript, textColor: textColor)
+            let degTS = Typesetter(font: font, style: .scriptOfScript,
+                                   textColor: textColor, fontStyle: fontStyle)
             if let degree = degTS.renderNode(degNode) {
                 radical.setDegree(degree, fontMetrics: mt)
             }
@@ -949,7 +956,8 @@ public class Typesetter: @unchecked Sendable {
         let rightDelim = parts.count > 1 ? String(parts[1]) : "."
 
         // Render inner content
-        let subTS = Typesetter(font: font, style: style, cramped: self.cramped, textColor: textColor)
+        let subTS = Typesetter(font: font, style: style, cramped: self.cramped,
+                               textColor: textColor, fontStyle: fontStyle)
         guard let innerDisplay = subTS.createDisplay(innerGroup.childNodes ?? []) else { return nil }
 
         let mt = font.mathTable
@@ -1140,7 +1148,8 @@ public class Typesetter: @unchecked Sendable {
                 let col = cols[ci]
                 // Matrix cells render in \textstyle (not \displaystyle)
                 // Use cramped style for matrix cells
-                let sub = Typesetter(font: cellFont, style: cellStyle, cramped: true, textColor: textColor)
+                let sub = Typesetter(font: cellFont, style: cellStyle, cramped: true,
+                                     textColor: textColor, fontStyle: fontStyle)
                 let d: MTDisplay?
                 if col.type == .ordgroup, let ch = col.childNodes { d = sub.createDisplay(ch) }
                 else { d = sub.renderNode(col) }
@@ -1234,7 +1243,8 @@ public class Typesetter: @unchecked Sendable {
         guard let children = node.childNodes, !children.isEmpty else { return nil }
         guard let colorName = node.text, !colorName.isEmpty else { return createDisplay(children) }
         let color = parseColor(colorName)
-        let subTS = Typesetter(font: font, style: style, cramped: self.cramped, textColor: color?.cgColor ?? textColor)
+        let subTS = Typesetter(font: font, style: style, cramped: self.cramped,
+                               textColor: color?.cgColor ?? textColor, fontStyle: fontStyle)
         guard let inner = subTS.createDisplay(children) else { return nil }
         if let c = color { inner.textColor = c }
         return inner
@@ -1248,7 +1258,8 @@ public class Typesetter: @unchecked Sendable {
         let borderColorName = parts.count > 1 ? String(parts[1]) : ""
         let fillColor = fillColorName.isEmpty ? MTColor.black : (parseColor(fillColorName) ?? MTColor.black)
         let borderColor = borderColorName.isEmpty ? MTColor.black : (parseColor(borderColorName) ?? MTColor.black)
-        let subTS = Typesetter(font: font, style: style, cramped: self.cramped, textColor: textColor)
+        let subTS = Typesetter(font: font, style: style, cramped: self.cramped,
+                               textColor: textColor, fontStyle: fontStyle)
         guard let inner = subTS.createDisplay(children) else { return nil }
         let box = MTColorboxDisplay(inner: inner, fillColor: fillColor, borderColor: borderColor, padding: 0)
         box.range = node.indexRange
@@ -1474,6 +1485,43 @@ public class Typesetter: @unchecked Sendable {
         let display = MTAccentDisplay(accent: accentBase, accentee: accentee, range: node.indexRange)
         display.position = .zero
         return display
+    }
+
+    private func renderOverline(_ node: ASTNode) -> MTDisplay? {
+        renderLineDecoration(node, above: true)
+    }
+
+    private func renderUnderline(_ node: ASTNode) -> MTDisplay? {
+        renderLineDecoration(node, above: false)
+    }
+
+    /// TeXbook Rule 9 (overline) / Rule 10 (underline) via OpenType MATH constants.
+    private func renderLineDecoration(_ node: ASTNode, above: Bool) -> MTDisplay? {
+        guard let children = node.childNodes, !children.isEmpty else { return nil }
+        let mt = font.mathTable
+        // KaTeX builds overline inner in cramped style (TeXbook Rule 9).
+        let subTS = Typesetter(font: font, style: style, cramped: above,
+                               textColor: textColor, fontStyle: fontStyle)
+        guard let inner = subTS.createDisplay(children) else { return nil }
+        inner.position = .zero
+
+        let ruleThickness = above ? mt.overbarRuleThickness : mt.underbarRuleThickness
+        let gap = above ? mt.overbarVerticalGap : mt.underbarVerticalGap
+        let extra = above ? mt.overbarExtraAscender : mt.underbarExtraDescender
+        let rule = MTRuleDisplay(width: inner.width, thickness: ruleThickness)
+        if above {
+            rule.position = CGPoint(x: 0, y: inner.ascent + gap)
+        } else {
+            rule.position = CGPoint(x: 0, y: -inner.descent - gap - ruleThickness)
+        }
+
+        let list = MTMathListDisplay(withDisplays: [inner, rule], range: node.indexRange)
+        if above {
+            list.ascent += extra
+        } else {
+            list.descent += extra
+        }
+        return list
     }
 
     // MARK: - Inter-element spacing

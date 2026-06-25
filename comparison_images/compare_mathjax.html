@@ -59,28 +59,14 @@ fetch('compare-config.json').then(function(r){ return r.ok ? r.json() : compareC
   return MathJax.startup.promise;
 }).then(function(){
   document.getElementById('status').textContent='MathJax v4 + mathjax-stix2 loaded';
+  return fetch('compare-cases.json').then(function(r){
+    if (!r.ok) throw new Error('compare-cases.json missing — run: cd Tools/RenderCompare && swift run RenderCompare');
+    return r.json();
+  });
+}).then(function(cases){
   var g=document.getElementById('grid');
-  [["fraction","\\frac{x}{y}"],["nested-frac","\\frac{\\frac{a}{b}}{\\frac{c}{d}}"],
-   ["sqrt","\\sqrt{x+1}"],["sqrt-nested","\\sqrt{\\frac{x}{y}}"],
-   ["sup","x^{2}"],["sub","x_{1}"],["supsub","x_{i}^{2}"],
-   ["sum-display","\\sum_{i=0}^{n} i^{2}"],["sum-inline","\\textstyle\\sum_{i=0}^{n} i^{2}"],
-   ["integral","\\int_{0}^{\\infty} f(x)\\,dx"],
-   ["matrix","\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}"],
-   ["leftright","\\left(\\frac{x}{y}\\right)"],
-   ["accent-hat","\\hat{x}"],["accent-vec","\\vec{x}"],["accent-bar","\\bar{x}"],
-   ["accent-bar-multi","\\bar{ab}"],["accent-widehat","\\widehat{AB}"],
-   ["accent-tilde","\\tilde{x}"],["accent-dot","\\dot{x}"],["accent-ddot","\\ddot{x}"],
-   ["color","\\textcolor{red}{x}"],["colorbox","\\colorbox{yellow}{x+y}"],
-   ["frac-display","\\dfrac{1}{2}"],["frac-text","\\tfrac{1}{2}"],
-   ["sqrt-3","\\sqrt[3]{x}"],["greek","\\alpha\\beta\\gamma\\omega"],
-   ["sin-cos","\\sin^{2}\\theta + \\cos^{2}\\theta"],
-   ["sum-limits","\\sum_{i=0}^{\\infty} \\frac{1}{i}"],
-   ["text","\\text{Hello world}"],
-   ["complex-frac1","\\frac{a}{b+\\frac{c}{d+\\frac{5}{y-\\frac{x^2}{3}}}}"],
-   ["complex-int","\\sqrt[3]{a+\\frac{3}{x^2}}\\int_0^1\\frac{{\\int y}^3+\\frac{x}{5}-1}{x^4-4\\sqrt[3]{x}+\\frac{\\frac{3+x}{4-y}}{\\frac{3+x}{\\sqrt{c^2}+y}}}= \\int_0^1 a \\cos x \\text{😃}dx"],
-   ["complex-mix","12x3^{\\int 2}+\\frac{\\int a}{b}-\\sqrt[n]{x+y^2-\\frac{\\frac{z}{1-7v^2}}{\\frac{3r^3}{\\frac 1{2+\\frac xy}}}}+\\int_0^1 \\sum aa+3a"]
-  ].forEach(function(pair){
-    var label=pair[0], latex=pair[1];
+  cases.forEach(function(item){
+    var label=item.label, latex=item.latex;
     var c=document.createElement('div');c.className='card';
     c.innerHTML='<div class="card-header"><span class="card-label">'+label+'</span><span class="card-latex">'+latex+'</span></div>'+
       '<div class="panes"><div class="pane"><div class="pane-label a">AlphaEqt</div><img class="alpha-img" src="'+label+'.png"></div>'+
@@ -90,8 +76,10 @@ fetch('compare-config.json').then(function(r){ return r.ok ? r.json() : compareC
     document.getElementById('mj-'+label).textContent='$$'+latex+'$$';
   });
   MathJax.typesetPromise().then(function(){
-    document.getElementById('status').textContent='32 expressions - AlphaEqt vs MathJax v4 (STIX2)';
+    document.getElementById('status').textContent=cases.length+' expressions - AlphaEqt vs MathJax v4 (STIX2)';
   });
+}).catch(function(err){
+  document.getElementById('status').textContent='Error: '+err.message;
 });
 </script>
 </body>

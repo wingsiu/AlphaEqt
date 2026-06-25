@@ -114,6 +114,8 @@ public class Lexer {
                 case .leftParen:    combinedText = "\\left("
                 case .leftBracket:  combinedText = "\\left["
                 case .leftBrace:    combinedText = "\\left{"
+                case .command:
+                    if next.text == "\\{" { combinedText = "\\left{" }
                 case .operatorSymbol:
                     if next.text == "." { combinedText = "\\left." }
                     else { combinedText = "\\left|" }
@@ -140,6 +142,8 @@ public class Lexer {
                 case .rightParen:    combinedText = "\\right)"
                 case .rightBracket:  combinedText = "\\right]"
                 case .rightBrace:    combinedText = "\\right}"
+                case .command:
+                    if next.text == "\\}" { combinedText = "\\right}" }
                 case .operatorSymbol:
                     if next.text == "." { combinedText = "\\right." }
                     else { combinedText = "\\right|" }
@@ -192,8 +196,6 @@ public class Lexer {
         case .escape:
             if text == "\\left" { return .command }
             if text == "\\right" { return .command }
-            if text == "\\{" { return .leftBrace }
-            if text == "\\}" { return .rightBrace }
             if text == "\\|" { return .operatorSymbol }
             if text == "\\\\" { return .lineBreak }
             return .command

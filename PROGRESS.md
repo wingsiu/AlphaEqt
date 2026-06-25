@@ -1,3 +1,95 @@
+# AlphaEqt Progress Report — June 25, 2026
+
+## KaTeX / MathJax Parity Snapshot
+
+**Compare page:** [comparison_images/compare_mathjax.html](comparison_images/compare_mathjax.html) — 46 expressions, AlphaEqt STIX2 vs MathJax v4 STIX2 @ 30pt.
+
+### ✅ Strong parity (production-ready for most school/university math)
+
+| Area | AlphaEqt | KaTeX | MathJax STIX2 | Notes |
+|------|----------|-------|---------------|-------|
+| Fractions, sqrt, nested | ✅ | ✅ | ✅ | TeX Appendix G + style/cramped cascade |
+| Sup/sub, limits, large ops | ✅ | ✅ | ✅ | `\limits`/`\nolimits` |
+| Delimiters `\left...\right` | ✅ | ✅ | ✅ | Variant chain + assembly |
+| Matrices (6 envs + cases) | ✅ | ✅ | ✅ | `\@arstrut` row spacing fixed (Jun 25) |
+| Greek, 280+ symbols, arrows | ✅ | ✅ | ✅ | |
+| Spacing `\, \; \quad \!` | ✅ | ✅ | ✅ | TeX atom-class spacing |
+| Color / colorbox | ✅ | ✅ | ✅ | |
+| Style sizing | ✅ | ✅ | ✅ | display/text/script |
+| Basic accents (13) | ✅ | ✅ | ✅ | hat, bar, vec, widehat, … |
+| `\text{}` | ✅ | ✅ | ✅ | Upright system font |
+| Math italic a–z, A–Z, α–ω | ✅ | ✅ | ✅ | |
+
+### ⚠️ Partial parity (works but gaps remain)
+
+| Area | Status | Gap vs KaTeX/MathJax |
+|------|--------|----------------------|
+| **Font styles** | ✅ Implemented (Jun 25) | `\mathbb` uses **KaTeX AMS-Regular**; `\mathbf`/`\bm`/`\mathcal`/etc. use **Unicode variants in main OTF** (STIX2/XITS), not KaTeX Main-Bold / Caligraphic fonts |
+| **Vectors** `\mathbf{v}` | ✅ | Heavier than KaTeX Main-Bold; matches MathJax STIX2 closely |
+| **Sets** `\mathbb{R}` | ✅ | Now matches KaTeX AMS look (not STIX letterlike mix) |
+| **Script** `\mathcal{L}` | ✅ | Unicode script capitals; not KaTeX Script-Regular |
+| **Literal braces** `\{ \}` | ✅ Fixed (Jun 25) | Lexer no longer swallows as groups |
+| **Stretchy accent arrows** | ❌ | `\overrightarrow`, `\overleftarrow`, `\overleftrightarrow` — not in accent handler |
+| **Over/underline** | ✅ | `\overline`, `\underline` via MATH overbar/underbar constants |
+| **Delimiter sizing** | Partial | No `\big`, `\Big`, `\middle` |
+| **Environments** | Partial | `matrix`/`cases` yes; `\begin{align}` no |
+
+### ❌ Not implemented (common KaTeX features still missing)
+
+| Priority | Feature | KaTeX | Typical use |
+|----------|---------|-------|-------------|
+| **P1** | `\overrightarrow` etc. | ✅ | Vector arrows over symbols |
+| **P2** | `\binom{n}{k}` | ✅ | Combinatorics |
+| **P2** | `\operatorname` | ✅ | Custom operators |
+| **P2** | `\phantom` | ✅ | Spacing alignment |
+| **P2** | `\not` | ✅ | `\not=` |
+| **P2** | `\begin{align}` | ✅ | Multi-line equations |
+| **P2** | `\big`/`\middle` | ✅ | Sized delimiters |
+| **P3** | `\overbrace`/`\underbrace` | ✅ | Annotations |
+| **P3** | `\overset`/`\underset` | ✅ | Chemistry, custom ops |
+| **P3** | `\html*` / `\href` | ✅ | Web-only (low priority) |
+
+### Fonts in use (June 25, 2026)
+
+| Command | Font file | Mechanism |
+|---------|-----------|-----------|
+| Default math, matrices | `stix2-math.otf` / `xits-math.otf` | OpenType MATH (demo default: **XITS**) |
+| `\mathbb{R}` | `katex-ams-regular.ttf` | KaTeX AMS double-struck @ ASCII A–Z |
+| `\mathbf{v}` | Main OTF | Unicode bold alphanumeric (U+1D400) |
+| `\mathcal{L}` | Main OTF | Unicode script capitals + letterlike (U+2112, …) |
+| `\mathfrak`, `\mathsf`, `\mathtt` | Main OTF | Unicode math alphanumeric |
+
+### Session work (June 25, 2026)
+
+| Item | Description |
+|------|-------------|
+| Real font styles | `MathVariant.swift`, `renderStyling()`, `KaTeXFont.swift` |
+| `\mathbb` | KaTeX AMS-Regular (replaces STIX Unicode mix) |
+| `\mathcal` | Official Unicode script A–Z table (fixes ℒ etc.) |
+| `\{` `\}` | Lexer fix — literal braces render |
+| Matrix `\@arstrut` | Row min height 0.7/0.3 × baselineskip |
+| Compare page | 46 cards: fonts, vectors, matrices, complex exprs |
+| Tests | `testFontStyles`, `testBlackboardUnicode`, `testCaligraphic*`, `testEscapedBraces`, `testOverlineUnderline` |
+| Over/underline | `\overline` / `\underline` via `MTRuleDisplay` + MATH overbar/underbar metrics |
+
+### Recommended next steps (by impact)
+
+1. **P1** — Register stretchy arrows in accent handler (`\overrightarrow`, etc.)
+2. **P2** — KaTeX **Main-Bold** for `\mathbf` (optional polish, like we did AMS for `\mathbb`)
+3. **P2** — `\binom`, `\operatorname`, `\phantom`
+4. **P2** — `\begin{align}` + `&` alignment
+
+### Rough coverage estimate
+
+| Corpus | AlphaEqt | Notes |
+|--------|----------|-------|
+| High-school / early undergrad | **~90%** | Frac, sqrt, matrices, Greek, sets, vectors |
+| Typical LaTeX worksheet | **~78%** | Missing binom, align, stretchy arrows |
+| Full KaTeX function list | **~45%** | Many primitives still N/A |
+| MathJax STIX2 visual match | **~85%** | Same font family; spacing tweaks remain |
+
+---
+
 # AlphaEqt Progress Report — June 21, 2026
 
 ## Milestone: TeX Style/Cramped Cascade Complete ✅
@@ -51,7 +143,7 @@ All TeX Appendix G style and cramped propagation rules are now implemented acros
 | 8 | **Spacing commands** | `\quad`, `\qquad`, `\,`, `\;`, `\!` |
 | 9 | **Math italic** | ASCII a-z/A-Z + Greek lowercase α-ω → math-italic Unicode |
 | 10 | **Style sizing** | `\displaystyle`/`\textstyle`/`\scriptstyle`/`\scriptscriptstyle` |
-| 11 | **Font commands (pass-through)** | `\mathbf{F}`, `\mathbb{R}`, etc. — consume braced arg, parse content |
+| 11 | **Font commands** ✅ | `\mathbf`, `\mathbb`, `\mathcal`, etc. — real styles (Jun 25); `\mathbb` uses KaTeX AMS |
 | 12 | **Inter-element spacing** | TeX atom type spacing via `Spaces.swift` |
 | 13 | **Color** | kCTForegroundColorAttributeName propagation |
 | 14 | **Debug boxes** | Red border rendering (disabled for production) |
@@ -100,19 +192,19 @@ All TeX Appendix G style and cramped propagation rules are now implemented acros
 
 | # | Feature | Effort | Description |
 |---|---------|--------|-------------|
-| **P1‑1** | **Accents** | Medium | `\hat`, `\bar`, `\tilde`, `\dot`, `\ddot`, `\vec`, `\widehat`, `\widetilde`. Need parser handler + `renderAccent()` in Typesetter. `AccentUtils.swift` has lookup tables. |
-| **P1‑2** | **Real font styles** | Medium | `\mathbf`, `\mathbb`, `\mathcal`, `\mathfrak`, `\mathit`, `\mathsf`, `\mathtt` with actual CTFont switching or Unicode math alphanumerics. |
-| **P1‑3** | **`\color` / `\textcolor`** ✅ | Small | Implemented. `Color.swift` handler + `renderColor()` + 15 named colors + hex. |
-| **P1‑4** | **`\colorbox` / `\fcolorbox`** ✅ | Small | Implemented. `MTColorboxDisplay` class + `renderColorbox()`. |
-| **P1‑5** | **Accent arrows** | Small | `\overrightarrow`, `\overleftarrow`, `\overleftrightarrow`. |
+| **P1‑1** | **Accents** ✅ | `\hat`, `\bar`, `\tilde`, `\dot`, `\ddot`, `\vec`, `\widehat`, `\widetilde`, `\check`, `\breve`, `\acute`, `\grave`, `\arc` |
+| **P1‑2** | **Real font styles** ✅ | `\mathbf`, `\mathbb` (KaTeX AMS), `\mathcal`, `\mathfrak`, `\mathsf`, `\mathtt`, `\mathrm`, `\bm` via `MathVariant.swift` + `renderStyling()` |
+| **P1‑3** | **`\color` / `\textcolor`** ✅ | Implemented. |
+| **P1‑4** | **`\colorbox` / `\fcolorbox`** ✅ | Implemented. |
+| **P1‑5** | **`\overline` / `\underline`** ✅ | `MTRuleDisplay` + MATH overbar/underbar constants; cramped inner for overline. |
+| **P1‑6** | **Accent arrows** | Small | `\overrightarrow`, `\overleftarrow`, `\overleftrightarrow` — tables exist, not wired in parser. |
 
 ### ⭐ P2 — Medium Priority (Completeness)
 
 | # | Feature | Effort | Description |
 |---|---------|--------|-------------|
-| **P2‑1** | **`\overline` / `\underline`** | Medium | Rule bar above/below content via MATH table constants. |
-| **P2‑2** | **`\binom{n}{k}`** | Small | Generalized fraction with `ruleThickness = 0`. |
-| **P2‑3** | **`\operatorname`** | Small | Custom named operator (upright roman with operator spacing). |
+| **P2‑1** | **`\binom{n}{k}`** | Small | Generalized fraction with `ruleThickness = 0`. |
+| **P2‑2** | **`\operatorname`** | Small | Custom named operator (upright roman with operator spacing). |
 | **P2‑4** | **`\genfrac`** | Medium | Fully generalized fraction with custom delimiters/rule/style. |
 | **P2‑5** | **Nested constructs** | Medium | Systematic testing of fractions in radicals, matrices in delimiters, etc. |
 | **P2‑6** | **`\phantom{x}`** | Small | Invisible content that still takes space. |
@@ -183,13 +275,13 @@ and KaTeX's complete function catalog (`src/functions/*`).
 | 15 | Braced groups | `.ordgroup` | inline `parse()` | `renderOrdGroup` |
 | 16 | Math italic (a-z, A-Z, α-ω) | `.mathord` | — | `mathItalicize` |
 
-### ⚠️ Stub Implementation (Parser exists, renderer pass-through only)
+### ⚠️ Stub / Partial (updated Jun 25)
 
-| # | Feature | AST Node | What's Missing |
-|---|---------|----------|----------------|
-| S1 | `\mathbf`, `\mathrm`, `\mathit`, `\mathsf`, `\mathtt`, `\mathcal`, `\mathbb`, `\mathfrak`, `\mathbfit`, `\bm`, `\boldsymbol`, `\mathnormal` | `.styling` (pass-through to content) | Actual font switching via CTFont / Unicode math alphanumerics |
-| S2 | Legacy: `\rm`, `\bf`, `\cal`, `\mit`, `\frak`, `\Bbb` | `.styling` (same handler) | Same — no real style change |
-| S3 | `\textsf`, `\texttt`, `\textit`, `\textbf` | `.styling` (same handler) | Same |
+| # | Feature | Status |
+|---|---------|--------|
+| S1 | Font styles | ✅ **Done** — see `MathVariant.swift`, `KaTeXFont.swift` |
+| S2 | Legacy `\rm`, `\bf`, `\cal`, etc. | ✅ Aliased to same handler |
+| S3 | KaTeX font parity for all styles | ⚠️ Only `\mathbb` uses KaTeX font; `\mathbf` still Unicode/STIX |
 
 ### ❌ Not Implemented (AST type defined, no handler, no renderer)
 
@@ -230,49 +322,31 @@ and KaTeX's complete function catalog (`src/functions/*`).
 | N33 | `\cr` / `\crcr` / `\hdashline` / `\hline` (array internals) | — | `cr.js`, `hline.js` | Medium |
 | N34 | `\unit` (physical units) | — | `unit.js` | Low |
 
-### 📊 Updated Priority List (June 21, 2026)
+### 📊 Updated Priority List (June 25, 2026)
 
 ```
 P0 — All Done ✅
 
-P1 — Critical User-Visible Gaps:
-  P1-1: Accents ✅ (June 21)
-  P1-2: Real font styles (\mathbf, \mathbb, \mathcal, \mathfrak, etc.)
+P1 — User-Visible Gaps:
+  P1-1: Accents (basic) ✅
+  P1-2: Real font styles ✅ (mathbb=KaTeX AMS; rest=Unicode/STIX)
   P1-3: \color / \textcolor ✅
   P1-4: \colorbox / \fcolorbox ✅
-  P1-5: \overline / \underline [promoted — heavily used in practice]
-  P1-6: \overrightarrow / \overleftarrow / \overleftrightarrow [accent arrows]
+  P1-5: \overline / \underline ✅
+  P1-6: \overrightarrow / \overleftarrow / \overleftrightarrow  ← NEXT
+  P1-7: KaTeX Main-Bold for \mathbf     ← optional polish
 
-P2 — Medium Priority (Completeness):
+P2 — Completeness:
   P2-1: \binom{n}{k}
-  P2-2: \operatorname / \operatorname*
-  P2-3: \genfrac (generalized fraction)
-  P2-4: \phantom / \vphantom / \hphantom
-  P2-5: \hbox
-  P2-6: \stackrel
-  P2-7: \overset / \underset
-  P2-8: \mod / \pmod
-  P2-9: \not
+  P2-2: \operatorname
+  P2-3: \genfrac
+  P2-4: \phantom
+  P2-5: \begin{align}
+  P2-6: \big / \middle delimiter sizing
+  P2-7: \not, \mod / \pmod
+  P2-8: \overset / \underset
 
-P3 — Lower Priority:
-  P3-1: \overbrace / \underbrace
-  P3-2: \xleftarrow / \xrightarrow
-  P3-3: \raisebox
-  P3-4: \mathchoice
-  P3-5: \tag{n}
-  P3-6: \rule
-  P3-7: \kern / \mkern
-  P3-8: \pmb
-  P3-9: \llap / \rlap
-  P3-10: \smash / \mathstrut
-  P3-11: \mathop / \mathbin / \mathrel etc.
-  P3-12: \verb
-  P3-13: Real font styles (stub→real, P1-2)
-  P3-14: Latin Modern Math font compat
-  P3-15: Legacy font commands (stub→real)
-  P3-16: Error recovery
-  P3-17: Test coverage
-  P3-18: Performance tuning
+P3 — Lower Priority: overbrace, xarrow, raisebox, mathchoice, tag, …
 ```
 
 ### Files Reviewed This Audit

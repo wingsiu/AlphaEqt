@@ -46,33 +46,14 @@ h1 { text-align:center; font-size:16px; color:#fff; margin-bottom:2px; }
 </div>
 <script src="node_modules/katex/dist/katex.min.js"></script>
 <script>
-const cases = [
-  ["fraction","\\frac{x}{y}"],["nested-frac","\\frac{\\frac{a}{b}}{\\frac{c}{d}}"],
-  ["sqrt","\\sqrt{x+1}"],["sqrt-nested","\\sqrt{\\frac{x}{y}}"],
-  ["sup","x^{2}"],["sub","x_{1}"],["supsub","x_{i}^{2}"],
-  ["sum-display","\\sum_{i=0}^{n} i^{2}"],["sum-inline","\\textstyle\\sum_{i=0}^{n} i^{2}"],
-  ["integral","\\int_{0}^{\\infty} f(x)\\,dx"],
-  ["matrix","\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}"],
-  ["leftright","\\left(\\frac{x}{y}\\right)"],
-  ["accent-hat","\\hat{x}"],["accent-vec","\\vec{x}"],["accent-bar","\\bar{x}"],
-  ["accent-bar-multi","\\bar{ab}"],["accent-widehat","\\widehat{AB}"],
-  ["accent-tilde","\\tilde{x}"],["accent-dot","\\dot{x}"],["accent-ddot","\\ddot{x}"],
-  ["color","\\textcolor{red}{x}"],["colorbox","\\colorbox{yellow}{x+y}"],
-  ["frac-display","\\dfrac{1}{2}"],["frac-text","\\tfrac{1}{2}"],
-  ["sqrt-3","\\sqrt[3]{x}"],["greek","\\alpha\\beta\\gamma\\omega"],
-  ["sin-cos","\\sin^{2}\\theta + \\cos^{2}\\theta"],
-  ["sum-limits","\\sum_{i=0}^{\\infty} \\frac{1}{i}"],
-];
-
-const grid = document.getElementById('grid');
-
-// Load all metrics JSONs first
-const alphaMet = {}, katexMet = {};
-Promise.all(cases.map(([label]) => Promise.all([
-  fetch(`metrics_alpha_${label}.json`).then(r=>r.json()).then(d=>{alphaMet[label]=d}).catch(()=>{}),
-  fetch(`metrics_katex_${label}.json`).then(r=>r.json()).then(d=>{katexMet[label]=d}).catch(()=>{}),
-]))).then(() => {
-  cases.forEach(([label,latex]) => {
+function renderCases(cases) {
+  const grid = document.getElementById('grid');
+  const alphaMet = {}, katexMet = {};
+  Promise.all(cases.map(({label}) => Promise.all([
+    fetch(`metrics_alpha_${label}.json`).then(r=>r.json()).then(d=>{alphaMet[label]=d}).catch(()=>{}),
+    fetch(`metrics_katex_${label}.json`).then(r=>r.json()).then(d=>{katexMet[label]=d}).catch(()=>{}),
+  ]))).then(() => {
+    cases.forEach(({label, latex}) => {
     const card = document.createElement('div'); card.className='card';
     const am = alphaMet[label], km = katexMet[label];
     
@@ -99,8 +80,14 @@ Promise.all(cases.map(([label]) => Promise.all([
     
     try { katex.render(latex, document.getElementById(`katex-${label}`), {displayMode:true,throwOnError:false,strict:false}); }
     catch(e) { document.getElementById(`katex-${label}`).textContent='Error'; }
+    });
   });
-});
+}
+
+fetch('compare-cases.json')
+  .then(r => { if (!r.ok) throw new Error('compare-cases.json missing'); return r.json(); })
+  .then(renderCases)
+  .catch(e => { document.querySelector('.summary').textContent = 'Error: ' + e.message; });
 </script>
 </body>
 </html>

@@ -391,8 +391,8 @@ private let symbolTable: [String: SymbolEntry] = {
 
     // ── Special characters ──────────────────────────────────────────
     let specials: [(String, String, AtomType)] = [
-        ("\\{",     "{",  .open),
-        ("\\}",     "}",  .close),
+        ("\\{",     "{",  .ord),
+        ("\\}",     "}",  .ord),
         ("\\$",     "$",  .ord),
         ("\\&",     "&",  .ord),
         ("\\#",     "#",  .ord),
@@ -414,14 +414,17 @@ public let allSymbolCommands: [String] = Array(symbolTable.keys)
 // MARK: - Font Command Handler
 
 /// Handles font style commands like \mathbf{F}, \mathrm{x}, \mathbb{R}, etc.
-/// Currently passes through the braced content (font styles not yet implemented).
 func handleFontCommand(tokens: ArraySlice<Token>, index: inout Int) -> ASTNode? {
-    guard tokens.count >= 2, tokens[tokens.startIndex + 1].kind == .leftBrace else {
-        // No argument — skip the command token
+    guard let token = tokens.first else { return nil }
+    let cmd = token.text
+    guard let style = fontStyle(for: cmd) else {
         index = 1
         return nil
     }
-    // Find matching right brace
+    guard tokens.count >= 2, tokens[tokens.startIndex + 1].kind == .leftBrace else {
+        index = 1
+        return nil
+    }
     var depth = 1
     var braceTokens: [Token] = []
     var i = tokens.startIndex + 2
@@ -432,15 +435,22 @@ func handleFontCommand(tokens: ArraySlice<Token>, index: inout Int) -> ASTNode? 
         if depth > 0 { braceTokens.append(t) }
         i += 1
     }
-    // Parse the content inside braces
     let parser = LatexParser()
     let content = parser.parse(tokens: braceTokens)
-    // Return as a group node (font style metadata is lost for now)
     index = i - tokens.startIndex
-    if content.count == 1 {
-        return content[0]
+    let children: [ASTNode]?
+    if content.isEmpty {
+        children = nil
+    } else if content.count == 1 {
+        children = content
+    } else {
+        children = [ASTNode(type: .ordgroup, childNodes: content)]
     }
-    return ASTNode(type: .ordgroup, text: nil, childNodes: content.isEmpty ? nil : content)
+    let node = ASTNode(type: .styling, text: cmd,
+                       location: token.sourceLocation, originalText: cmd,
+                       childNodes: children)
+    node.fontStyle = style
+    return node
 }
 
 // MARK: - Spacing Command Handler

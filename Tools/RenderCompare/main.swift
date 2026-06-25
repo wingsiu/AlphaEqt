@@ -7,6 +7,65 @@ import ImageIO
 let logicalFontSize: CGFloat = 30
 let pixelScale: CGFloat = 2
 
+func dumpMetrics(_ latex: String) {
+    let font = MathFont.stix2Font.mtfont(size: logicalFontSize)
+    let lexer = Lexer(input: latex)
+    let tokens = lexer.tokenize()
+    let parser = LatexParser()
+    let nodes = parser.parse(tokens: tokens)
+    guard !nodes.isEmpty else { print("{\"error\":\"parse_empty\"}"); return }
+    let ts = Typesetter(font: font, style: .display)
+    guard let display = ts.createDisplay(nodes) else { print("{\"error\":\"render_nil\"}"); return }
+
+    var items: [[String: Any]] = []
+    func walk(_ d: MTDisplay, depth: Int) {
+        var info: [String: Any] = [
+            "kind": String(describing: type(of: d)),
+            "depth": depth,
+            "x": Double(d.position.x),
+            "y": Double(d.position.y),
+            "ascent": Double(d.ascent),
+            "descent": Double(d.descent),
+            "width": Double(d.width),
+        ]
+        if let ctLine = d as? MTCTLineDisplay, let atoms = ctLine.atoms {
+            info["text"] = atoms.compactMap { $0.text }.joined()
+        }
+        if let rule = d as? MTRuleDisplay {
+            info["ruleThickness"] = Double(rule.ruleThickness)
+        }
+        items.append(info)
+        if let list = d as? MTMathListDisplay {
+            for sub in list.subDisplays { walk(sub, depth: depth + 1) }
+        } else if let frac = d as? MTFractionDisplay {
+            if let n = frac.numerator { walk(n, depth: depth + 1) }
+            if let de = frac.denominator { walk(de, depth: depth + 1) }
+        } else if let acc = d as? MTAccentDisplay {
+            if let a = acc.accent { walk(a, depth: depth + 1) }
+            if let ae = acc.accentee { walk(ae, depth: depth + 1) }
+        }
+    }
+    walk(display, depth: 0)
+    let mt = font.mathTable
+    let constants: [String: Double] = [
+        "overbarVerticalGap": Double(mt.overbarVerticalGap),
+        "overbarRuleThickness": Double(mt.overbarRuleThickness),
+        "overbarExtraAscender": Double(mt.overbarExtraAscender),
+        "underbarVerticalGap": Double(mt.underbarVerticalGap),
+        "underbarRuleThickness": Double(mt.underbarRuleThickness),
+        "underbarExtraDescender": Double(mt.underbarExtraDescender),
+    ]
+    let result: [String: Any] = [
+        "expression": latex,
+        "fontSize": Double(logicalFontSize),
+        "root": ["width": Double(display.width), "ascent": Double(display.ascent), "descent": Double(display.descent)],
+        "mathConstants": constants,
+        "items": items,
+    ]
+    let data = try! JSONSerialization.data(withJSONObject: result, options: .prettyPrinted)
+    print(String(data: data, encoding: .utf8)!)
+}
+
 func renderToPNG(_ latex: String, outputPath: String) -> Bool {
     let font = MathFont.stix2Font.mtfont(size: logicalFontSize)
     let lexer = Lexer(input: latex)
@@ -73,6 +132,8 @@ let cases: [(String, String)] = [
     ("accent-vec",      #"\vec{x}"#),
     ("accent-bar",      #"\bar{x}"#),
     ("accent-bar-multi", #"\bar{ab}"#),
+    ("overline",        #"\overline{AB}"#),
+    ("underline",       #"\underline{x}"#),
     ("accent-widehat",  #"\widehat{AB}"#),
     ("accent-tilde",    #"\tilde{x}"#),
     ("accent-dot",      #"\dot{x}"#),
@@ -89,10 +150,31 @@ let cases: [(String, String)] = [
     ("complex-frac1",   #"\frac{a}{b+\frac{c}{d+\frac{5}{y-\frac{x^2}{3}}}}"#),
     ("complex-int",     #"\sqrt[3]{a+\frac{3}{x^2}}\int_0^1\frac{{\int y}^3+\frac{x}{5}-1}{x^4-4\sqrt[3]{x}+\frac{\frac{3+x}{4-y}}{\frac{3+x}{\sqrt{c^2}+y}}}= \int_0^1 a \cos x 😃dx"#),
     ("complex-mix",     #"12x3^{\int 2}+\frac{\int a}{b}-\sqrt[n]{x+y^2-\frac{\frac{z}{1-7v^2}}{\frac{3r^3}{\frac 1{2+\frac xy}}}}+\int_0^1 \sum aa+3a"#),
+    // Font styles
+    ("font-mathbb",     #"\mathbb{R}"#),
+    ("font-mathbb-sets", #"\mathbb{N} \subset \mathbb{Z} \subset \mathbb{Q} \subset \mathbb{R}"#),
+    ("font-mathbf",     #"\mathbf{F} = m\mathbf{a}"#),
+    ("font-mathrm",     #"\mathrm{sin}\, x"#),
+    ("font-mathcal",    #"\mathcal{L}\{f\}"#),
+    ("font-mathfrak",   #"\mathfrak{SO}(3)"#),
+    ("font-mathsf",     #"\mathsf{ABC}"#),
+    ("font-mathtt",     #"\mathtt{01ab}"#),
+    ("font-mix",        #"x \in \mathbb{R}, \mathbf{v} \in \mathbb{R}^n"#),
+    // Vectors & matrices
+    ("vec-mathbf",      #"\mathbf{v} = \mathbf{A}\mathbf{x}"#),
+    ("vec-bm",          #"\bm{\alpha} + \bm{\beta} = \bm{\gamma}"#),
+    ("vec-field",       #"\oint_C \mathbf{F} \cdot d\mathbf{r}"#),
+    ("matrix-bold",     #"\begin{pmatrix} \mathbf{a}_1 & \mathbf{a}_2 \\ \mathbf{b}_1 & \mathbf{b}_2 \end{pmatrix}"#),
+    ("linalg-mix",      #"A\mathbf{x} = \mathbf{b}, \quad \mathbf{x} \in \mathbb{R}^n"#),
 ]
 
 let outputDir = "/Users/alpha/Desktop/swift/AlphaEqt/comparison_images"
 try? FileManager.default.createDirectory(atPath: outputDir, withIntermediateDirectories: true)
+
+if CommandLine.arguments.count >= 3, CommandLine.arguments[1] == "--metrics" {
+    dumpMetrics(CommandLine.arguments[2])
+    exit(0)
+}
 
 print("Rendering \(cases.count) expressions...")
 var success = 0
@@ -112,3 +194,9 @@ let configURL = URL(fileURLWithPath: "\(outputDir)/compare-config.json")
 let configData = try! JSONSerialization.data(withJSONObject: config, options: .prettyPrinted)
 try! configData.write(to: configURL)
 print("Wrote \(configURL.path)")
+
+let casesJSON: [[String: String]] = cases.map { ["label": $0.0, "latex": $0.1] }
+let casesURL = URL(fileURLWithPath: "\(outputDir)/compare-cases.json")
+let casesData = try! JSONSerialization.data(withJSONObject: casesJSON, options: .prettyPrinted)
+try! casesData.write(to: casesURL)
+print("Wrote \(casesURL.path)")

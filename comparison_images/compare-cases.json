@@ -1,0 +1,194 @@
+[
+  {
+    "latex" : "\\frac{x}{y}",
+    "label" : "fraction"
+  },
+  {
+    "latex" : "\\frac{\\frac{a}{b}}{\\frac{c}{d}}",
+    "label" : "nested-frac"
+  },
+  {
+    "latex" : "\\sqrt{x+1}",
+    "label" : "sqrt"
+  },
+  {
+    "latex" : "\\sqrt{\\frac{x}{y}}",
+    "label" : "sqrt-nested"
+  },
+  {
+    "label" : "sup",
+    "latex" : "x^2"
+  },
+  {
+    "label" : "sub",
+    "latex" : "x_1"
+  },
+  {
+    "label" : "supsub",
+    "latex" : "x_i^2"
+  },
+  {
+    "label" : "sum-display",
+    "latex" : "\\displaystyle\\sum_{i=0}^n i^2"
+  },
+  {
+    "latex" : "\\textstyle\\sum_{i=0}^n i^2",
+    "label" : "sum-inline"
+  },
+  {
+    "label" : "integral",
+    "latex" : "\\displaystyle\\int_0^\\infty f(x)dx"
+  },
+  {
+    "label" : "matrix",
+    "latex" : "\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}"
+  },
+  {
+    "label" : "leftright",
+    "latex" : "\\left(\\frac{x}{y}\\right)"
+  },
+  {
+    "latex" : "\\hat{x}",
+    "label" : "accent-hat"
+  },
+  {
+    "label" : "accent-vec",
+    "latex" : "\\vec{x}"
+  },
+  {
+    "latex" : "\\bar{x}",
+    "label" : "accent-bar"
+  },
+  {
+    "label" : "accent-bar-multi",
+    "latex" : "\\bar{ab}"
+  },
+  {
+    "label" : "overline",
+    "latex" : "\\overline{AB}"
+  },
+  {
+    "latex" : "\\underline{x}",
+    "label" : "underline"
+  },
+  {
+    "label" : "accent-widehat",
+    "latex" : "\\widehat{AB}"
+  },
+  {
+    "latex" : "\\tilde{x}",
+    "label" : "accent-tilde"
+  },
+  {
+    "label" : "accent-dot",
+    "latex" : "\\dot{x}"
+  },
+  {
+    "latex" : "\\ddot{x}",
+    "label" : "accent-ddot"
+  },
+  {
+    "label" : "color",
+    "latex" : "\\textcolor{red}{x}"
+  },
+  {
+    "latex" : "\\colorbox{yellow}{x+y}",
+    "label" : "colorbox"
+  },
+  {
+    "label" : "frac-display",
+    "latex" : "\\dfrac{1}{2}"
+  },
+  {
+    "latex" : "\\tfrac{1}{2}",
+    "label" : "frac-text"
+  },
+  {
+    "latex" : "\\sqrt[3]{x}",
+    "label" : "sqrt-3"
+  },
+  {
+    "latex" : "\\alpha\\beta\\gamma\\omega",
+    "label" : "greek"
+  },
+  {
+    "label" : "sin-cos",
+    "latex" : "\\sin^2\\theta + \\cos^2\\theta"
+  },
+  {
+    "latex" : "\\displaystyle\\sum_{i=0}^\\infty \\frac{1}{i}",
+    "label" : "sum-limits"
+  },
+  {
+    "latex" : "\\text{Hello world}",
+    "label" : "text"
+  },
+  {
+    "label" : "complex-frac1",
+    "latex" : "\\frac{a}{b+\\frac{c}{d+\\frac{5}{y-\\frac{x^2}{3}}}}"
+  },
+  {
+    "label" : "complex-int",
+    "latex" : "\\sqrt[3]{a+\\frac{3}{x^2}}\\int_0^1\\frac{{\\int y}^3+\\frac{x}{5}-1}{x^4-4\\sqrt[3]{x}+\\frac{\\frac{3+x}{4-y}}{\\frac{3+x}{\\sqrt{c^2}+y}}}= \\int_0^1 a \\cos x 😃dx"
+  },
+  {
+    "label" : "complex-mix",
+    "latex" : "12x3^{\\int 2}+\\frac{\\int a}{b}-\\sqrt[n]{x+y^2-\\frac{\\frac{z}{1-7v^2}}{\\frac{3r^3}{\\frac 1{2+\\frac xy}}}}+\\int_0^1 \\sum aa+3a"
+  },
+  {
+    "label" : "font-mathbb",
+    "latex" : "\\mathbb{R}"
+  },
+  {
+    "label" : "font-mathbb-sets",
+    "latex" : "\\mathbb{N} \\subset \\mathbb{Z} \\subset \\mathbb{Q} \\subset \\mathbb{R}"
+  },
+  {
+    "latex" : "\\mathbf{F} = m\\mathbf{a}",
+    "label" : "font-mathbf"
+  },
+  {
+    "latex" : "\\mathrm{sin}\\, x",
+    "label" : "font-mathrm"
+  },
+  {
+    "label" : "font-mathcal",
+    "latex" : "\\mathcal{L}\\{f\\}"
+  },
+  {
+    "latex" : "\\mathfrak{SO}(3)",
+    "label" : "font-mathfrak"
+  },
+  {
+    "label" : "font-mathsf",
+    "latex" : "\\mathsf{ABC}"
+  },
+  {
+    "latex" : "\\mathtt{01ab}",
+    "label" : "font-mathtt"
+  },
+  {
+    "label" : "font-mix",
+    "latex" : "x \\in \\mathbb{R}, \\mathbf{v} \\in \\mathbb{R}^n"
+  },
+  {
+    "label" : "vec-mathbf",
+    "latex" : "\\mathbf{v} = \\mathbf{A}\\mathbf{x}"
+  },
+  {
+    "latex" : "\\bm{\\alpha} + \\bm{\\beta} = \\bm{\\gamma}",
+    "label" : "vec-bm"
+  },
+  {
+    "latex" : "\\oint_C \\mathbf{F} \\cdot d\\mathbf{r}",
+    "label" : "vec-field"
+  },
+  {
+    "latex" : "\\begin{pmatrix} \\mathbf{a}_1 & \\mathbf{a}_2 \\\\ \\mathbf{b}_1 & \\mathbf{b}_2 \\end{pmatrix}",
+    "label" : "matrix-bold"
+  },
+  {
+    "label" : "linalg-mix",
+    "latex" : "A\\mathbf{x} = \\mathbf{b}, \\quad \\mathbf{x} \\in \\mathbb{R}^n"
+  }
+]

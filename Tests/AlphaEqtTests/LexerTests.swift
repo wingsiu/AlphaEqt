@@ -54,6 +54,13 @@ final class LexerTests: XCTestCase {
         XCTAssertEqual(tokens.last?.kind, .eof)
     }
 
+    func testEscapedBraces() {
+        let lexer = Lexer(input: #"\{f\}"#)
+        let tokens = lexer.lexAll().filter { $0.kind != .eof }
+        XCTAssertEqual(tokens.map(\.kind), [.command, .identifier, .command])
+        XCTAssertEqual(tokens.map(\.text), [#"\{"#, "f", #"\}"#])
+    }
+
     func testCustomDelimiterBraces() {
         let input = "\\left\\{ x \\right\\}"
         let lexer = Lexer(input: input)

@@ -63,6 +63,8 @@ public class LatexParser {
         for cmd in accentCmds {
             commandHandlers[cmd] = handleAccentCommand
         }
+        commandHandlers["\\overline"] = handleOverlineCommand
+        commandHandlers["\\underline"] = handleUnderlineCommand
         // Color commands
         commandHandlers["\\color"] = handleColorCommand
         commandHandlers["\\textcolor"] = handleColorCommand

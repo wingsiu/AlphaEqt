@@ -2,19 +2,19 @@
 <html><head><meta charset="utf-8"><title>AlphaEqt vs KaTeX</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 <style>
-@font-face{font-family:"KaTeX_AMS";src:url("xits-math-comparison.otf?v=1782062814") format("opentype")}
-@font-face{font-family:"KaTeX_Caligraphic";src:url("xits-math-comparison.otf?v=1782062814") format("opentype")}
-@font-face{font-family:"KaTeX_Fraktur";src:url("xits-math-comparison.otf?v=1782062814") format("opentype")}
-@font-face{font-family:"KaTeX_Main";src:url("xits-math-comparison.otf?v=1782062814") format("opentype")}
-@font-face{font-family:"KaTeX_Main";src:url("xits-math-comparison.otf?v=1782062814") format("opentype");font-weight:bold}
-@font-face{font-family:"KaTeX_Math";src:url("xits-math-comparison.otf?v=1782062814") format("opentype")}
-@font-face{font-family:"KaTeX_SansSerif";src:url("xits-math-comparison.otf?v=1782062814") format("opentype")}
-@font-face{font-family:"KaTeX_Script";src:url("xits-math-comparison.otf?v=1782062814") format("opentype")}
-@font-face{font-family:"KaTeX_Size1";src:url("xits-math-comparison.otf?v=1782062814") format("opentype")}
-@font-face{font-family:"KaTeX_Size2";src:url("xits-math-comparison.otf?v=1782062814") format("opentype")}
-@font-face{font-family:"KaTeX_Size3";src:url("xits-math-comparison.otf?v=1782062814") format("opentype")}
-@font-face{font-family:"KaTeX_Size4";src:url("xits-math-comparison.otf?v=1782062814") format("opentype")}
-@font-face{font-family:"KaTeX_Typewriter";src:url("xits-math-comparison.otf?v=1782062814") format("opentype")}
+@font-face{font-family:"KaTeX_AMS";src:url("xits-math-comparison.otf?v=1782328251") format("opentype")}
+@font-face{font-family:"KaTeX_Caligraphic";src:url("xits-math-comparison.otf?v=1782328251") format("opentype")}
+@font-face{font-family:"KaTeX_Fraktur";src:url("xits-math-comparison.otf?v=1782328251") format("opentype")}
+@font-face{font-family:"KaTeX_Main";src:url("xits-math-comparison.otf?v=1782328251") format("opentype")}
+@font-face{font-family:"KaTeX_Main";src:url("xits-math-comparison.otf?v=1782328251") format("opentype");font-weight:bold}
+@font-face{font-family:"KaTeX_Math";src:url("xits-math-comparison.otf?v=1782328251") format("opentype")}
+@font-face{font-family:"KaTeX_SansSerif";src:url("xits-math-comparison.otf?v=1782328251") format("opentype")}
+@font-face{font-family:"KaTeX_Script";src:url("xits-math-comparison.otf?v=1782328251") format("opentype")}
+@font-face{font-family:"KaTeX_Size1";src:url("xits-math-comparison.otf?v=1782328251") format("opentype")}
+@font-face{font-family:"KaTeX_Size2";src:url("xits-math-comparison.otf?v=1782328251") format("opentype")}
+@font-face{font-family:"KaTeX_Size3";src:url("xits-math-comparison.otf?v=1782328251") format("opentype")}
+@font-face{font-family:"KaTeX_Size4";src:url("xits-math-comparison.otf?v=1782328251") format("opentype")}
+@font-face{font-family:"KaTeX_Typewriter";src:url("xits-math-comparison.otf?v=1782328251") format("opentype")}
 
 .katex,.katex *{font-size:50px!important}
 
@@ -202,6 +202,30 @@ Browser will ask: "Allow this page to access files?" → click <b>Allow</b>
 <div class="col"><div class="col-label">KaTeX</div><div class="katex-out" id="k-sum-limits"></div></div>
 </div>
 <div class="code">\displaystyle\sum_{i=0}^\infty \frac{1}{i}</div>
+</div><div class="card"><h3>text</h3>
+<div class="row">
+<div class="col"><div class="col-label">AlphaEqt</div><img src="text.png"></div>
+<div class="col"><div class="col-label">KaTeX</div><div class="katex-out" id="k-text"></div></div>
+</div>
+<div class="code">\text{Hello world}</div>
+</div><div class="card"><h3>complex-frac1</h3>
+<div class="row">
+<div class="col"><div class="col-label">AlphaEqt</div><img src="complex-frac1.png"></div>
+<div class="col"><div class="col-label">KaTeX</div><div class="katex-out" id="k-complex-frac1"></div></div>
+</div>
+<div class="code">\frac{a}{b+\frac{c}{d+\frac{5}{y-\frac{x^2}{3}}}}</div>
+</div><div class="card"><h3>complex-int</h3>
+<div class="row">
+<div class="col"><div class="col-label">AlphaEqt</div><img src="complex-int.png"></div>
+<div class="col"><div class="col-label">KaTeX</div><div class="katex-out" id="k-complex-int"></div></div>
+</div>
+<div class="code">\sqrt[3]{a+\frac{3}{x^2}}\int_0^1\frac{{\int y}^3+\frac{x}{5}-1}{x^4-4\sqrt[3]{x}+\frac{\frac{3+x}{4-y}}{\frac{3+x}{\sqrt{c^2}+y}}}= \int_0^1 a \cos x 😃dx</div>
+</div><div class="card"><h3>complex-mix</h3>
+<div class="row">
+<div class="col"><div class="col-label">AlphaEqt</div><img src="complex-mix.png"></div>
+<div class="col"><div class="col-label">KaTeX</div><div class="katex-out" id="k-complex-mix"></div></div>
+</div>
+<div class="code">12x3^{\int 2}+\frac{\int a}{b}-\sqrt[n]{x+y^2-\frac{\frac{z}{1-7v^2}}{\frac{3r^3}{\frac 1{2+\frac xy}}}}+\int_0^1 \sum aa+3a</div>
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
 <script>
@@ -234,6 +258,10 @@ document.fonts.ready.then(function(){
 ['k-greek','\\alpha\\beta\\gamma\\omega'],
 ['k-sin-cos','\\sin^2\\theta + \\cos^2\\theta'],
 ['k-sum-limits','\\displaystyle\\sum_{i=0}^\\infty \\frac{1}{i}'],
+['k-text','\\text{Hello world}'],
+['k-complex-frac1','\\frac{a}{b+\\frac{c}{d+\\frac{5}{y-\\frac{x^2}{3}}}}'],
+['k-complex-int','\\sqrt[3]{a+\\frac{3}{x^2}}\\int_0^1\\frac{{\\int y}^3+\\frac{x}{5}-1}{x^4-4\\sqrt[3]{x}+\\frac{\\frac{3+x}{4-y}}{\\frac{3+x}{\\sqrt{c^2}+y}}}= \\int_0^1 a \\cos x 😃dx'],
+['k-complex-mix','12x3^{\\int 2}+\\frac{\\int a}{b}-\\sqrt[n]{x+y^2-\\frac{\\frac{z}{1-7v^2}}{\\frac{3r^3}{\\frac 1{2+\\frac xy}}}}+\\int_0^1 \\sum aa+3a'],
   ];
   cases.forEach(function(x){
     try{katex.render(x[1],document.getElementById(x[0]),{displayMode:true,throwOnError:false,trust:true})}

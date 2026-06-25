@@ -80,6 +80,15 @@ final class RenderingTests: XCTestCase {
         assertRenders(#"\bar{x}"#)
     }
 
+    func testOverlineUnderline() {
+        assertRenders(#"\overline{x}"#)
+        assertRenders(#"\overline{AB}"#)
+        assertRenders(#"\overline{abc}"#)
+        assertRenders(#"\underline{x}"#)
+        assertRenders(#"\underline{AB}"#)
+        assertRenders(#"\overline{\frac{a}{b}}"#)
+    }
+
     func testAccentsArc() {
         assertRenders(#"\arc a"#)
         assertRenders(#"\arc A"#)
@@ -222,6 +231,56 @@ final class RenderingTests: XCTestCase {
         assertRenders(#"\begin{Bmatrix} a & b \\ c & d \end{Bmatrix}"#)
         assertRenders(#"\begin{vmatrix} a & b \\ c & d \end{vmatrix}"#)
         assertRenders(#"\begin{Vmatrix} a & b \\ c & d \end{Vmatrix}"#)
+    }
+
+    // MARK: - Font Styles
+
+    func testFontStyles() {
+        assertRenders(#"\mathbb{R}"#)
+        assertRenders(#"\mathbb{NZQ}"#)
+        assertRenders(#"\mathbf{F}"#)
+        assertRenders(#"\mathrm{sin}"#)
+        assertRenders(#"\mathcal{L}"#)
+        assertRenders(#"\mathfrak{g}"#)
+        assertRenders(#"\mathsf{A}"#)
+        assertRenders(#"\mathtt{01}"#)
+        assertRenders(#"x \in \mathbb{R}"#)
+    }
+
+    func testBlackboardUnicode() {
+        XCTAssertEqual(applyMathFontStyle("R", style: .blackboard), "R")
+        XCTAssertEqual(applyMathFontStyle("ABC", style: .blackboard), "ABC")
+        XCTAssertEqual(applyMathFontStyle("k", style: .blackboard), "k")
+    }
+
+    func testBoldAndRoman() {
+        XCTAssertEqual(applyMathFontStyle("x", style: .bold), "\u{1D431}")
+        XCTAssertEqual(applyMathFontStyle("x", style: .roman), "x")
+        XCTAssertEqual(applyMathFontStyle("x", style: .italic), "\u{1D465}")
+    }
+
+    func testCaligraphicUnicode() {
+        XCTAssertEqual(applyMathFontStyle("L", style: .caligraphic), "\u{2112}")
+        XCTAssertEqual(applyMathFontStyle("AB", style: .caligraphic), "\u{1D49C}\u{212C}")
+    }
+
+    func testCaligraphicWithBraces() {
+        let display = assertRenders(#"\mathcal{L}\{f\}"#)
+        let nodes = display?.mathList ?? []
+        let texts = collectRenderedTexts(nodes)
+        XCTAssertTrue(texts.contains("{"), "Missing literal open brace, got: \(texts)")
+        XCTAssertTrue(texts.contains("}"), "Missing literal close brace, got: \(texts)")
+    }
+
+    private func collectRenderedTexts(_ nodes: [ASTNode]) -> [String] {
+        var out: [String] = []
+        for node in nodes {
+            if let t = node.text, !t.isEmpty, t != "^", t != "_" { out.append(t) }
+            if let children = node.childNodes {
+                out.append(contentsOf: collectRenderedTexts(children))
+            }
+        }
+        return out
     }
 
     // MARK: - Color (✅)
