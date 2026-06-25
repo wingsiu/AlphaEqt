@@ -151,6 +151,12 @@ public class MTMathAtomFactory {
         "overrightarrow" : "\u{20D7}",
         "overleftarrow" : "\u{20D6}",
         "overleftrightarrow" : "\u{20E1}",
+        "overrightharpoonup" : "\u{20D7}",
+        "overrightharpoondown" : "\u{20D7}",
+        "overleftharpoonup" : "\u{20D6}",
+        "overleftharpoondown" : "\u{20D6}",
+        "overrightharpoon" : "\u{20D7}",
+        "overleftharpoon" : "\u{20D6}",
         "widehat" :  "\u{0302}",
         "widetilde" :  "\u{0303}",
         "arc" : "\u{23DC}" //By Alpha

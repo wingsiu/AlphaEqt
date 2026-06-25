@@ -4,7 +4,8 @@
 //
 //  Parser handler for \hat, \bar, \tilde, \dot, \ddot, \vec,
 //  \widehat, \widetilde, \check, \breve, \acute, \grave,
-//  \overrightarrow, \overleftarrow, \overleftrightarrow.
+//  \overrightarrow, \overleftarrow, \overleftrightarrow,
+//  \overrightharpoonup, \overleftharpoonup, \overrightharpoondown, \overleftharpoondown.
 //
 
 import Foundation

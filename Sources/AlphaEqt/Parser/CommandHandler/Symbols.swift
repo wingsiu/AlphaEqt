@@ -143,6 +143,25 @@ private let symbolTable: [String: SymbolEntry] = {
         table[cmd] = SymbolEntry(unicode: ch, atomType: .rel)
     }
 
+    // ── Harpoons (AMS) ───────────────────────────────────────────────
+    let harpoons: [(String, String)] = [
+        ("\\leftharpoonup",      "\u{21BC}"),  // ↼
+        ("\\leftharpoondown",    "\u{21BD}"),  // ↽
+        ("\\rightharpoonup",     "\u{21C0}"),  // ⇀
+        ("\\rightharpoondown",   "\u{21C1}"),  // ⇁
+        ("\\upharpoonleft",      "\u{21BF}"),  // ↿
+        ("\\upharpoonright",     "\u{21BE}"),  // ↾
+        ("\\downharpoonleft",    "\u{21C3}"),  // ⇃
+        ("\\downharpoonright",   "\u{21C2}"),  // ⇂
+        ("\\rightleftharpoons",  "\u{21CC}"),  // ⇌
+        ("\\leftrightharpoons",  "\u{21CB}"),  // ⇋
+        ("\\leftrightarrows",    "\u{21C6}"),  // ⇆
+        ("\\rightleftarrows",    "\u{21C4}"),  // ⇄
+    ]
+    for (cmd, ch) in harpoons {
+        table[cmd] = SymbolEntry(unicode: ch, atomType: .rel)
+    }
+
     // ── Arrow aliases ────────────────────────────────────────────────
     let arrowAliases: [(String, String)] = [
         ("\\to",              "\u{2192}"),  // →

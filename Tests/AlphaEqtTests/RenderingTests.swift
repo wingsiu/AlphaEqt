@@ -100,6 +100,9 @@ final class RenderingTests: XCTestCase {
         assertRenders(#"\overrightarrow{AB}"#)
         assertRenders(#"\overleftarrow{AB}"#)
         assertRenders(#"\overleftrightarrow{AB}"#)
+        assertRenders(#"\overrightharpoonup{AB}"#)
+        assertRenders(#"\overleftharpoonup{AB}"#)
+        assertRenders(#"\overrightharpoondown{xy}"#)
         assertRenders(#"\overgroup{AB}"#)
         assertRenders(#"\overlinesegment{AB}"#)
         assertRenders(#"\widecheck{AB}"#)
@@ -326,6 +329,13 @@ final class RenderingTests: XCTestCase {
     func testArrows() {
         assertRenders(#"\leftarrow\rightarrow\leftrightarrow\mapsto"#)
         assertRenders(#"\Rightarrow\Leftarrow\Leftrightarrow"#)
+    }
+
+    func testHarpoons() {
+        assertRenders(#"A \rightleftharpoons B"#)
+        assertRenders(#"\overrightharpoonup{A}"#)
+        assertRenders(#"\overrightharpoonup{AB}"#)
+        assertRenders(#"\overleftharpoonup{AB}"#)
     }
 
     // MARK: - Text (✅)

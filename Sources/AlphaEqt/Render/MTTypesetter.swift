@@ -1409,13 +1409,22 @@ public class Typesetter: @unchecked Sendable {
         return disp
     }
 
-    private static let stretchyArrowOperators: [String: String] = [
+    private static let stretchyAccentOperators: [String: String] = [
         "overrightarrow": "\u{2192}",
         "overleftarrow": "\u{2190}",
         "overleftrightarrow": "\u{2194}",
+        "overrightharpoonup": "\u{21C0}",
+        "overrightharpoondown": "\u{21C1}",
+        "overleftharpoonup": "\u{21BC}",
+        "overleftharpoondown": "\u{21BD}",
+        "overrightharpoon": "\u{21C0}",
+        "overleftharpoon": "\u{21BC}",
     ]
-    private static let stretchyArrowAccentNames: Set<String> = [
+    private static let stretchyAccentKernNames: Set<String> = [
         "overrightarrow", "overleftarrow", "overleftrightarrow", "vec",
+        "overrightharpoonup", "overrightharpoondown",
+        "overleftharpoonup", "overleftharpoondown",
+        "overrightharpoon", "overleftharpoon",
     ]
 
     private func glyphForCharacter(_ ch: String) -> CGGlyph? {
@@ -1491,11 +1500,12 @@ public class Typesetter: @unchecked Sendable {
         // Multi-char stretchy arrows stretch U+2190/2192/2194 (MathJax-sized ink)
         // but stay at Rule 12 height; shiftDown aligns ink with combining marks.
         let isMultiChar = !isSingleCharAccentee(node)
-        let usesOperatorArrow = isMultiChar && Self.stretchyArrowOperators[node.text ?? ""] != nil
+        let usesOperatorArrow = Self.stretchyAccentOperators[accentName] != nil
+            && (isMultiChar || accentName.contains("harpoon"))
         let effectiveAccentChar: String
         if accentName == "bar" && isMultiChar {
             effectiveAccentChar = "\u{00AF}"  // ¯  standalone macron
-        } else if usesOperatorArrow, let op = Self.stretchyArrowOperators[accentName] {
+        } else if usesOperatorArrow, let op = Self.stretchyAccentOperators[accentName] {
             effectiveAccentChar = op
         } else {
             effectiveAccentChar = MTMathAtomFactory.accents[accentName] ?? ""
@@ -1571,7 +1581,7 @@ public class Typesetter: @unchecked Sendable {
             let delta = min(accentee.ascent, mt.accentBaseHeight)
             ax = isSingleCharAccentee(node) ? getSkew(accentNode: node, accentee: accentee, accentGlyph: accentGlyph) : (aw - accentBase.width) / 2
             // Rule 12 + 1.5μ kern (between 0 and thinmuskip) for stretchy arrows.
-            let accentKern = Self.stretchyArrowAccentNames.contains(accentName) ? 1.5 * mt.muUnit : 0
+            let accentKern = Self.stretchyAccentKernNames.contains(accentName) ? 1.5 * mt.muUnit : 0
             ay = accentee.ascent - delta + accentKern
         }
         if usesOperatorArrow {
