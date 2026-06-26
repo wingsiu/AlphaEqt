@@ -1,0 +1,260 @@
+{
+  "latex": "\\binom{n}{k}",
+  "fontSizePx": 30,
+  "mathjaxCHTML": {
+    "source": "mathjax-chtml-node",
+    "fontSizePx": 30,
+    "latex": "\\binom{n}{k}",
+    "items": [
+      {
+        "kind": "mjx-container",
+        "classes": "MathJax",
+        "jax": "CHTML",
+        "overflow": "overflow",
+        "display": "true"
+      },
+      {
+        "kind": "mjx-math",
+        "classes": "STX-N",
+        "latex": "\\binom{n}{k}",
+        "display": "true"
+      },
+      {
+        "kind": "mjx-mrow",
+        "latex": "\\binom{n}{k}"
+      },
+      {
+        "kind": "mjx-TeXAtom",
+        "classes": "OPEN",
+        "latex": "\\biggl (",
+        "texclass": "OPEN"
+      },
+      {
+        "kind": "mjx-mo",
+        "vertical-align": {
+          "em": -0.02,
+          "px": -0.6
+        }
+      },
+      {
+        "kind": "mjx-c",
+        "classes": "mjx-c28 STX-S5"
+      },
+      {
+        "kind": "mjx-mfrac"
+      },
+      {
+        "kind": "mjx-frac",
+        "vertical-align": {
+          "em": -0.686,
+          "px": -20.58
+        },
+        "type": "d",
+        "atop": "true",
+        "delims": "true"
+      },
+      {
+        "kind": "mjx-num",
+        "padding-bottom": {
+          "em": 0.647,
+          "px": 19.41
+        }
+      },
+      {
+        "kind": "mjx-mi",
+        "latex": "n"
+      },
+      {
+        "kind": "mjx-c",
+        "classes": "mjx-c1D45B"
+      },
+      {
+        "kind": "mjx-den"
+      },
+      {
+        "kind": "mjx-mi",
+        "latex": "k"
+      },
+      {
+        "kind": "mjx-c",
+        "classes": "mjx-c1D458"
+      },
+      {
+        "kind": "mjx-TeXAtom",
+        "classes": "CLOSE",
+        "latex": "\\biggr )",
+        "texclass": "CLOSE"
+      },
+      {
+        "kind": "mjx-mo",
+        "vertical-align": {
+          "em": -0.02,
+          "px": -0.6
+        }
+      },
+      {
+        "kind": "mjx-c",
+        "classes": "mjx-c29 STX-S5"
+      }
+    ]
+  },
+  "mathjaxBBox": {
+    "source": "mathjax-compare-page-bbox",
+    "fontSizePx": 30,
+    "root": {
+      "name": "root",
+      "topPx": 0,
+      "bottomPx": 64.3,
+      "heightPx": 64.3,
+      "widthPx": 52.5,
+      "topEm": 0,
+      "bottomEm": 2.1433
+    },
+    "open": {
+      "name": "open-paren",
+      "topPx": 0,
+      "bottomPx": 64.3,
+      "heightPx": 64.3,
+      "widthPx": 14.19,
+      "topEm": 0,
+      "bottomEm": 2.1433
+    },
+    "close": {
+      "name": "close-paren",
+      "topPx": 0,
+      "bottomPx": 64.3,
+      "heightPx": 64.3,
+      "widthPx": 14.19,
+      "topEm": 0,
+      "bottomEm": 2.1433
+    },
+    "n": {
+      "name": "n",
+      "topPx": 5.03,
+      "bottomPx": 19.69,
+      "heightPx": 14.66,
+      "widthPx": 16.94,
+      "topEm": 0.1677,
+      "bottomEm": 0.6563
+    },
+    "k": {
+      "name": "k",
+      "topPx": 39.09,
+      "bottomPx": 60.53,
+      "heightPx": 21.44,
+      "widthPx": 15.98,
+      "topEm": 1.303,
+      "bottomEm": 2.0177
+    },
+    "numBox": {
+      "name": "num-box",
+      "topPx": 5.03,
+      "bottomPx": 39.09,
+      "heightPx": 34.06,
+      "widthPx": 16.94,
+      "topEm": 0.1677,
+      "bottomEm": 1.303
+    },
+    "denBox": {
+      "name": "den-box",
+      "topPx": 39.09,
+      "bottomPx": 60.53,
+      "heightPx": 21.44,
+      "widthPx": 16.94,
+      "topEm": 1.303,
+      "bottomEm": 2.0177
+    },
+    "gap_n_bottom_to_k_top": {
+      "px": 19.4,
+      "em": 0.6467
+    },
+    "gap_below_k": {
+      "px": 3.77,
+      "em": 0.1257
+    },
+    "styles": {
+      "frac": "vertical-align: -0.686em;",
+      "num": "padding-bottom: 0.647em;",
+      "fracType": "d",
+      "atop": "true"
+    }
+  },
+  "alphaEqt": {
+    "source": "alphaeqt-rendercompare",
+    "fontSizePx": 30,
+    "root": {
+      "widthPx": 51.33,
+      "heightPx": 64.32,
+      "ascentPx": 39.9,
+      "descentPx": 24.42,
+      "heightEm": 2.144
+    },
+    "n": {
+      "name": "n",
+      "baselineY": 20.310000000000002,
+      "topPx": 4.99,
+      "bottomPx": 19.66,
+      "heightPx": 14.67,
+      "topEm": 0.1663,
+      "bottomEm": 0.6553
+    },
+    "k": {
+      "name": "k",
+      "baselineY": -20.580000000000002,
+      "topPx": 39.1,
+      "bottomPx": 60.55,
+      "heightPx": 21.45,
+      "topEm": 1.3033,
+      "bottomEm": 2.0183
+    },
+    "delimiters": {
+      "open": {
+        "widthPx": 14.19,
+        "heightPx": 64.32
+      },
+      "close": {
+        "widthPx": 14.19,
+        "heightPx": 64.32
+      }
+    },
+    "gap_n_bottom_to_k_top": {
+      "px": 19.44,
+      "em": 0.648
+    },
+    "gap_below_k": {
+      "px": 45.3,
+      "em": 1.51
+    },
+    "raw": {
+      "n": {
+        "y": 20.310000000000002,
+        "descent": 0.3,
+        "kind": "MTCTLineDisplay",
+        "ascent": 14.37,
+        "width": 16.95,
+        "text": "n",
+        "depth": 3,
+        "x": 3
+      },
+      "k": {
+        "y": -20.580000000000002,
+        "kind": "MTCTLineDisplay",
+        "ascent": 21.15,
+        "width": 15.99,
+        "descent": 0.3,
+        "depth": 3,
+        "x": 3.4799999999999995,
+        "text": "k"
+      },
+      "frac": {
+        "depth": 2,
+        "ascent": 39.668571428571425,
+        "kind": "MTFractionDisplay",
+        "y": 0.21642857142857252,
+        "x": 14.19,
+        "width": 22.95,
+        "descent": 24.621428571428574
+      }
+    }
+  }
+}

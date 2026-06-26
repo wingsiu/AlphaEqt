@@ -2,24 +2,17 @@
 //  LeftRight.swift
 //  AlphaEqt
 //
-//  Parser handler for \left...\right delimiter pairs.
-//  The lexer already combines \left( → \left( token, etc.
+//  Parser handler for \left...\right delimiter pairs (with optional \middle).
 //
 
 import Foundation
 
-/// Parses `\left<delim> ... \right<delim>` into a `.leftright` AST node.
-/// The lexer already merges `\left` + delimiter into a single
-/// `.customDelimiterLeft` token (e.g., `\left(`), and similarly
-/// `\right` + delimiter into `.customDelimiterRight`.
+/// Parses `\left<delim> ... [\middle<delim> ...]* \right<delim>` into a `.leftright` AST node.
 func handleLeftRightCommand(tokens: ArraySlice<Token>, index: inout Int) -> ASTNode? {
     let leftToken = tokens[tokens.startIndex]
-    // Extract delimiter char from combined token text
-    let leftText = leftToken.text  // e.g., "\left(", "\left[", "\left|"
-    guard leftText.hasPrefix("\\left"), leftText.count > 5 else { return nil }
-    let leftDelim = String(leftText.suffix(from: leftText.index(leftText.startIndex, offsetBy: 5)))
+    guard leftToken.kind == .customDelimiterLeft else { return nil }
+    let leftDelim = DelimiterUtils.leftDelimiter(from: leftToken.text)
 
-    // Find matching \right
     var depth = 0
     var innerTokens: [Token] = []
     var rightDelim = ""
@@ -31,35 +24,58 @@ func handleLeftRightCommand(tokens: ArraySlice<Token>, index: inout Int) -> ASTN
             innerTokens.append(t)
         } else if t.kind == .customDelimiterRight {
             if depth == 0 {
-                // Found matching \right
-                let rightText = t.text  // e.g., "\right)", "\right]"
-                if rightText.hasPrefix("\\right"), rightText.count > 6 {
-                    rightDelim = String(rightText.suffix(from: rightText.index(rightText.startIndex, offsetBy: 6)))
-                }
+                rightDelim = DelimiterUtils.rightDelimiter(from: t.text)
+                i += 1
                 break
-            } else {
-                depth -= 1
-                innerTokens.append(t)
             }
+            depth -= 1
+            innerTokens.append(t)
         } else {
             innerTokens.append(t)
         }
         i += 1
     }
 
-    // Parse inner content
+    let segments = splitOnMiddle(innerTokens)
     let parser = LatexParser()
-    let innerNodes = parser.parse(tokens: innerTokens)
+    var segmentNodes: [ASTNode] = []
+    for seg in segments {
+        let innerNodes = parser.parse(tokens: seg)
+        let group = ASTNode(type: .ordgroup, text: nil,
+                            childNodes: innerNodes.isEmpty ? nil : innerNodes)
+        segmentNodes.append(group)
+    }
 
-    // Build .leftright node with children: [innerGroup, left, right]
-    // left and right are stored as metadata (the delimiter chars)
-    let innerGroup = ASTNode(type: .ordgroup, text: nil, childNodes: innerNodes.isEmpty ? nil : innerNodes)
+    index = i - tokens.startIndex
+    let middleDelims = extractMiddleDelimiters(innerTokens)
+    let meta = "\(leftDelim)\0\(rightDelim)\0\(middleDelims.joined(separator: "\0"))"
+    return ASTNode(type: .leftright, text: meta, childNodes: segmentNodes)
+}
 
-    index = i - tokens.startIndex + 1  // advance past \right token
-    // Use \0 separator to avoid collisions with delimiter chars (e.g. "|")
-    return ASTNode(
-        type: .leftright,
-        text: "\(leftDelim)\0\(rightDelim)",
-        childNodes: [innerGroup]
-    )
+private func splitOnMiddle(_ tokens: [Token]) -> [[Token]] {
+    var segments: [[Token]] = [[]]
+    var depth = 0
+    for t in tokens {
+        if t.kind == .customDelimiterLeft { depth += 1 }
+        else if t.kind == .customDelimiterRight { depth -= 1 }
+        if t.kind == .customDelimiterMiddle && depth == 0 {
+            segments.append([])
+            continue
+        }
+        segments[segments.count - 1].append(t)
+    }
+    return segments
+}
+
+private func extractMiddleDelimiters(_ tokens: [Token]) -> [String] {
+    var depth = 0
+    var delims: [String] = []
+    for t in tokens {
+        if t.kind == .customDelimiterLeft { depth += 1 }
+        else if t.kind == .customDelimiterRight { depth -= 1 }
+        else if t.kind == .customDelimiterMiddle && depth == 0 {
+            delims.append(DelimiterUtils.middleDelimiter(from: t.text))
+        }
+    }
+    return delims
 }

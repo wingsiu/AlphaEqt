@@ -220,6 +220,9 @@ public class Typesetter: @unchecked Sendable {
         case .leftright: return renderLeftRight(node)
         case .array:     return renderArray(node)
         case .accent:    return renderAccent(node)
+        case .horizBrace: return renderHorizBrace(node)
+        case .stack:     return renderStack(node)
+        case .xarrow:    return renderXArrow(node)
         case .overline:  return renderOverline(node)
         case .underline: return renderUnderline(node)
         case .color:     return renderColor(node)
@@ -429,6 +432,29 @@ public class Typesetter: @unchecked Sendable {
             return opsDisplay
         }
 
+        if baseNode.type == .horizBrace, let brace = base as? MTAccentDisplay, let accent = brace.accent {
+            let isOver = baseNode.text == "overbrace"
+            let fs = font.size
+            let labelGap = TeXStackMetrics.horizBraceLabelGap(fs)
+            if let sup = supDisplay, isOver {
+                let padTop = TeXStackMetrics.horizBraceLabelPadTop(fs)
+                let braceTop = accent.position.y + accent.ascent
+                sup.position = CGPoint(x: (brace.width - sup.width) / 2,
+                                       y: braceTop + labelGap + sup.descent)
+                brace.ascent = padTop + sup.position.y + sup.ascent
+                return MTSupSubDisplay(base: brace, superscript: sup, subscript: nil, scriptSpace: 0)
+            }
+            if let sub = subDisplay, !isOver {
+                let padBottom = TeXStackMetrics.horizBraceLabelPadTop(fs)
+                let braceBottom = accent.position.y - accent.descent
+                sub.position = CGPoint(x: (brace.width - sub.width) / 2,
+                                       y: braceBottom - labelGap - sub.ascent)
+                brace.descent = padBottom + max(brace.descent, -(sub.position.y - sub.descent))
+                return MTSupSubDisplay(base: brace, superscript: nil, subscript: sub, scriptSpace: 0)
+            }
+            return brace
+        }
+
         let subXDelta: CGFloat
         if isLargeOp, !isLimitsOp, let gd = base as? MTGlyphDisplay {
             subXDelta = gd.leftMargin
@@ -544,7 +570,10 @@ public class Typesetter: @unchecked Sendable {
         // Per TeX: shift/gap values depend on the fraction's own style level.
         let fracFontSize = Self.getStyleSize(style, baseFont: font)
         let mt = font.copy(withSize: fracFontSize).mathTable
+        let fracKind = node.text ?? ""
+        let isBinom = ["binom", "dbinom", "tbinom"].contains(fracKind)
         let isDisplay = style == .display
+        let ruleThickness = isBinom ? 0 : mt.fractionRuleThickness
 
         // TeX Appendix G: use em-based shift parameters (like MathJax).
         // These are the classic TeX font parameters, not OpenType MATH table values.
@@ -564,17 +593,31 @@ public class Typesetter: @unchecked Sendable {
         let styleLabel = isDisplay ? "D" : (style == .text ? "T" : (style == .script ? "S" : "SS"))
         print("[FRAC \(styleLabel)] fontSize=\(fracFontSize) numAscent=\(num.ascent) numDescent=\(num.descent) denAscent=\(den.ascent) denDescent=\(den.descent)")
         print("[FRAC \(styleLabel)] shiftUp=\(numShiftUp) shiftDown=\(denShiftDown) gapMinNum=\(numGapMin) gapMinDen=\(denGapMin) axis=\(mt.axisHeight) rule=\(mt.fractionRuleThickness)")
-        return MTFractionDisplay(
+        let binomDisplay: Bool = {
+            switch fracKind {
+            case "dbinom": return true
+            case "tbinom": return false
+            case "binom": return style == .display
+            default: return false
+            }
+        }()
+        let fracDisp = MTFractionDisplay(
             numerator: num, denominator: den,
-            ruleThickness: mt.fractionRuleThickness,
+            ruleThickness: ruleThickness,
             axisHeight: mt.axisHeight,
             numeratorShiftUp: numShiftUp,
             denominatorShiftDown: denShiftDown,
             numeratorGapMin: numGapMin,
             denominatorGapMin: denGapMin,
             barOverhang: barOverhang,
-            fractionPadding: fractionPadding
+            fractionPadding: fractionPadding,
+            binomDisplayStyle: isBinom ? binomDisplay : nil,
+            binomFontSize: isBinom ? fracFontSize : nil
         )
+        if isBinom {
+            return wrapBinomWithDelimiters(fracDisp)
+        }
+        return fracDisp
     }
 
     // MARK: - Large Operators
@@ -668,15 +711,26 @@ public class Typesetter: @unchecked Sendable {
         CTFontGetAdvancesForGlyphs(measurementFont.ctFont, .horizontal,
                                    &varGlyphs, &advances, numVariants)
 
+        var bestIdx: Int?
+        var bestTotal = CGFloat.infinity
         for i in 0..<numVariants {
             let bounds = bboxes[i]
             let a = max(0, bounds.maxY)
             let d = max(0, -bounds.minY)
-            let w = advances[i].width
-            if a + d >= height {
-                glyphAscent = a; glyphDescent = d; glyphWidth = w
-                return varGlyphs[i]
+            let total = a + d
+            if total >= height {
+                if total < bestTotal {
+                    bestTotal = total
+                    bestIdx = i
+                }
             }
+        }
+        if let idx = bestIdx {
+            let bounds = bboxes[idx]
+            glyphAscent = max(0, bounds.maxY)
+            glyphDescent = max(0, -bounds.minY)
+            glyphWidth = advances[idx].width
+            return varGlyphs[idx]
         }
         let lastBounds = bboxes[numVariants - 1]
         glyphAscent = max(0, lastBounds.maxY)
@@ -947,65 +1001,115 @@ public class Typesetter: @unchecked Sendable {
     /// largest pre-built variant glyph, or falls back to glyph assembly
     /// (stacked parts) for very tall expressions.
     private func renderLeftRight(_ node: ASTNode) -> MTDisplay? {
-        guard let children = node.childNodes, children.count >= 1 else { return nil }
-        guard let innerGroup = children.first else { return nil }
+        guard let segmentNodes = node.childNodes, !segmentNodes.isEmpty else { return nil }
 
-        // Parse delimiter chars from node.text "leftDelim\0rightDelim"
-        let parts = (node.text ?? ".\0.").split(separator: "\0")
-        let leftDelim = parts.count > 0 ? String(parts[0]) : "."
-        let rightDelim = parts.count > 1 ? String(parts[1]) : "."
-
-        // Render inner content
-        let subTS = Typesetter(font: font, style: style, cramped: self.cramped,
-                               textColor: textColor, fontStyle: fontStyle)
-        guard let innerDisplay = subTS.createDisplay(innerGroup.childNodes ?? []) else { return nil }
+        let metaParts = (node.text ?? ".\0.").split(separator: "\0", omittingEmptySubsequences: false).map(String.init)
+        let leftDelim = metaParts.count > 0 ? metaParts[0] : "."
+        let rightDelim = metaParts.count > 1 ? metaParts[1] : "."
+        let middleDelims = metaParts.count > 2 ? Array(metaParts.dropFirst(2)) : []
 
         let mt = font.mathTable
-        let axis = mt.axisHeight
+        let delimiterPadding: CGFloat = 0
+        let subTS = Typesetter(font: font, style: style, cramped: self.cramped,
+                               textColor: textColor, fontStyle: fontStyle)
 
-        // Calculate required delimiter height (SwiftMath algorithm)
-        let delta = max(innerDisplay.ascent - axis, innerDisplay.descent + axis)
-        let d1 = (delta / 500) * 901  // 90% coverage
-        let d2 = 2 * delta - 5         // 5pt shortfall
-        let glyphHeight = max(d1, d2)
+        var segments: [MTDisplay] = []
+        for segNode in segmentNodes {
+            if let inner = subTS.createDisplay(segNode.childNodes ?? []) {
+                segments.append(inner)
+            }
+        }
+        guard !segments.isEmpty else { return nil }
 
-        let delimiterPadding = mt.muUnit * 2
+        let maxH = segments.map { $0.ascent + $0.descent }.max() ?? mt.axisHeight * 2
+        let delta = max(maxH * 0.5 - mt.axisHeight, mt.axisHeight)
+        let glyphHeight = max((delta / 500) * 901, 2 * delta - 5)
+
+        func makeDelimiter(_ delim: String) -> MTDisplay? {
+            guard delim != "." else { return nil }
+            guard let gd = makeDelimiterGlyph(delim, height: glyphHeight) else { return nil }
+            gd.position = .zero
+            return gd
+        }
+
         var elements: [MTDisplay] = []
+        var x: CGFloat = 0
 
-        // Left delimiter
-        if leftDelim != "." {
-            let leftGD = makeDelimiterGlyph(leftDelim, height: glyphHeight)
-            leftGD?.position = .zero
-            if let lg = leftGD {
-                elements.append(lg)
+        if let lg = makeDelimiter(leftDelim) {
+            lg.position.x = x
+            elements.append(lg)
+            x += lg.width + delimiterPadding
+        }
+
+        for (idx, inner) in segments.enumerated() {
+            inner.position = CGPoint(x: x, y: 0)
+            elements.append(inner)
+            x += inner.width + delimiterPadding
+            if idx < middleDelims.count, let md = makeDelimiter(middleDelims[idx]) {
+                md.position.x = x
+                elements.append(md)
+                x += md.width + delimiterPadding
             }
         }
 
-        // Inner content
-        innerDisplay.position = CGPoint(
-            x: (leftDelim != "." ? (elements.first?.width ?? 0) + delimiterPadding : 0),
-            y: 0
-        )
-        elements.append(innerDisplay)
-
-        // Right delimiter
-        if rightDelim != "." {
-            let rightX = (elements.last?.position.x ?? 0) + (elements.last?.width ?? 0) + delimiterPadding
-            let rightGD = makeDelimiterGlyph(rightDelim, height: glyphHeight)
-            rightGD?.position = CGPoint(x: rightX, y: 0)
-            if let rg = rightGD {
-                elements.append(rg)
-            }
+        if let rg = makeDelimiter(rightDelim) {
+            rg.position.x = x
+            elements.append(rg)
         }
 
-        let list = MTMathListDisplay(withDisplays: elements, range: node.indexRange)
-        return list
+        return MTMathListDisplay(withDisplays: elements, range: node.indexRange)
+    }
+
+    /// `\binom` delimiters: MathJax-sized `\biggl`/`\biggr` (fixed 2.143em cap).
+    private func wrapBinomWithDelimiters(_ inner: MTDisplay) -> MTDisplay {
+        let delimH = TeXStackMetrics.binomDelimCap(font.size)
+        var elements: [MTDisplay] = []
+        var x: CGFloat = 0
+        guard let lg = makeDelimiterGlyph("(", height: delimH, tightFit: true) else {
+            return wrapWithDelimiters(inner, left: "(", right: ")", minHeight: delimH)
+        }
+        lg.position = .zero
+        elements.append(lg)
+        x = lg.width
+        let innerCenter = (inner.ascent - inner.descent) / 2
+        let delimCenter = (lg.ascent - lg.descent) / 2
+        let yAlign = delimCenter - innerCenter
+        inner.position = CGPoint(x: x, y: yAlign)
+        elements.append(inner)
+        x += inner.width
+        if let rg = makeDelimiterGlyph(")", height: delimH, tightFit: true) {
+            rg.position = CGPoint(x: x, y: 0)
+            elements.append(rg)
+        }
+        return MTMathListDisplay(withDisplays: elements, range: inner.range)
+    }
+
+    private func wrapWithDelimiters(_ inner: MTDisplay, left: String, right: String,
+                                    minHeight: CGFloat? = nil) -> MTDisplay {
+        let mt = font.mathTable
+        let h = inner.ascent + inner.descent
+        let glyphHeight = max(h, minHeight ?? mt.axisHeight * 2)
+        var elements: [MTDisplay] = []
+        var x: CGFloat = 0
+        if let lg = makeDelimiterGlyph(left, height: glyphHeight) {
+            lg.position = .zero
+            elements.append(lg)
+            x = lg.width
+        }
+        inner.position = CGPoint(x: x, y: 0)
+        elements.append(inner)
+        x += inner.width
+        if let rg = makeDelimiterGlyph(right, height: glyphHeight) {
+            rg.position = CGPoint(x: x, y: 0)
+            elements.append(rg)
+        }
+        return MTMathListDisplay(withDisplays: elements, range: inner.range)
     }
 
     /// Builds a single stretchy delimiter glyph using variants or assembly.
     /// When the largest pre‑built variant is too short, falls back to glyph
     /// assembly (stacked parts: bottom + extender + top).
-    private func makeDelimiterGlyph(_ delim: String, height: CGFloat) -> MTDisplay? {
+    private func makeDelimiterGlyph(_ delim: String, height: CGFloat, tightFit: Bool = false) -> MTDisplay? {
         let mt = font.mathTable
         let axis = mt.axisHeight
 
@@ -1019,21 +1123,43 @@ public class Typesetter: @unchecked Sendable {
             return nil
         }
 
-        // Find the largest variant
+        let parts = mt.getVerticalGlyphAssembly(forGlyph: baseGlyph)
         var glyphAscent: CGFloat = 0, glyphDescent: CGFloat = 0, glyphWidth: CGFloat = 0
-        let glyph = findGlyph(baseGlyph, withHeight: height,
+        // Binom tight-fit: prefer the text-style variant tier, allowing slight protrusion
+        // instead of jumping to a taller assembly (MathJax `\biggl` stays compact).
+        let variantTarget = tightFit ? height * 0.92 : height
+        let glyph = findGlyph(baseGlyph, withHeight: variantTarget,
                               using: mt,
                               measurementFont: font,
                               glyphAscent: &glyphAscent,
                               glyphDescent: &glyphDescent,
                               glyphWidth: &glyphWidth)
+        let variantH = glyphAscent + glyphDescent
 
-        // If the largest variant isn't tall enough, try assembly
-        if glyphAscent + glyphDescent < height {
-            let parts = mt.getVerticalGlyphAssembly(forGlyph: baseGlyph)
-            if !parts.isEmpty {
-                return buildAssemblyDisplay(parts: parts, targetHeight: height, axis: axis)
+        if tightFit {
+            var best: MTDisplay?
+            var bestH = CGFloat.infinity
+            if variantH >= height * 0.96 {
+                let gd = MTGlyphDisplay(glyph: glyph, range: NSRange(location: NSNotFound, length: 0), font: font)
+                gd.rawAscent = glyphAscent
+                gd.rawDescent = glyphDescent
+                gd.width = glyphWidth
+                gd.shiftDown = 0.5 * (glyphAscent - glyphDescent) - axis
+                gd.position = .zero
+                best = gd
+                bestH = variantH
             }
+            if !parts.isEmpty, let asm = buildAssemblyDisplay(parts: parts, targetHeight: height, axis: axis) {
+                let asmH = asm.ascent + asm.descent
+                if asmH >= height, asmH < bestH {
+                    best = asm
+                    bestH = asmH
+                }
+            }
+            if let best { return best }
+        } else if variantH < height, !parts.isEmpty,
+                  let asm = buildAssemblyDisplay(parts: parts, targetHeight: height, axis: axis) {
+            return asm
         }
 
         let gd = MTGlyphDisplay(glyph: glyph, range: NSRange(location: NSNotFound, length: 0),
@@ -1062,8 +1188,15 @@ public class Typesetter: @unchecked Sendable {
         let topAdv = top.fullAdvance
 
         let nonExtHeight = bottomAdv + topAdv
-        let extHeight = max(0, targetHeight - nonExtHeight)
-        let extCount = max(1, Int(ceil(extHeight / extAdv)))
+        let gap = max(0, targetHeight - nonExtHeight)
+        let extCount: Int
+        if extAdv > 0.001 {
+            var count = Int(floor(gap / extAdv))
+            if nonExtHeight + CGFloat(count) * extAdv < targetHeight { count += 1 }
+            extCount = count
+        } else {
+            extCount = 0
+        }
 
         var glyphs: [CGGlyph] = []
         var offsets: [CGFloat] = []
@@ -1409,6 +1542,16 @@ public class Typesetter: @unchecked Sendable {
         return disp
     }
 
+    /// Stretch a horizontal glyph construction to an exact layout width (MathJax `stretchy-h` box).
+    /// Not a TeXbook rule — bridges OpenType assembly advance vs desired box width.
+    private func scaleHorizontalConstruction(_ display: MTDisplay, toWidth target: CGFloat) {
+        guard let c = display as? MTGlyphConstructionDisplay, c.width > 0 else { return }
+        guard abs(c.width - target) > 0.01 else { c.width = target; return }
+        let scale = target / c.width
+        for i in 0..<c.positions.count { c.positions[i].x *= scale }
+        c.width = target
+    }
+
     private static let stretchyAccentOperators: [String: String] = [
         "overrightarrow": "\u{2192}",
         "overleftarrow": "\u{2190}",
@@ -1419,6 +1562,15 @@ public class Typesetter: @unchecked Sendable {
         "overleftharpoondown": "\u{21BD}",
         "overrightharpoon": "\u{21C0}",
         "overleftharpoon": "\u{21BC}",
+        "overgroup": "\u{23E0}",
+        "overlinesegment": "\u{23DC}",
+        "widecheck": "\u{030C}",
+    ]
+    private static let alwaysStretchyAccents: Set<String> = [
+        "overgroup", "overlinesegment", "widecheck",
+        "overrightharpoonup", "overrightharpoondown",
+        "overleftharpoonup", "overleftharpoondown",
+        "overrightharpoon", "overleftharpoon",
     ]
     private static let stretchyAccentKernNames: Set<String> = [
         "overrightarrow", "overleftarrow", "overleftrightarrow", "vec",
@@ -1501,7 +1653,7 @@ public class Typesetter: @unchecked Sendable {
         // but stay at Rule 12 height; shiftDown aligns ink with combining marks.
         let isMultiChar = !isSingleCharAccentee(node)
         let usesOperatorArrow = Self.stretchyAccentOperators[accentName] != nil
-            && (isMultiChar || accentName.contains("harpoon"))
+            && (isMultiChar || accentName.contains("harpoon") || Self.alwaysStretchyAccents.contains(accentName))
         let effectiveAccentChar: String
         if accentName == "bar" && isMultiChar {
             effectiveAccentChar = "\u{00AF}"  // ¯  standalone macron
@@ -1591,6 +1743,173 @@ public class Typesetter: @unchecked Sendable {
         let display = MTAccentDisplay(accent: accentBase, accentee: accentee, range: node.indexRange)
         display.position = .zero
         return display
+    }
+
+    private static let horizBraceGlyphs: [String: String] = [
+        "overbrace": "\u{23DE}",
+        "underbrace": "\u{23DF}",
+    ]
+
+    private func buildStretchyGlyphDisplay(baseGlyph: CGGlyph, accentName: String,
+                                           targetWidth: CGFloat, node: ASTNode) -> MTDisplay? {
+        var ga: CGFloat = 0, gd: CGFloat = 0, gw: CGFloat = 0
+        let g = findHorizontalVariantGlyph(baseGlyph, withMaxWidth: targetWidth,
+                                         glyphAscent: &ga, glyphDescent: &gd, glyphWidth: &gw)
+        if gw < targetWidth * 0.95 {
+            let parts = font.mathTable.getHorizontalGlyphAssembly(forGlyph: baseGlyph)
+            if parts.count >= 2,
+               let asm = buildHorizontalAssemblyDisplay(parts: parts, targetWidth: targetWidth,
+                                                        ascent: &ga, descent: &gd) {
+                return asm
+            }
+        }
+        let disp = MTGlyphDisplay(glyph: g, range: node.indexRange, font: font)
+        disp.rawAscent = ga; disp.rawDescent = gd; disp.width = gw
+        return disp
+    }
+
+    private func renderHorizBrace(_ node: ASTNode) -> MTDisplay? {
+        guard let children = node.childNodes, let child = children.first else { return nil }
+        guard let accentee = createDisplay([child]) else { return nil }
+        guard let accentName = node.text, let chStr = Self.horizBraceGlyphs[accentName] else { return accentee }
+        guard let ch = chStr.unicodeScalars.first else { return accentee }
+        let up = UnsafeMutablePointer<UniChar>.allocate(capacity: 1); defer { up.deallocate() }
+        up[0] = UniChar(ch.value)
+        var baseGlyph: CGGlyph = 0
+        guard CTFontGetGlyphsForCharacters(font.ctFont, up, &baseGlyph, 1) else { return accentee }
+        guard let accentBase = buildStretchyGlyphDisplay(baseGlyph: baseGlyph, accentName: accentName,
+                                                         targetWidth: accentee.width, node: node) else { return accentee }
+        let placeAbove = accentName == "overbrace"
+        let fs = font.size
+        let bodyKern = TeXStackMetrics.horizBraceBodyKern(fs)
+        let ax = (accentee.width - accentBase.width) / 2
+        accentee.position = .zero
+        let ay: CGFloat
+        if placeAbove {
+            let trim = TeXStackMetrics.horizBraceAscentTrim(fs)
+            ay = accentee.ascent + bodyKern - accentBase.ascent * trim
+        } else {
+            ay = -(accentee.descent + bodyKern * 0.35 + accentBase.ascent * 0.45)
+        }
+        accentBase.position = CGPoint(x: ax, y: ay)
+        return MTAccentDisplay(accent: accentBase, accentee: accentee, range: node.indexRange, placeAbove: placeAbove)
+    }
+
+    private func renderStack(_ node: ASTNode) -> MTDisplay? {
+        guard let children = node.childNodes, children.count >= 2 else { return nil }
+        let scriptAbove = node.text == "overset"
+        let scriptNode = children[0]
+        let baseNode = children[1]
+        let subTS = Typesetter(font: font, style: style, cramped: cramped,
+                               textColor: textColor, fontStyle: fontStyle)
+        let scriptStyleTS = Typesetter(font: font, style: scriptStyle(), cramped: true,
+                                       textColor: textColor, fontStyle: fontStyle)
+        guard let script = scriptStyleTS.renderNode(scriptNode),
+              let base = subTS.renderNode(baseNode) else { return nil }
+        let fs = font.size
+        let disp = MTStackDisplay(script: script, base: base, scriptAbove: scriptAbove, range: node.indexRange)
+        disp.width = max(script.width, base.width)
+        base.position = .zero
+        if scriptAbove {
+            // KaTeX assembleSupSub.ts: limits sup on op base (overset)
+            let kern = max(TeXStackMetrics.bigOpSpacing1(fs),
+                           TeXStackMetrics.bigOpSpacing3(fs) - script.descent)
+            script.position = CGPoint(x: (disp.width - script.width) / 2,
+                                      y: base.ascent + kern + script.descent)
+            disp.ascent = script.position.y + script.ascent + TeXStackMetrics.bigOpSpacing5(fs)
+            disp.descent = base.descent
+        } else {
+            // KaTeX assembleSupSub.ts: limits sub on op base (underset)
+            let kern = max(TeXStackMetrics.bigOpSpacing2(fs),
+                           TeXStackMetrics.bigOpSpacing4(fs) - script.ascent)
+            script.position = CGPoint(x: (disp.width - script.width) / 2,
+                                      y: -(base.descent + kern + script.ascent))
+            disp.ascent = base.ascent
+            disp.descent = base.descent + kern + script.ascent + script.descent
+                + TeXStackMetrics.bigOpSpacing5(fs)
+        }
+        return disp
+    }
+
+    private static let xArrowGlyphs: [String: String] = [
+        "xrightarrow": "\u{2192}", "xleftarrow": "\u{2190}",
+        "xRightarrow": "\u{21D2}", "xLeftarrow": "\u{21D0}",
+        "xleftrightarrow": "\u{2194}", "xLeftrightarrow": "\u{21D4}",
+    ]
+
+    private enum XArrowKind { case right, left, both }
+
+    private static func xArrowKind(for name: String) -> XArrowKind {
+        let hasLeft = name.localizedCaseInsensitiveContains("left")
+        let hasRight = name.localizedCaseInsensitiveContains("right")
+        if hasLeft && hasRight { return .both }
+        if hasLeft { return .left }
+        return .right
+    }
+
+    /// AMS extensible arrows (`\xrightarrow`, `\xleftarrow`, …).
+    ///
+    /// Box width and label placement use KaTeX/AMS rules (`TeXStackMetrics`).
+    /// Arrow glyph position may add empirical ink shifts; labels anchor to the unshifted
+    /// arrow top so only the stretchy operator moves. Horizontal assembly is scaled to the
+    /// label box width (MathJax `stretchy-h` behavior).
+    private func renderXArrow(_ node: ASTNode) -> MTDisplay? {
+        guard let name = node.text, let arrowChar = Self.xArrowGlyphs[name] else { return nil }
+        guard let children = node.childNodes, !children.isEmpty else { return nil }
+        let aboveNode = children[0]
+        let belowNode = children.count > 1 ? children[1] : nil
+        let subTS = Typesetter(font: font, style: .script, cramped: true,
+                               textColor: textColor, fontStyle: fontStyle)
+        guard let above = subTS.renderNode(aboveNode) else { return nil }
+        let below = belowNode.flatMap { subTS.renderNode($0) }
+        let fs = font.size
+        let kind = Self.xArrowKind(for: name)
+        let minW = TeXStackMetrics.xArrowMinWidth(fs)
+        let hPad = TeXStackMetrics.xArrowHBoxPad(fs)
+        let contentW = max(above.width, below?.width ?? 0)
+        var labelW = max(contentW + hPad, minW)
+        if kind == .left {
+            labelW += TeXStackMetrics.xArrowLeftExtraWidth(fs)
+        }
+        guard let ch = arrowChar.unicodeScalars.first else { return nil }
+        let up = UnsafeMutablePointer<UniChar>.allocate(capacity: 1); defer { up.deallocate() }
+        up[0] = UniChar(ch.value)
+        var baseGlyph: CGGlyph = 0
+        guard CTFontGetGlyphsForCharacters(font.ctFont, up, &baseGlyph, 1),
+              let arrow = buildStretchyGlyphDisplay(baseGlyph: baseGlyph, accentName: name,
+                                                    targetWidth: labelW, node: node) else { return nil }
+        scaleHorizontalConstruction(arrow, toWidth: labelW)
+        let axis = font.mathTable.axisHeight
+        let padTop = TeXStackMetrics.xArrowLabelPadTop(fs)
+        let underPad = TeXStackMetrics.xArrowUnderPadTop(fs)
+        let disp = MTXArrowDisplay(above: above, below: below, arrow: arrow, range: node.indexRange)
+        disp.width = labelW
+        let axisNudge = below != nil ? TeXStackMetrics.xArrowAxisNudge(fs) : 0
+        let (shiftX, shiftY): (CGFloat, CGFloat) = switch kind {
+        case .right:
+            (TeXStackMetrics.xArrowRightShiftX(fs), TeXStackMetrics.xArrowRightShiftY(fs))
+        case .left:
+            (TeXStackMetrics.xArrowLeftShiftX(fs), TeXStackMetrics.xArrowLeftShiftY(fs))
+        case .both:
+            (0, TeXStackMetrics.xArrowRightShiftY(fs))
+        }
+        let baseArrowY = axis - (arrow.ascent - arrow.descent) / 2 - axisNudge
+        arrow.position = CGPoint(x: shiftX, y: baseArrowY + shiftY)
+        let baseArrowTop = baseArrowY + arrow.ascent
+        let arrowBottom = arrow.position.y - arrow.descent
+        above.position = CGPoint(x: (disp.width - above.width) / 2,
+                                 y: baseArrowTop + above.descent)
+        var top = padTop + above.position.y + above.ascent
+        var bottom = max(arrow.descent, -(arrow.position.y - arrow.descent))
+        if let b = below {
+            b.position = CGPoint(x: (disp.width - b.width) / 2,
+                                 y: arrowBottom - underPad - b.ascent)
+            let belowInkBottom = -(b.position.y - b.descent)
+            bottom = max(bottom, belowInkBottom + TeXStackMetrics.xArrowUnderPadBottom(fs))
+        }
+        disp.ascent = top
+        disp.descent = bottom
+        return disp
     }
 
     private func renderOverline(_ node: ASTNode) -> MTDisplay? {

@@ -50,6 +50,9 @@ public enum ASTNodeType: String {
     case subarray       // Subarray node
     case underline      // Underline, e.g. \underline{x}
     case overline       // Overline, e.g. \overline{x}
+    case horizBrace     // \overbrace, \underbrace
+    case stack          // \overset, \underset
+    case xarrow         // \xrightarrow, \xleftarrow, ...
     case unicode        // Unicode character node
     case verb           // Verbatim node
     case pmb            // Bold math, e.g. \pmb{x}
@@ -174,7 +177,7 @@ public class ASTNode: CustomStringConvertible, @unchecked Sendable {
             return .close
         case .punct:
             return .punct
-        case .accent, .supsub, .frac, .genfrac, .sqrt, .root, .ordgroup, .array, .environment, .htmlmathml, .subarray, .underline, .overline, .lap, .inner, .hbox, .rule, .mathchoice, .tag:
+        case .accent, .supsub, .frac, .genfrac, .sqrt, .root, .ordgroup, .array, .environment, .htmlmathml, .subarray, .underline, .overline, .horizBrace, .stack, .xarrow, .lap, .inner, .hbox, .rule, .mathchoice, .tag:
             return .inner
         case .spacing, .kern:
             return .ord

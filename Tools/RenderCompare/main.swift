@@ -1,5 +1,6 @@
 import AlphaEqt
 import CoreGraphics
+import CoreText
 import Foundation
 import ImageIO
 
@@ -31,6 +32,26 @@ func dumpMetrics(_ latex: String) {
         if let ctLine = d as? MTCTLineDisplay, let atoms = ctLine.atoms {
             info["text"] = atoms.compactMap { $0.text }.joined()
         }
+        if let c = d as? MTGlyphConstructionDisplay, let ct = c.font?.ctFont {
+            var minX = CGFloat.infinity, maxX = -CGFloat.infinity
+            let count = min(c.glyphs.count, c.positions.count)
+            for i in 0..<count {
+                var g = c.glyphs[i]
+                let b = CTFontGetBoundingRectsForGlyphs(ct, .horizontal, &g, nil, 1)
+                let px = c.positions[i].x
+                minX = min(minX, px + b.minX)
+                maxX = max(maxX, px + b.maxX)
+            }
+            if minX.isFinite {
+                info["inkMinX"] = Double(minX)
+                info["inkMaxX"] = Double(maxX)
+            }
+        } else if let g = d as? MTGlyphDisplay, let ct = g.font?.ctFont {
+            var gv = g.glyph
+            let b = CTFontGetBoundingRectsForGlyphs(ct, .horizontal, &gv, nil, 1)
+            info["inkMinX"] = Double(b.minX)
+            info["inkMaxX"] = Double(b.maxX)
+        }
         if let rule = d as? MTRuleDisplay {
             info["ruleThickness"] = Double(rule.ruleThickness)
         }
@@ -43,6 +64,17 @@ func dumpMetrics(_ latex: String) {
         } else if let acc = d as? MTAccentDisplay {
             if let a = acc.accent { walk(a, depth: depth + 1) }
             if let ae = acc.accentee { walk(ae, depth: depth + 1) }
+        } else if let arr = d as? MTXArrowDisplay {
+            if let a = arr.above { walk(a, depth: depth + 1) }
+            if let ar = arr.arrow { walk(ar, depth: depth + 1) }
+            if let b = arr.below { walk(b, depth: depth + 1) }
+        } else if let ss = d as? MTSupSubDisplay {
+            if let b = ss.base { walk(b, depth: depth + 1) }
+            if let s = ss.superscript { walk(s, depth: depth + 1) }
+            if let s = ss.subscriptDisplay { walk(s, depth: depth + 1) }
+        } else if let st = d as? MTStackDisplay {
+            if let s = st.script { walk(s, depth: depth + 1) }
+            if let b = st.base { walk(b, depth: depth + 1) }
         }
     }
     walk(display, depth: 0)
@@ -148,6 +180,18 @@ let cases: [(String, String)] = [
     ("harpoons-over-left",   #"\overleftharpoonup{AB}"#),
     ("harpoons-over-down",   #"\overrightharpoondown{xy}"#),
     ("harpoons-over-mix",    #"\overrightharpoonup{AB} \quad \overleftharpoonup{CD}"#),
+    ("accent-overgroup",     #"\overgroup{AB}"#),
+    ("accent-overlinesegment", #"\overlinesegment{ABC}"#),
+    ("accent-widecheck",     #"\widecheck{AB}"#),
+    ("binom",                #"\binom{n}{k}"#),
+    ("dbinom",               #"\dbinom{n}{k}"#),
+    ("overbrace",            #"\overbrace{x+y}^{n}"#),
+    ("underbrace",           #"\underbrace{a+b}_{k}"#),
+    ("overset",              #"\overset{!}{=}"#),
+    ("xrightarrow",          #"\xrightarrow{f(x)}"#),
+    ("xleftarrow-below",     #"\xleftarrow[below]{above}"#),
+    ("middle-delimiter",     #"\left( a \middle| b \right)"#),
+    ("langle-delimiter",     #"\left\langle x \right\rangle"#),
     ("accent-tilde",    #"\tilde{x}"#),
     ("accent-dot",      #"\dot{x}"#),
     ("accent-ddot",     #"\ddot{x}"#),

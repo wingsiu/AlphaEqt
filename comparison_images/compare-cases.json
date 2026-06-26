@@ -1,261 +1,333 @@
 [
   {
-    "latex" : "\\frac{x}{y}",
-    "displayWidth" : 29.969999999999999,
     "displayHeight" : 61.829999999999998,
-    "label" : "fraction"
+    "displayWidth" : 29.969999999999999,
+    "label" : "fraction",
+    "latex" : "\\frac{x}{y}"
   },
   {
-    "displayHeight" : 76.923000000000002,
     "displayWidth" : 38.076000000000001,
+    "latex" : "\\frac{\\frac{a}{b}}{\\frac{c}{d}}",
     "label" : "nested-frac",
-    "latex" : "\\frac{\\frac{a}{b}}{\\frac{c}{d}}"
+    "displayHeight" : 76.923000000000002
   },
   {
     "displayWidth" : 90.373333333333335,
-    "latex" : "\\sqrt{x+1}",
     "label" : "sqrt",
-    "displayHeight" : 37.950000000000003
+    "displayHeight" : 37.950000000000003,
+    "latex" : "\\sqrt{x+1}"
   },
   {
-    "displayHeight" : 73.439999999999998,
-    "label" : "sqrt-nested",
+    "displayWidth" : 65.280000000000001,
     "latex" : "\\sqrt{\\frac{x}{y}}",
-    "displayWidth" : 65.280000000000001
+    "displayHeight" : 73.439999999999998,
+    "label" : "sqrt-nested"
   },
   {
-    "latex" : "x^2",
-    "displayWidth" : 27.164999999999999,
     "displayHeight" : 24.624000000000002,
-    "label" : "sup"
-  },
-  {
-    "displayHeight" : 18.869999999999997,
-    "label" : "sub",
-    "latex" : "x_1",
+    "label" : "sup",
+    "latex" : "x^2",
     "displayWidth" : 27.164999999999999
   },
   {
-    "latex" : "x_i^2",
     "displayWidth" : 27.164999999999999,
+    "label" : "sub",
+    "displayHeight" : 18.869999999999997,
+    "latex" : "x_1"
+  },
+  {
+    "label" : "supsub",
     "displayHeight" : 32.177999999999997,
-    "label" : "supsub"
+    "displayWidth" : 27.164999999999999,
+    "latex" : "x_i^2"
   },
   {
     "displayHeight" : 79.140000000000015,
-    "label" : "sum-display",
+    "displayWidth" : 56.975000000000001,
     "latex" : "\\displaystyle\\sum_{i=0}^n i^2",
-    "displayWidth" : 56.975000000000001
+    "label" : "sum-display"
   },
   {
     "displayWidth" : 82.963999999999999,
-    "label" : "sum-inline",
+    "latex" : "\\textstyle\\sum_{i=0}^n i^2",
     "displayHeight" : 34.289999999999999,
-    "latex" : "\\textstyle\\sum_{i=0}^n i^2"
+    "label" : "sum-inline"
   },
   {
+    "latex" : "\\displaystyle\\int_0^\\infty f(x)dx",
     "displayWidth" : 144.923,
     "label" : "integral",
-    "displayHeight" : 72.950999999999993,
-    "latex" : "\\displaystyle\\int_0^\\infty f(x)dx"
+    "displayHeight" : 72.950999999999993
   },
   {
+    "label" : "matrix",
     "latex" : "\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}",
-    "displayWidth" : 99.756666666666646,
-    "displayHeight" : 72,
-    "label" : "matrix"
+    "displayWidth" : 90.329999999999998,
+    "displayHeight" : 72
   },
   {
+    "latex" : "\\left(\\frac{x}{y}\\right)",
     "label" : "leftright",
-    "displayHeight" : 71.519999999999996,
-    "displayWidth" : 66.396666666666661,
-    "latex" : "\\left(\\frac{x}{y}\\right)"
+    "displayWidth" : 54.209999999999994,
+    "displayHeight" : 61.829999999999998
   },
   {
-    "displayWidth" : 16.77,
+    "label" : "accent-hat",
     "latex" : "\\hat{x}",
-    "displayHeight" : 20.52,
-    "label" : "accent-hat"
+    "displayWidth" : 16.77,
+    "displayHeight" : 20.52
   },
   {
-    "latex" : "\\vec{x}",
     "label" : "accent-vec",
     "displayWidth" : 16.77,
-    "displayHeight" : 28.09
+    "displayHeight" : 28.09,
+    "latex" : "\\vec{x}"
   },
   {
+    "latex" : "\\bar{x}",
     "displayHeight" : 18.600000000000001,
     "label" : "accent-bar",
-    "latex" : "\\bar{x}",
     "displayWidth" : 16.77
   },
   {
-    "latex" : "\\bar{ab}",
-    "displayHeight" : 25.799999999999997,
     "displayWidth" : 32.189999999999998,
-    "label" : "accent-bar-multi"
+    "label" : "accent-bar-multi",
+    "latex" : "\\bar{ab}",
+    "displayHeight" : 25.799999999999997
   },
   {
     "label" : "overline",
     "latex" : "\\overline{AB}",
-    "displayHeight" : 29.159999999999997,
-    "displayWidth" : 38.219999999999999
+    "displayWidth" : 38.219999999999999,
+    "displayHeight" : 29.159999999999997
   },
   {
     "displayWidth" : 16.77,
-    "latex" : "\\underline{x}",
     "displayHeight" : 24,
-    "label" : "underline"
+    "label" : "underline",
+    "latex" : "\\underline{x}"
   },
   {
-    "displayHeight" : 28.049999999999997,
-    "displayWidth" : 38.219999999999999,
+    "latex" : "\\widehat{AB}",
     "label" : "accent-widehat",
-    "latex" : "\\widehat{AB}"
+    "displayHeight" : 28.049999999999997,
+    "displayWidth" : 38.219999999999999
   },
   {
+    "latex" : "\\overrightarrow{AB}",
     "displayHeight" : 33.219999999999999,
-    "displayWidth" : 38.219999999999999,
     "label" : "accent-overrightarrow",
-    "latex" : "\\overrightarrow{AB}"
+    "displayWidth" : 43.469999999999999
   },
   {
     "label" : "accent-overleftarrow",
     "latex" : "\\overleftarrow{AB}",
-    "displayHeight" : 33.219999999999999,
-    "displayWidth" : 38.219999999999999
+    "displayWidth" : 38.219999999999999,
+    "displayHeight" : 33.219999999999999
   },
   {
-    "displayWidth" : 38.219999999999999,
-    "label" : "accent-overleftrightarrow",
+    "displayWidth" : 42.240000000000002,
+    "displayHeight" : 33.219999999999999,
     "latex" : "\\overleftrightarrow{AB}",
-    "displayHeight" : 33.219999999999999
+    "label" : "accent-overleftrightarrow"
   },
   {
-    "label" : "accent-arrows",
-    "displayWidth" : 151.53666666666663,
+    "displayHeight" : 33.819999999999993,
+    "displayWidth" : 163.11666666666665,
     "latex" : "\\overrightarrow{AB}\\;\\overleftarrow{CD}\\;\\overleftrightarrow{EF}",
-    "displayHeight" : 33.819999999999993
+    "label" : "accent-arrows"
   },
   {
-    "displayHeight" : 33.219999999999999,
-    "label" : "harpoons-over-right",
     "latex" : "\\overrightharpoonup{AB}",
-    "displayWidth" : 38.219999999999999
-  },
-  {
-    "label" : "harpoons-over-left",
-    "latex" : "\\overleftharpoonup{AB}",
+    "displayHeight" : 33.219999999999999,
     "displayWidth" : 38.219999999999999,
-    "displayHeight" : 33.219999999999999
+    "label" : "harpoons-over-right"
   },
   {
-    "displayHeight" : 34.449999999999996,
+    "displayWidth" : 38.219999999999999,
+    "label" : "harpoons-over-left",
+    "displayHeight" : 33.219999999999999,
+    "latex" : "\\overleftharpoonup{AB}"
+  },
+  {
     "label" : "harpoons-over-down",
+    "displayHeight" : 34.449999999999996,
     "latex" : "\\overrightharpoondown{xy}",
-    "displayWidth" : 32.07
+    "displayWidth" : 38.100000000000001
   },
   {
-    "latex" : "\\overrightharpoonup{AB} \\quad \\overleftharpoonup{CD}",
     "label" : "harpoons-over-mix",
     "displayHeight" : 33.819999999999993,
+    "latex" : "\\overrightharpoonup{AB} \\quad \\overleftharpoonup{CD}",
     "displayWidth" : 118.95999999999999
   },
   {
+    "displayWidth" : 38.219999999999999,
+    "latex" : "\\overgroup{AB}",
+    "label" : "accent-overgroup",
+    "displayHeight" : 28.049999999999997
+  },
+  {
+    "latex" : "\\overlinesegment{ABC}",
+    "displayWidth" : 57.899999999999999,
+    "displayHeight" : 28.169999999999995,
+    "label" : "accent-overlinesegment"
+  },
+  {
+    "label" : "accent-widecheck",
+    "latex" : "\\widecheck{AB}",
+    "displayWidth" : 38.219999999999999,
+    "displayHeight" : 28.049999999999997
+  },
+  {
+    "latex" : "\\binom{n}{k}",
+    "displayHeight" : 64.319999999999993,
+    "displayWidth" : 51.329999999999998,
+    "label" : "binom"
+  },
+  {
+    "latex" : "\\dbinom{n}{k}",
+    "displayHeight" : 64.319999999999993,
+    "label" : "dbinom",
+    "displayWidth" : 51.329999999999998
+  },
+  {
+    "displayHeight" : 52.845000000000006,
+    "label" : "overbrace",
+    "latex" : "\\overbrace{x+y}^{n}",
+    "displayWidth" : 67.00333333333333
+  },
+  {
+    "displayHeight" : 56.136000000000003,
+    "label" : "underbrace",
+    "latex" : "\\underbrace{a+b}_{k}",
+    "displayWidth" : 67.123333333333335
+  },
+  {
+    "displayHeight" : 34.899000000000001,
+    "displayWidth" : 21.599999999999998,
+    "latex" : "\\overset{!}{=}",
+    "label" : "overset"
+  },
+  {
+    "displayWidth" : 56.850000000000001,
+    "label" : "xrightarrow",
+    "displayHeight" : 37.821000000000005,
+    "latex" : "\\xrightarrow{f(x)}"
+  },
+  {
+    "displayWidth" : 74.727000000000004,
+    "displayHeight" : 55.734000000000002,
+    "label" : "xleftarrow-below",
+    "latex" : "\\xleftarrow[below]{above}"
+  },
+  {
+    "label" : "middle-delimiter",
+    "latex" : "\\left( a \\middle| b \\right)",
+    "displayWidth" : 61.619999999999997,
+    "displayHeight" : 27.959999999999997
+  },
+  {
+    "label" : "langle-delimiter",
+    "displayHeight" : 27.959999999999997,
+    "displayWidth" : 37.109999999999999,
+    "latex" : "\\left\\langle x \\right\\rangle"
+  },
+  {
+    "displayWidth" : 16.77,
     "latex" : "\\tilde{x}",
     "displayHeight" : 19.559999999999999,
-    "label" : "accent-tilde",
-    "displayWidth" : 16.77
+    "label" : "accent-tilde"
   },
   {
-    "latex" : "\\dot{x}",
+    "displayWidth" : 16.77,
     "displayHeight" : 20.489999999999998,
     "label" : "accent-dot",
-    "displayWidth" : 16.77
+    "latex" : "\\dot{x}"
   },
   {
-    "displayWidth" : 16.77,
-    "label" : "accent-ddot",
     "latex" : "\\ddot{x}",
-    "displayHeight" : 20.460000000000001
+    "displayWidth" : 16.77,
+    "displayHeight" : 20.460000000000001,
+    "label" : "accent-ddot"
   },
   {
-    "latex" : "\\textcolor{red}{x}",
     "displayWidth" : 16.77,
     "displayHeight" : 14.67,
-    "label" : "color"
+    "label" : "color",
+    "latex" : "\\textcolor{red}{x}"
   },
   {
+    "latex" : "\\colorbox{yellow}{x+y}",
     "displayHeight" : 23.339999999999996,
-    "label" : "colorbox",
     "displayWidth" : 67.00333333333333,
-    "latex" : "\\colorbox{yellow}{x+y}"
+    "label" : "colorbox"
   },
   {
-    "latex" : "\\dfrac{1}{2}",
     "displayHeight" : 60.030000000000001,
-    "label" : "frac-display",
-    "displayWidth" : 28.050000000000001
+    "latex" : "\\dfrac{1}{2}",
+    "displayWidth" : 28.050000000000001,
+    "label" : "frac-display"
   },
   {
+    "displayWidth" : 23.595000000000002,
     "latex" : "\\tfrac{1}{2}",
     "label" : "frac-text",
-    "displayHeight" : 35.588999999999999,
-    "displayWidth" : 23.595000000000002
+    "displayHeight" : 35.588999999999999
   },
   {
     "latex" : "\\sqrt[3]{x}",
     "displayWidth" : 40.657499999999999,
-    "displayHeight" : 37.950000000000003,
-    "label" : "sqrt-3"
+    "label" : "sqrt-3",
+    "displayHeight" : 37.950000000000003
   },
   {
-    "displayWidth" : 68.849999999999994,
-    "latex" : "\\alpha\\beta\\gamma\\omega",
+    "label" : "greek",
     "displayHeight" : 27.989999999999998,
-    "label" : "greek"
+    "latex" : "\\alpha\\beta\\gamma\\omega",
+    "displayWidth" : 68.849999999999994
   },
   {
-    "displayWidth" : 174.89333333333335,
+    "label" : "sin-cos",
     "displayHeight" : 25.524000000000001,
     "latex" : "\\sin^2\\theta + \\cos^2\\theta",
-    "label" : "sin-cos"
+    "displayWidth" : 174.89333333333335
   },
   {
-    "label" : "sum-limits",
-    "latex" : "\\displaystyle\\sum_{i=0}^\\infty \\frac{1}{i}",
     "displayWidth" : 66.409999999999997,
-    "displayHeight" : 78.320999999999998
+    "displayHeight" : 78.320999999999998,
+    "latex" : "\\displaystyle\\sum_{i=0}^\\infty \\frac{1}{i}",
+    "label" : "sum-limits"
   },
   {
+    "displayHeight" : 21.240234375,
     "latex" : "\\text{Hello world}",
-    "label" : "text",
     "displayWidth" : 144.140625,
-    "displayHeight" : 21.240234375
+    "label" : "text"
   },
   {
-    "displayWidth" : 157.85533333333331,
     "latex" : "\\frac{a}{b+\\frac{c}{d+\\frac{5}{y-\\frac{x^2}{3}}}}",
-    "label" : "complex-frac1",
-    "displayHeight" : 95.494500000000016
+    "displayWidth" : 157.85533333333331,
+    "displayHeight" : 95.494500000000016,
+    "label" : "complex-frac1"
   },
   {
     "label" : "complex-int",
-    "displayWidth" : 654.72931495934938,
     "latex" : "\\sqrt[3]{a+\\frac{3}{x^2}}\\int_0^1\\frac{{\\int y}^3+\\frac{x}{5}-1}{x^4-4\\sqrt[3]{x}+\\frac{\\frac{3+x}{4-y}}{\\frac{3+x}{\\sqrt{c^2}+y}}}= \\int_0^1 a \\cos x 😃dx",
+    "displayWidth" : 654.72931495934938,
     "displayHeight" : 124.2705
   },
   {
-    "displayWidth" : 672.32540682926822,
-    "label" : "complex-mix",
     "displayHeight" : 115.90049999999999,
-    "latex" : "12x3^{\\int 2}+\\frac{\\int a}{b}-\\sqrt[n]{x+y^2-\\frac{\\frac{z}{1-7v^2}}{\\frac{3r^3}{\\frac 1{2+\\frac xy}}}}+\\int_0^1 \\sum aa+3a"
+    "label" : "complex-mix",
+    "latex" : "12x3^{\\int 2}+\\frac{\\int a}{b}-\\sqrt[n]{x+y^2-\\frac{\\frac{z}{1-7v^2}}{\\frac{3r^3}{\\frac 1{2+\\frac xy}}}}+\\int_0^1 \\sum aa+3a",
+    "displayWidth" : 672.32540682926822
   },
   {
-    "label" : "font-mathbb",
     "displayWidth" : 21.66,
-    "displayHeight" : 20.550000000000001,
-    "latex" : "\\mathbb{R}"
+    "label" : "font-mathbb",
+    "latex" : "\\mathbb{R}",
+    "displayHeight" : 20.550000000000001
   },
   {
     "label" : "font-mathbb-sets",
@@ -264,22 +336,22 @@
     "displayHeight" : 26.460000000000001
   },
   {
-    "label" : "font-mathbf",
     "latex" : "\\mathbf{F} = m\\mathbf{a}",
-    "displayHeight" : 20.039999999999999,
-    "displayWidth" : 97.546666666666667
+    "label" : "font-mathbf",
+    "displayWidth" : 97.546666666666667,
+    "displayHeight" : 20.039999999999999
   },
   {
-    "displayHeight" : 20.519999999999996,
-    "latex" : "\\mathrm{sin}\\, x",
+    "label" : "font-mathrm",
     "displayWidth" : 59.450000000000003,
-    "label" : "font-mathrm"
+    "latex" : "\\mathrm{sin}\\, x",
+    "displayHeight" : 20.519999999999996
   },
   {
-    "latex" : "\\mathcal{L}\\{f\\}",
-    "displayHeight" : 28.829999999999998,
     "displayWidth" : 57.900000000000006,
-    "label" : "font-mathcal"
+    "label" : "font-mathcal",
+    "displayHeight" : 28.829999999999998,
+    "latex" : "\\mathcal{L}\\{f\\}"
   },
   {
     "label" : "font-mathfrak",
@@ -294,45 +366,45 @@
     "displayWidth" : 52.22999999999999
   },
   {
-    "displayHeight" : 21.539999999999999,
-    "displayWidth" : 68.400000000000006,
     "latex" : "\\mathtt{01ab}",
-    "label" : "font-mathtt"
+    "label" : "font-mathtt",
+    "displayWidth" : 68.400000000000006,
+    "displayHeight" : 21.539999999999999
   },
   {
     "displayWidth" : 172.81833333333336,
-    "displayHeight" : 27.669000000000004,
     "latex" : "x \\in \\mathbb{R}, \\mathbf{v} \\in \\mathbb{R}^n",
+    "displayHeight" : 27.669000000000004,
     "label" : "font-mix"
   },
   {
-    "displayHeight" : 20.07,
     "latex" : "\\mathbf{v} = \\mathbf{A}\\mathbf{x}",
-    "label" : "vec-mathbf",
-    "displayWidth" : 94.366666666666674
+    "displayWidth" : 94.366666666666674,
+    "displayHeight" : 20.07,
+    "label" : "vec-mathbf"
   },
   {
+    "label" : "vec-bm",
     "latex" : "\\bm{\\alpha} + \\bm{\\beta} = \\bm{\\gamma}",
     "displayWidth" : 119.90999999999998,
-    "label" : "vec-bm",
     "displayHeight" : 27.990000000000002
   },
   {
-    "label" : "vec-field",
-    "displayHeight" : 70.61099999999999,
+    "displayWidth" : 105.45333333333332,
     "latex" : "\\oint_C \\mathbf{F} \\cdot d\\mathbf{r}",
-    "displayWidth" : 105.45333333333332
+    "displayHeight" : 70.61099999999999,
+    "label" : "vec-field"
   },
   {
-    "label" : "matrix-bold",
+    "displayWidth" : 111.75,
     "latex" : "\\begin{pmatrix} \\mathbf{a}_1 & \\mathbf{a}_2 \\\\ \\mathbf{b}_1 & \\mathbf{b}_2 \\end{pmatrix}",
-    "displayWidth" : 121.17666666666666,
-    "displayHeight" : 72
+    "displayHeight" : 72,
+    "label" : "matrix-bold"
   },
   {
-    "label" : "linalg-mix",
     "displayHeight" : 27.669000000000004,
-    "displayWidth" : 218.11833333333337,
-    "latex" : "A\\mathbf{x} = \\mathbf{b}, \\quad \\mathbf{x} \\in \\mathbb{R}^n"
+    "latex" : "A\\mathbf{x} = \\mathbf{b}, \\quad \\mathbf{x} \\in \\mathbb{R}^n",
+    "label" : "linalg-mix",
+    "displayWidth" : 218.11833333333337
   }
 ]

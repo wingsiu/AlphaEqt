@@ -157,6 +157,9 @@ public class MTMathAtomFactory {
         "overleftharpoondown" : "\u{20D6}",
         "overrightharpoon" : "\u{20D7}",
         "overleftharpoon" : "\u{20D6}",
+        "overgroup" : "\u{0302}",
+        "overlinesegment" : "\u{0305}",
+        "widecheck" : "\u{030C}",
         "widehat" :  "\u{0302}",
         "widetilde" :  "\u{0303}",
         "arc" : "\u{23DC}" //By Alpha

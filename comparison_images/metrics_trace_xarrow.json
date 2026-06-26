@@ -1,0 +1,718 @@
+{
+  "fontSizePx": 30,
+  "cases": {
+    "xrightarrow": {
+      "latex": "\\xrightarrow{f(x)}",
+      "mathjaxBBox": {
+        "source": "mathjax-compare-page-bbox",
+        "fontSizePx": 30,
+        "card": "xrightarrow",
+        "root": {
+          "name": "root",
+          "topPx": 0,
+          "bottomPx": 34.16,
+          "leftPx": 0,
+          "rightPx": 56.91,
+          "heightPx": 34.16,
+          "widthPx": 56.91,
+          "topEm": 0,
+          "bottomEm": 1.1387,
+          "leftEm": 0,
+          "rightEm": 1.897
+        },
+        "arrow": {
+          "name": "arrow-mo",
+          "topPx": 22.05,
+          "bottomPx": 34.16,
+          "leftPx": 0,
+          "rightPx": 56.91,
+          "heightPx": 12.11,
+          "widthPx": 56.91,
+          "topEm": 0.735,
+          "bottomEm": 1.1387,
+          "leftEm": 0,
+          "rightEm": 1.897
+        },
+        "labelAbove": {
+          "name": "label-above",
+          "topPx": 3,
+          "bottomPx": 22.05,
+          "leftPx": 0,
+          "rightPx": 56.91,
+          "heightPx": 19.05,
+          "widthPx": 56.91,
+          "topEm": 0.1,
+          "bottomEm": 0.735,
+          "leftEm": 0,
+          "rightEm": 1.897
+        },
+        "labelBelow": null,
+        "textAbove": {
+          "name": "text-ink",
+          "leftPx": 5.89,
+          "rightPx": 45.09,
+          "widthPx": 39.2,
+          "glyphs": [
+            "f",
+            "(",
+            "x",
+            ")"
+          ]
+        },
+        "textBelow": null,
+        "stretchy": {
+          "widthEm": 1.897,
+          "widthPx": 56.91
+        },
+        "gap_label_to_arrow": {
+          "px": 0,
+          "em": 0
+        },
+        "gap_arrow_to_below": null,
+        "gap_above_top_label": {
+          "px": 3,
+          "em": 0.1
+        },
+        "styles": {
+          "mover": null,
+          "over": "padding-bottom: 0.111em;"
+        },
+        "horizontal": {
+          "labelBox": {
+            "leftPx": 0,
+            "rightPx": 56.91,
+            "widthPx": 56.91,
+            "leftEm": 0,
+            "rightEm": 1.897,
+            "widthEm": 1.897
+          },
+          "arrowBox": {
+            "leftPx": 0,
+            "rightPx": 56.91,
+            "widthPx": 56.91,
+            "leftEm": 0,
+            "rightEm": 1.897,
+            "widthEm": 1.897
+          },
+          "textAbove": {
+            "leftPx": 5.89,
+            "rightPx": 45.09,
+            "widthPx": 39.2,
+            "leftEm": 0.1963,
+            "rightEm": 1.503,
+            "widthEm": 1.3067
+          },
+          "textBelow": null,
+          "arrowPastTextAbove": {
+            "leftPx": 5.89,
+            "rightPx": 11.82,
+            "leftEm": 0.1963,
+            "rightEm": 0.394
+          },
+          "arrowPastTextBelow": null,
+          "arrowPastLabel": {
+            "leftPx": 0,
+            "rightPx": 0
+          },
+          "note": "MathJax: arrow-mo box = label-over box; arrowheads align to box edges, past narrower text ink."
+        }
+      },
+      "alphaEqt": {
+        "source": "alphaeqt-rendercompare",
+        "fontSizePx": 30,
+        "root": {
+          "widthPx": 56.85,
+          "heightPx": 37.82,
+          "ascentPx": 37.82,
+          "descentPx": 0
+        },
+        "arrow": {
+          "name": "MTGlyphConstructionDisplay",
+          "baselineY": 2.4900000000000007,
+          "topPx": 21.53,
+          "bottomPx": 35.33,
+          "heightPx": 13.8,
+          "widthPx": 56.85,
+          "xPx": 3
+        },
+        "labelAbove": {
+          "name": "MTMathListDisplay",
+          "baselineY": 19.365000000000002,
+          "topPx": 3,
+          "bottomPx": 23.18,
+          "heightPx": 20.18,
+          "widthPx": 38.85,
+          "xPx": 9
+        },
+        "labelBelow": null,
+        "horizontal": {
+          "labelBox": {
+            "leftPx": 0,
+            "rightPx": 56.85,
+            "widthPx": 56.85,
+            "leftEm": 0,
+            "rightEm": 1.895,
+            "widthEm": 1.895
+          },
+          "textAbove": {
+            "leftPx": 9,
+            "rightPx": 47.85,
+            "widthPx": 38.85,
+            "leftEm": 0.3,
+            "rightEm": 1.595,
+            "widthEm": 1.295
+          },
+          "textBelow": null,
+          "arrowAdvance": {
+            "leftPx": 3,
+            "rightPx": 59.85,
+            "widthPx": 56.85,
+            "leftEm": 0.1,
+            "rightEm": 1.995,
+            "widthEm": 1.895
+          },
+          "arrowInk": {
+            "leftPx": 3,
+            "rightPx": 57.3,
+            "widthPx": 54.3,
+            "leftEm": 0.1,
+            "rightEm": 1.9102,
+            "widthEm": 1.81
+          },
+          "arrowPastTextAbove": {
+            "leftPx": 6,
+            "rightPx": 9.45,
+            "leftEm": 0.2,
+            "rightEm": 0.315
+          },
+          "arrowPastTextBelow": null,
+          "arrowPastLabel": {
+            "leftPx": -3,
+            "rightPx": 0.45
+          },
+          "hPadEachSide": {
+            "leftPx": 9,
+            "rightPx": 9,
+            "leftEm": 0.3,
+            "rightEm": 0.3
+          },
+          "note": "Alpha: labelBox = disp.width; text = centered MTMathListDisplay; arrow ink from glyph bboxes."
+        },
+        "gap_above_top_label": {
+          "px": 3,
+          "em": 0.1
+        },
+        "gap_label_to_arrow": {
+          "px": -1.65,
+          "em": -0.055
+        },
+        "gap_arrow_to_below": null,
+        "raw": {
+          "items": [
+            {
+              "kind": "MTMathListDisplay",
+              "width": 56.85,
+              "ascent": 37.821000000000005,
+              "depth": 0,
+              "x": 0,
+              "y": 0,
+              "descent": 0
+            },
+            {
+              "x": 0,
+              "width": 56.85,
+              "ascent": 37.821000000000005,
+              "descent": 0,
+              "depth": 1,
+              "y": 0,
+              "kind": "MTXArrowDisplay"
+            },
+            {
+              "x": 9,
+              "descent": 4.7250000000000005,
+              "width": 38.85,
+              "depth": 2,
+              "y": 19.365000000000002,
+              "ascent": 15.456000000000003,
+              "kind": "MTMathListDisplay"
+            },
+            {
+              "x": 0,
+              "kind": "MTCTLineDisplay",
+              "depth": 3,
+              "descent": 4.7250000000000005,
+              "ascent": 14.931000000000001,
+              "width": 12.117,
+              "text": "f",
+              "y": 0
+            },
+            {
+              "depth": 3,
+              "kind": "MTCTLineDisplay",
+              "ascent": 15.456000000000003,
+              "text": "(",
+              "x": 12.117,
+              "y": 0,
+              "width": 7.497000000000001,
+              "descent": 4.1160000000000005
+            },
+            {
+              "descent": 0.21000000000000002,
+              "kind": "MTCTLineDisplay",
+              "depth": 3,
+              "x": 19.614,
+              "y": 0,
+              "ascent": 10.059000000000001,
+              "text": "x",
+              "width": 11.739
+            },
+            {
+              "text": ")",
+              "x": 31.353,
+              "y": 0,
+              "depth": 3,
+              "width": 7.497000000000001,
+              "ascent": 15.456000000000003,
+              "kind": "MTCTLineDisplay",
+              "descent": 4.1160000000000005
+            },
+            {
+              "y": 2.4900000000000007,
+              "inkMaxX": 54.30489420935412,
+              "depth": 2,
+              "descent": 0,
+              "inkMinX": 0,
+              "ascent": 13.799999999999999,
+              "x": 3,
+              "kind": "MTGlyphConstructionDisplay",
+              "width": 56.85
+            }
+          ]
+        }
+      }
+    },
+    "xleftarrow-below": {
+      "latex": "\\xleftarrow[below]{above}",
+      "mathjaxBBox": {
+        "source": "mathjax-compare-page-bbox",
+        "fontSizePx": 30,
+        "card": "xleftarrow-below",
+        "root": {
+          "name": "root",
+          "topPx": 0,
+          "bottomPx": 57.28,
+          "leftPx": 0,
+          "rightPx": 70.44,
+          "heightPx": 57.28,
+          "widthPx": 70.44,
+          "topEm": 0,
+          "bottomEm": 1.9093,
+          "leftEm": 0,
+          "rightEm": 2.348
+        },
+        "arrow": {
+          "name": "arrow-mo",
+          "topPx": 21.27,
+          "bottomPx": 33.38,
+          "leftPx": 0,
+          "rightPx": 70.44,
+          "heightPx": 12.11,
+          "widthPx": 70.44,
+          "topEm": 0.709,
+          "bottomEm": 1.1127,
+          "leftEm": 0,
+          "rightEm": 2.348
+        },
+        "labelAbove": {
+          "name": "label-above",
+          "topPx": 3,
+          "bottomPx": 21.27,
+          "leftPx": 0,
+          "rightPx": 70.44,
+          "heightPx": 18.27,
+          "widthPx": 70.44,
+          "topEm": 0.1,
+          "bottomEm": 0.709,
+          "leftEm": 0,
+          "rightEm": 2.348
+        },
+        "labelBelow": {
+          "name": "label-below",
+          "topPx": 33.38,
+          "bottomPx": 57.28,
+          "leftPx": 0,
+          "rightPx": 70.44,
+          "heightPx": 23.91,
+          "widthPx": 70.44,
+          "topEm": 1.1127,
+          "bottomEm": 1.9093,
+          "leftEm": 0,
+          "rightEm": 2.348
+        },
+        "textAbove": {
+          "name": "text-ink",
+          "leftPx": 11.78,
+          "rightPx": 64.5,
+          "widthPx": 52.72,
+          "glyphs": [
+            "a",
+            "b",
+            "o",
+            "v",
+            "e"
+          ]
+        },
+        "textBelow": {
+          "name": "text-ink",
+          "leftPx": 12.34,
+          "rightPx": 63.91,
+          "widthPx": 51.56,
+          "glyphs": [
+            "b",
+            "e",
+            "l",
+            "o",
+            "w"
+          ]
+        },
+        "stretchy": {
+          "widthEm": 2.348,
+          "widthPx": 70.44
+        },
+        "gap_label_to_arrow": {
+          "px": 0,
+          "em": 0
+        },
+        "gap_arrow_to_below": {
+          "px": 0,
+          "em": 0
+        },
+        "gap_above_top_label": {
+          "px": 3,
+          "em": 0.1
+        },
+        "styles": {
+          "munderover": null,
+          "over": "padding-bottom: 0.111em;",
+          "under": "padding-top: 0.167em; padding-left: 0.019em;"
+        },
+        "horizontal": {
+          "labelBox": {
+            "leftPx": 0,
+            "rightPx": 70.44,
+            "widthPx": 70.44,
+            "leftEm": 0,
+            "rightEm": 2.348,
+            "widthEm": 2.348
+          },
+          "arrowBox": {
+            "leftPx": 0,
+            "rightPx": 70.44,
+            "widthPx": 70.44,
+            "leftEm": 0,
+            "rightEm": 2.348,
+            "widthEm": 2.348
+          },
+          "textAbove": {
+            "leftPx": 11.78,
+            "rightPx": 64.5,
+            "widthPx": 52.72,
+            "leftEm": 0.3927,
+            "rightEm": 2.15,
+            "widthEm": 1.7573
+          },
+          "textBelow": {
+            "leftPx": 12.34,
+            "rightPx": 63.91,
+            "widthPx": 51.57,
+            "leftEm": 0.4113,
+            "rightEm": 2.1303,
+            "widthEm": 1.719
+          },
+          "arrowPastTextAbove": {
+            "leftPx": 11.78,
+            "rightPx": 5.94,
+            "leftEm": 0.3927,
+            "rightEm": 0.198
+          },
+          "arrowPastTextBelow": {
+            "leftPx": 12.34,
+            "rightPx": 6.53,
+            "leftEm": 0.4113,
+            "rightEm": 0.2177
+          },
+          "arrowPastLabel": {
+            "leftPx": 0,
+            "rightPx": 0
+          },
+          "note": "MathJax: arrow-mo box = label-over box; arrowheads align to box edges, past narrower text ink."
+        }
+      },
+      "alphaEqt": {
+        "source": "alphaeqt-rendercompare",
+        "fontSizePx": 30,
+        "root": {
+          "widthPx": 73.23,
+          "heightPx": 56.33,
+          "ascentPx": 29.49,
+          "descentPx": 26.85
+        },
+        "arrow": {
+          "name": "MTGlyphConstructionDisplay",
+          "baselineY": -0.8699999999999992,
+          "topPx": 16.56,
+          "bottomPx": 30.36,
+          "heightPx": 13.8,
+          "widthPx": 73.23,
+          "xPx": -2.4
+        },
+        "labelAbove": {
+          "name": "MTMathListDisplay",
+          "baselineY": 11.682,
+          "topPx": 3,
+          "bottomPx": 18.06,
+          "heightPx": 15.06,
+          "widthPx": 52.23,
+          "xPx": 10.5
+        },
+        "labelBelow": {
+          "name": "MTMathListDisplay",
+          "baselineY": -20.685000000000002,
+          "topPx": 35.37,
+          "bottomPx": 50.42,
+          "heightPx": 15.05,
+          "widthPx": 51.09,
+          "xPx": 11.07
+        },
+        "horizontal": {
+          "labelBox": {
+            "leftPx": 0,
+            "rightPx": 73.23,
+            "widthPx": 73.23,
+            "leftEm": 0,
+            "rightEm": 2.4409,
+            "widthEm": 2.441
+          },
+          "textAbove": {
+            "leftPx": 10.5,
+            "rightPx": 62.73,
+            "widthPx": 52.23,
+            "leftEm": 0.35,
+            "rightEm": 2.0909,
+            "widthEm": 1.741
+          },
+          "textBelow": {
+            "leftPx": 11.07,
+            "rightPx": 62.16,
+            "widthPx": 51.09,
+            "leftEm": 0.3689,
+            "rightEm": 2.072,
+            "widthEm": 1.703
+          },
+          "arrowAdvance": {
+            "leftPx": -2.4,
+            "rightPx": 70.83,
+            "widthPx": 73.23,
+            "leftEm": -0.08,
+            "rightEm": 2.3609,
+            "widthEm": 2.441
+          },
+          "arrowInk": {
+            "leftPx": -0.72,
+            "rightPx": 66.22,
+            "widthPx": 66.94,
+            "leftEm": -0.024,
+            "rightEm": 2.2073,
+            "widthEm": 2.2313
+          },
+          "arrowPastTextAbove": {
+            "leftPx": 11.22,
+            "rightPx": 3.49,
+            "leftEm": 0.374,
+            "rightEm": 0.1163
+          },
+          "arrowPastTextBelow": {
+            "leftPx": 11.79,
+            "rightPx": 4.06,
+            "leftEm": 0.393,
+            "rightEm": 0.1353
+          },
+          "arrowPastLabel": {
+            "leftPx": 0.72,
+            "rightPx": -7.01
+          },
+          "hPadEachSide": {
+            "leftPx": 10.5,
+            "rightPx": 10.5,
+            "leftEm": 0.35,
+            "rightEm": 0.35
+          },
+          "note": "Alpha: labelBox = disp.width; text = centered MTMathListDisplay; arrow ink from glyph bboxes."
+        },
+        "gap_above_top_label": {
+          "px": 3,
+          "em": 0.1
+        },
+        "gap_label_to_arrow": {
+          "px": -1.5,
+          "em": -0.05
+        },
+        "gap_arrow_to_below": {
+          "px": 5.01,
+          "em": 0.167
+        },
+        "raw": {
+          "items": [
+            {
+              "y": 0,
+              "kind": "MTMathListDisplay",
+              "ascent": 29.487000000000002,
+              "depth": 0,
+              "width": 73.227,
+              "descent": 26.847,
+              "x": 0
+            },
+            {
+              "y": 0,
+              "width": 73.227,
+              "descent": 26.847,
+              "depth": 1,
+              "x": 0,
+              "kind": "MTXArrowDisplay",
+              "ascent": 29.487000000000002
+            },
+            {
+              "depth": 2,
+              "width": 52.227000000000004,
+              "descent": 0.252,
+              "y": 11.682,
+              "x": 10.5,
+              "kind": "MTMathListDisplay",
+              "ascent": 14.805000000000001
+            },
+            {
+              "depth": 3,
+              "ascent": 10.059000000000001,
+              "kind": "MTCTLineDisplay",
+              "x": 0,
+              "y": 0,
+              "text": "a",
+              "descent": 0.252,
+              "width": 11.655000000000001
+            },
+            {
+              "x": 11.655000000000001,
+              "descent": 0.252,
+              "width": 10.878,
+              "ascent": 14.805000000000001,
+              "kind": "MTCTLineDisplay",
+              "depth": 3,
+              "y": 0,
+              "text": "b"
+            },
+            {
+              "text": "o",
+              "x": 22.533,
+              "width": 10.206000000000001,
+              "depth": 3,
+              "y": 0,
+              "ascent": 10.059000000000001,
+              "kind": "MTCTLineDisplay",
+              "descent": 0.21000000000000002
+            },
+            {
+              "text": "v",
+              "x": 32.739000000000004,
+              "width": 10.584000000000001,
+              "ascent": 10.059000000000001,
+              "depth": 3,
+              "kind": "MTCTLineDisplay",
+              "descent": 0.189,
+              "y": 0
+            },
+            {
+              "kind": "MTCTLineDisplay",
+              "descent": 0.252,
+              "text": "e",
+              "y": 0,
+              "depth": 3,
+              "ascent": 10.059000000000001,
+              "width": 8.904,
+              "x": 43.32300000000001
+            },
+            {
+              "descent": 0,
+              "inkMinX": 1.68,
+              "kind": "MTGlyphConstructionDisplay",
+              "y": -0.8699999999999992,
+              "ascent": 13.799999999999999,
+              "width": 73.227,
+              "depth": 2,
+              "x": -2.4,
+              "inkMaxX": 68.6190787037037
+            },
+            {
+              "x": 11.067,
+              "depth": 2,
+              "y": -20.685000000000002,
+              "descent": 0.252,
+              "width": 51.093,
+              "kind": "MTMathListDisplay",
+              "ascent": 14.805000000000001
+            },
+            {
+              "kind": "MTCTLineDisplay",
+              "y": 0,
+              "depth": 3,
+              "text": "b",
+              "width": 10.878,
+              "ascent": 14.805000000000001,
+              "x": 0,
+              "descent": 0.252
+            },
+            {
+              "text": "e",
+              "depth": 3,
+              "descent": 0.252,
+              "y": 0,
+              "kind": "MTCTLineDisplay",
+              "ascent": 10.059000000000001,
+              "width": 8.904,
+              "x": 10.878
+            },
+            {
+              "y": 0,
+              "kind": "MTCTLineDisplay",
+              "depth": 3,
+              "x": 19.782,
+              "width": 5.838,
+              "text": "l",
+              "ascent": 14.805000000000001,
+              "descent": 0.189
+            },
+            {
+              "y": 0,
+              "descent": 0.21000000000000002,
+              "width": 10.206000000000001,
+              "text": "o",
+              "depth": 3,
+              "ascent": 10.059000000000001,
+              "kind": "MTCTLineDisplay",
+              "x": 25.62
+            },
+            {
+              "text": "w",
+              "width": 15.267000000000001,
+              "x": 35.826,
+              "depth": 3,
+              "ascent": 10.059000000000001,
+              "descent": 0.189,
+              "y": 0,
+              "kind": "MTCTLineDisplay"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

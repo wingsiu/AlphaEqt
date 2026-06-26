@@ -102,7 +102,7 @@ final class ParserTests: XCTestCase {
     func testOpenCloseTextordErrorWhitespace() {
         let cases: [(String, [ASTNodeType])] = [
             // Flat bracket cases remain unchanged
-            ("(a) [b] {c}", [.open, .mathord, .close, .open, .mathord, .close, .open, .mathord, .close]),
+            ("(a) [b] {c}", [.open, .mathord, .close, .open, .mathord, .close, .ordgroup]),
             ("$ a + b", [.mathord, .bin, .mathord]), // error/skipped
             // \text{hello} now yields one .text node
             ("\\text{hello}", [.text]),
@@ -121,5 +121,49 @@ final class ParserTests: XCTestCase {
             }
             XCTAssertEqual(astNodes.map{ $0.type }, expectedTypes)
         }
+    }
+
+    func testRoadmapCommands() {
+        func parse(_ input: String) -> [ASTNode] {
+            let lexer = Lexer(input: input)
+            let tokens = lexer.lexAll()
+            return LatexParser().parse(tokens: tokens)
+        }
+
+        let binom = parse(#"\binom{n}{k}"#)
+        XCTAssertEqual(binom.count, 1)
+        XCTAssertEqual(binom[0].type, .frac)
+        XCTAssertEqual(binom[0].text, "binom")
+
+        let dbinom = parse(#"\dbinom{n}{k}"#)
+        XCTAssertEqual(dbinom.count, 1)
+        XCTAssertEqual(dbinom[0].type, .sizing)
+        XCTAssertEqual(dbinom[0].childNodes?[0].type, .frac)
+        XCTAssertEqual(dbinom[0].childNodes?[0].text, "dbinom")
+
+        let brace = parse(#"\overbrace{x+y}"#)
+        XCTAssertEqual(brace.count, 1)
+        XCTAssertEqual(brace[0].type, .horizBrace)
+        XCTAssertEqual(brace[0].text, "overbrace")
+
+        let overset = parse(#"\overset{!}{=}"#)
+        XCTAssertEqual(overset.count, 1)
+        XCTAssertEqual(overset[0].type, .stack)
+        XCTAssertEqual(overset[0].text, "overset")
+
+        let xarrow = parse(#"\xrightarrow{f}"#)
+        XCTAssertEqual(xarrow.count, 1)
+        XCTAssertEqual(xarrow[0].type, .xarrow)
+        XCTAssertEqual(xarrow[0].text, "xrightarrow")
+
+        let accent = parse(#"\overgroup{AB}"#)
+        XCTAssertEqual(accent.count, 1)
+        XCTAssertEqual(accent[0].type, .accent)
+        XCTAssertEqual(accent[0].text, "overgroup")
+
+        let xarrowBoth = parse(#"\xleftarrow[below]{above}"#)
+        XCTAssertEqual(xarrowBoth.count, 1)
+        XCTAssertEqual(xarrowBoth[0].type, .xarrow)
+        XCTAssertEqual(xarrowBoth[0].childNodes?.count, 2)
     }
 }

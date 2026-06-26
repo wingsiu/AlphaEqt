@@ -15,6 +15,9 @@ public class LatexParser {
     public init() {
         commandHandlers["\\text"] = handleTextCommand
         commandHandlers["\\frac"] = handleFracCommand
+        commandHandlers["\\binom"] = handleBinomCommand
+        commandHandlers["\\dbinom"] = handleDBinomCommand
+        commandHandlers["\\tbinom"] = handleTBinomCommand
         commandHandlers["\\sqrt"] = handleSqrtCommand
         // Style-change commands (TeX Appendix G)
         commandHandlers["\\displaystyle"] = handleSizingCommand
@@ -50,12 +53,16 @@ public class LatexParser {
         }
         // Matrix environments (trigger on \begin)
         commandHandlers["\\begin"] = handleBeginMatrixCommand
-        // Left/right delimiter pairs — trigger on \left + \right
-        commandHandlers["\\left("] = handleLeftRightCommand
-        commandHandlers["\\left["] = handleLeftRightCommand
-        commandHandlers["\\left{"] = handleLeftRightCommand
-        commandHandlers["\\left|"] = handleLeftRightCommand
-        commandHandlers["\\left."] = handleLeftRightCommand
+        // \overset / \underset / stretchy arrows with labels
+        commandHandlers["\\overset"] = handleOversetCommand
+        commandHandlers["\\underset"] = handleUndersetCommand
+        for cmd in ["\\xrightarrow", "\\xleftarrow", "\\xRightarrow", "\\xLeftarrow",
+                    "\\xleftrightarrow", "\\xLeftrightarrow"] {
+            commandHandlers[cmd] = handleXArrowCommand
+        }
+        // Horizontal braces
+        commandHandlers["\\overbrace"] = { t, i in handleHorizBraceCommand(tokens: t, index: &i, name: "overbrace") }
+        commandHandlers["\\underbrace"] = { t, i in handleHorizBraceCommand(tokens: t, index: &i, name: "underbrace") }
         // Accent commands
         let accentCmds = ["\\hat", "\\bar", "\\tilde", "\\dot", "\\ddot", "\\vec",
                           "\\widehat", "\\widetilde", "\\check", "\\breve", "\\acute", "\\grave",
@@ -63,7 +70,8 @@ public class LatexParser {
                           "\\overrightarrow", "\\overleftarrow", "\\overleftrightarrow",
                           "\\overrightharpoonup", "\\overrightharpoondown",
                           "\\overleftharpoonup", "\\overleftharpoondown",
-                          "\\overrightharpoon", "\\overleftharpoon"]
+                          "\\overrightharpoon", "\\overleftharpoon",
+                          "\\overgroup", "\\overlinesegment", "\\widecheck"]
         for cmd in accentCmds {
             commandHandlers[cmd] = handleAccentCommand
         }
@@ -96,8 +104,18 @@ public class LatexParser {
             let token = tokens[i]
             guard shouldParseToken(token) else { i += 1; continue }
 
+            if token.kind == .customDelimiterLeft {
+                let slice = tokens[i..<tokenCount]
+                var relIdx = 0
+                if let node = handleLeftRightCommand(tokens: slice, index: &relIdx) {
+                    nodes.append(node)
+                }
+                i += relIdx
+                continue
+            }
+
             // Command handler dispatch (handles .command and .customDelimiterLeft)
-            if (token.kind == .command || token.kind == .customDelimiterLeft),
+            if token.kind == .command,
                let handler = commandHandlers[token.text] {
                 let slice = tokens[i..<tokenCount]
                 var relIdx = 0

@@ -61,6 +61,15 @@ final class LexerTests: XCTestCase {
         XCTAssertEqual(tokens.map(\.text), [#"\{"#, "f", #"\}"#])
     }
 
+    func testCustomDelimiterNamed() {
+        let input = "\\left\\langle x \\right\\rangle"
+        let tokens = Lexer(input: input).lexAll()
+        let left = tokens.first { $0.kind == .customDelimiterLeft }
+        let right = tokens.first { $0.kind == .customDelimiterRight }
+        XCTAssertEqual(left?.text, "\\left\\langle")
+        XCTAssertEqual(right?.text, "\\right\\rangle")
+    }
+
     func testCustomDelimiterBraces() {
         let input = "\\left\\{ x \\right\\}"
         let lexer = Lexer(input: input)
@@ -74,13 +83,13 @@ final class LexerTests: XCTestCase {
             print("kind: \(token.kind), text: '\(token.text)'")
         }
         XCTAssertEqual(tokens[0].kind, .customDelimiterLeft)
-        XCTAssertEqual(tokens[0].text, "\\left{")
+        XCTAssertEqual(tokens[0].text, "\\left\\{")
         XCTAssertEqual(tokens[1].kind, .whitespace)
         XCTAssertEqual(tokens[2].kind, .identifier)
         XCTAssertEqual(tokens[2].text, "x")
         XCTAssertEqual(tokens[3].kind, .whitespace)
         XCTAssertEqual(tokens[4].kind, .customDelimiterRight)
-        XCTAssertEqual(tokens[4].text, "\\right}")
+        XCTAssertEqual(tokens[4].text, "\\right\\}")
         XCTAssertEqual(tokens.last?.kind, .eof)
     }
 
@@ -138,9 +147,9 @@ final class LexerTests: XCTestCase {
     }
 
     func testIdentifierAndNumber() {
-        let lexer = Lexer(input: "abc 123")
+        let lexer = Lexer(input: "x 123")
         let tokens = lexer.lexAll()
-        XCTAssertTrue(tokens.contains { $0.kind == .identifier && $0.text == "abc" })
+        XCTAssertTrue(tokens.contains { $0.kind == .identifier && $0.text == "x" })
         XCTAssertTrue(tokens.contains { $0.kind == .number && $0.text == "123" })
     }
 

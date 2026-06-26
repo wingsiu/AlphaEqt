@@ -44,7 +44,7 @@ public class Lexer {
     // Single-letter identifiers for math mode (mc^2 → m, c, ^, 2)
     // Commands like \text still work via \\[a-zA-Z@]+
     static let tokenPattern: NSRegularExpression = {
-        let pattern = #"([ \r\n\t]+|\\([a-zA-Z@]+)([ \r\n\t]*)|\\[a-zA-Z@]+|\\(?:\\|&)|\\[^a-zA-Z@]|\\(\n|[ \r\t]+\n?)[ \r\t]*|[A-Za-z]|\d+|[+\-*/^_=.,<>#]|[{}()\[\]|~&]|[^\x00-\x7F])"#
+        let pattern = #"([ \r\n\t]+|\\([a-zA-Z@]+)([ \r\n\t]*)|\\[a-zA-Z@]+|\\(?:\\|&)|\\[^a-zA-Z@]|\\(\n|[ \r\t]+\n?)[ \r\t]*|[A-Za-z]|\d+|[+\-*/^_=.,<>#!?]|[{}()\[\]|~&]|[^\x00-\x7F])"#
         return try! NSRegularExpression(pattern: pattern, options: [])
     }()
 
@@ -103,25 +103,13 @@ public class Lexer {
             rawTokens.append(Token(kind: kind, text: tokenText, sourceLocation: sourceLocation))
         }
 
-        // Combine \left/ \right with delimiter
+        // Combine \left/ \right/ \middle with delimiter
         var tokens: [Token] = []
         var i = 0
         while i < rawTokens.count {
             if rawTokens[i].kind == .command && rawTokens[i].text == "\\left" && (i + 1) < rawTokens.count {
                 let next = rawTokens[i + 1]
-                var combinedText: String?
-                switch next.kind {
-                case .leftParen:    combinedText = "\\left("
-                case .leftBracket:  combinedText = "\\left["
-                case .leftBrace:    combinedText = "\\left{"
-                case .command:
-                    if next.text == "\\{" { combinedText = "\\left{" }
-                case .operatorSymbol:
-                    if next.text == "." { combinedText = "\\left." }
-                    else { combinedText = "\\left|" }
-                default: break
-                }
-                if let combinedText = combinedText {
+                if let combinedText = DelimiterUtils.tryCombineDelimiter(prefix: "\\left", next: next) {
                     let combinedLoc = rawTokens[i].sourceLocation
                     let combinedEnd = next.sourceLocation
                     let combinedSourceLocation = SourceLocation(
@@ -137,19 +125,7 @@ public class Lexer {
             }
             if rawTokens[i].kind == .command && rawTokens[i].text == "\\right" && (i + 1) < rawTokens.count {
                 let next = rawTokens[i + 1]
-                var combinedText: String?
-                switch next.kind {
-                case .rightParen:    combinedText = "\\right)"
-                case .rightBracket:  combinedText = "\\right]"
-                case .rightBrace:    combinedText = "\\right}"
-                case .command:
-                    if next.text == "\\}" { combinedText = "\\right}" }
-                case .operatorSymbol:
-                    if next.text == "." { combinedText = "\\right." }
-                    else { combinedText = "\\right|" }
-                default: break
-                }
-                if let combinedText = combinedText {
+                if let combinedText = DelimiterUtils.tryCombineDelimiter(prefix: "\\right", next: next) {
                     let combinedLoc = rawTokens[i].sourceLocation
                     let combinedEnd = next.sourceLocation
                     let combinedSourceLocation = SourceLocation(
@@ -159,6 +135,22 @@ public class Lexer {
                         length: (combinedEnd.offset + combinedEnd.length) - combinedLoc.offset
                     )
                     tokens.append(Token(kind: .customDelimiterRight, text: combinedText, sourceLocation: combinedSourceLocation))
+                    i += 2
+                    continue
+                }
+            }
+            if rawTokens[i].kind == .command && rawTokens[i].text == "\\middle" && (i + 1) < rawTokens.count {
+                let next = rawTokens[i + 1]
+                if let combinedText = DelimiterUtils.tryCombineDelimiter(prefix: "\\middle", next: next) {
+                    let combinedLoc = rawTokens[i].sourceLocation
+                    let combinedEnd = next.sourceLocation
+                    let combinedSourceLocation = SourceLocation(
+                        line: combinedLoc.line,
+                        column: combinedLoc.column,
+                        offset: combinedLoc.offset,
+                        length: (combinedEnd.offset + combinedEnd.length) - combinedLoc.offset
+                    )
+                    tokens.append(Token(kind: .customDelimiterMiddle, text: combinedText, sourceLocation: combinedSourceLocation))
                     i += 2
                     continue
                 }
@@ -219,7 +211,7 @@ public class Lexer {
         if text == "&" { return .alignmentTab }
         if text == "\\\\" { return .lineBreak }
         if text == "#" { return .identifier }
-        if text.range(of: #"^[+\-*/^_=.,<>]$"#, options: .regularExpression) != nil {
+        if text.range(of: #"^[+\-*/^_=.,<>!?]$"#, options: .regularExpression) != nil {
             return .operatorSymbol
         }
         // Non-ASCII characters (emoji, Chinese, etc.) → mathord identifiers

@@ -13,6 +13,7 @@ public enum TokenKind {
     case operatorSymbol
     case leftBrace, rightBrace, leftParen, rightParen, leftBracket, rightBracket
     case customDelimiterLeft
+    case customDelimiterMiddle
     case customDelimiterRight
     case alignmentTab     // & in matrix environments
     case lineBreak        // \\ row separator

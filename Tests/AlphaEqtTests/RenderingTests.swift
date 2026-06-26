@@ -103,9 +103,41 @@ final class RenderingTests: XCTestCase {
         assertRenders(#"\overrightharpoonup{AB}"#)
         assertRenders(#"\overleftharpoonup{AB}"#)
         assertRenders(#"\overrightharpoondown{xy}"#)
-        assertRenders(#"\overgroup{AB}"#)
-        assertRenders(#"\overlinesegment{AB}"#)
-        assertRenders(#"\widecheck{AB}"#)
+        for cmd in ["overgroup", "overlinesegment", "widecheck"] {
+            let latex = "\\\(cmd){AB}"
+            let nodes = LatexParser().parse(tokens: Lexer(input: latex).lexAll())
+            XCTAssertEqual(nodes.count, 1, "Expected single accent node for \(latex)")
+            XCTAssertEqual(nodes[0].type, .accent, "Expected .accent for \(latex)")
+            XCTAssertEqual(nodes[0].text, cmd)
+            assertRenders(latex)
+        }
+    }
+
+    func testBinom() {
+        assertRenders(#"\binom{n}{k}"#)
+        assertRenders(#"\dbinom{n}{k}"#)
+        assertRenders(#"\tbinom{n}{k}"#)
+    }
+
+    func testHorizBrace() {
+        assertRenders(#"\overbrace{x+y}^{n}"#)
+        assertRenders(#"\underbrace{x+y}_{k}"#)
+    }
+
+    func testStackOversetUnderset() {
+        assertRenders(#"\overset{!}{=}"#)
+        assertRenders(#"\underset{?}{+}"#)
+    }
+
+    func testXArrow() {
+        assertRenders(#"\xrightarrow{f}"#)
+        assertRenders(#"\xleftarrow[below]{above}"#)
+        assertRenders(#"\xRightarrow{g}"#)
+    }
+
+    func testNamedDelimiters() {
+        assertRenders(#"\left\langle x \right\rangle"#)
+        assertRenders(#"\left\lfloor x \right\rfloor"#)
     }
 
     // MARK: - Fractions (✅)

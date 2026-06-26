@@ -1,0 +1,240 @@
+{
+  "latex": "\\overbrace{x+y}^{n}",
+  "fontSizePx": 30,
+  "mathjaxBBox": {
+    "source": "mathjax-compare-page-bbox",
+    "fontSizePx": 30,
+    "root": {
+      "name": "root",
+      "topPx": 0,
+      "bottomPx": 30.73,
+      "heightPx": 30.73,
+      "widthPx": 39,
+      "topEm": 0,
+      "bottomEm": 1.0243
+    },
+    "inner": {
+      "name": "inner-brace",
+      "topPx": 9.33,
+      "bottomPx": 30.73,
+      "heightPx": 21.41,
+      "widthPx": 39,
+      "topEm": 0.311,
+      "bottomEm": 1.0243
+    },
+    "brace": {
+      "name": "brace-mo",
+      "topPx": 11.06,
+      "bottomPx": 25.64,
+      "heightPx": 14.58,
+      "widthPx": 38.08,
+      "topEm": 0.3687,
+      "bottomEm": 0.8547
+    },
+    "baseX": {
+      "name": "base-x",
+      "topPx": 18.53,
+      "bottomPx": 27.06,
+      "heightPx": 8.53,
+      "widthPx": 9.77,
+      "topEm": 0.6177,
+      "bottomEm": 0.902
+    },
+    "baseY": {
+      "name": "base-y",
+      "topPx": 18.48,
+      "bottomPx": 30.73,
+      "heightPx": 12.25,
+      "widthPx": 8.91,
+      "topEm": 0.616,
+      "bottomEm": 1.0243
+    },
+    "label": {
+      "name": "label-n",
+      "topPx": 1.73,
+      "bottomPx": 7.75,
+      "heightPx": 6.02,
+      "widthPx": 6.97,
+      "topEm": 0.0577,
+      "bottomEm": 0.2583
+    },
+    "gap_label_to_inner": {
+      "px": 1.58,
+      "em": 0.0527
+    },
+    "gap_brace_bottom_to_base_top": {
+      "px": -7.11,
+      "em": -0.237
+    },
+    "gap_label_bottom_to_brace_top": {
+      "px": 3.31,
+      "em": 0.1103
+    },
+    "gap_above_label": {
+      "px": 1.73,
+      "em": 0.0577
+    },
+    "compareAlphaImg": {
+      "widthPx": 67.0033,
+      "heightPx": 51.4815
+    },
+    "styles": {
+      "outerMover": null,
+      "innerMover": null
+    }
+  },
+  "alphaEqt": {
+    "source": "alphaeqt-rendercompare",
+    "fontSizePx": 30,
+    "root": {
+      "widthPx": 67,
+      "heightPx": 53.12,
+      "ascentPx": 46.52,
+      "descentPx": 6.6,
+      "heightEm": 1.7708
+    },
+    "brace": {
+      "y": 0,
+      "ascentPx": 46.52,
+      "descentPx": 6.6,
+      "widthPx": 67,
+      "heightPx": 53.12
+    },
+    "stretchyGlyph": {
+      "topPx": 19.27,
+      "bottomPx": 44.32,
+      "heightPx": 25.05,
+      "widthPx": 65.4
+    },
+    "label": {
+      "name": "MTCTLineDisplay",
+      "baselineY": 33.464999999999996,
+      "topPx": 3,
+      "bottomPx": 13.27,
+      "heightPx": 10.27,
+      "widthPx": 11.87,
+      "topEm": 0.1,
+      "bottomEm": 0.4423
+    },
+    "base": {
+      "name": "x",
+      "baselineY": 0,
+      "topPx": 32.15,
+      "bottomPx": 46.82,
+      "heightPx": 14.67,
+      "widthPx": 16.77,
+      "topEm": 1.0717,
+      "bottomEm": 1.5607
+    },
+    "gap_above_label": {
+      "px": 3,
+      "em": 0.1
+    },
+    "gap_label_bottom_to_brace_top": {
+      "px": 6,
+      "em": 0.2
+    },
+    "gap_brace_bottom_to_base_top": {
+      "px": -12.17,
+      "em": -0.4057
+    },
+    "raw": {
+      "items": [
+        {
+          "y": 0,
+          "descent": 6.6,
+          "width": 67.00333333333333,
+          "ascent": 46.524,
+          "x": 0,
+          "depth": 0,
+          "kind": "MTMathListDisplay"
+        },
+        {
+          "ascent": 46.524,
+          "descent": 6.6,
+          "kind": "MTSupSubDisplay",
+          "x": 0,
+          "y": 0,
+          "width": 67.00333333333333,
+          "depth": 1
+        },
+        {
+          "width": 67.00333333333333,
+          "depth": 2,
+          "kind": "MTAccentDisplay",
+          "x": 0,
+          "ascent": 46.524,
+          "y": 0,
+          "descent": 6.6
+        },
+        {
+          "ascent": 25.05,
+          "descent": 0,
+          "depth": 3,
+          "kind": "MTGlyphDisplay",
+          "x": 0.8016666666666694,
+          "y": 2.2049999999999983,
+          "width": 65.39999999999999
+        },
+        {
+          "ascent": 16.74,
+          "y": 0,
+          "depth": 3,
+          "descent": 6.6,
+          "kind": "MTMathListDisplay",
+          "x": 0,
+          "width": 67.00333333333333
+        },
+        {
+          "kind": "MTMathListDisplay",
+          "descent": 6.6,
+          "depth": 4,
+          "ascent": 16.74,
+          "y": 0,
+          "x": 0,
+          "width": 67.00333333333333
+        },
+        {
+          "kind": "MTCTLineDisplay",
+          "text": "x",
+          "depth": 5,
+          "x": 0,
+          "y": 0,
+          "ascent": 14.37,
+          "descent": 0.3,
+          "width": 16.77
+        },
+        {
+          "kind": "MTCTLineDisplay",
+          "x": 23.436666666666667,
+          "y": 0,
+          "depth": 5,
+          "width": 21.599999999999998,
+          "text": "+",
+          "descent": 1.2,
+          "ascent": 16.74
+        },
+        {
+          "descent": 6.6,
+          "y": 0,
+          "ascent": 14.459999999999999,
+          "kind": "MTCTLineDisplay",
+          "depth": 5,
+          "width": 15.299999999999999,
+          "text": "y",
+          "x": 51.703333333333326
+        },
+        {
+          "kind": "MTCTLineDisplay",
+          "ascent": 10.059000000000001,
+          "y": 33.464999999999996,
+          "x": 27.569166666666664,
+          "width": 11.865,
+          "text": "",
+          "descent": 0.21000000000000002,
+          "depth": 2
+        }
+      ]
+    }
+  }
+}

@@ -124,7 +124,9 @@ public class MTFractionDisplay: MTDisplay {
                 numeratorGapMin: CGFloat,
                 denominatorGapMin: CGFloat,
                 barOverhang: CGFloat = 0,
-                fractionPadding: CGFloat = 0) {
+                fractionPadding: CGFloat = 0,
+                binomDisplayStyle: Bool? = nil,
+                binomFontSize: CGFloat? = nil) {
         self.numerator = numerator
         self.denominator = denominator
         self.lineThickness = ruleThickness
@@ -132,6 +134,30 @@ public class MTFractionDisplay: MTDisplay {
         super.init()
 
         guard let num = numerator, let den = denominator else { return }
+
+        // \binom: display Rule 15c in display math (MathJax type=d); \tbinom: text; \dbinom: display.
+        if ruleThickness == 0,
+           let display = binomDisplayStyle,
+           let fs = binomFontSize {
+            let shifts = TeXStackMetrics.binomShifts(
+                displayStyle: display, fontSize: fs,
+                numAscent: num.ascent, numDescent: num.descent,
+                denAscent: den.ascent, denDescent: den.descent)
+            let pads = TeXStackMetrics.binomPadsFittingCap(
+                displayStyle: display, fontSize: fs,
+                numUp: shifts.numUp, numAscent: num.ascent,
+                denDown: shifts.denDown, denDescent: den.descent)
+            self.numeratorUp = shifts.numUp
+            self.denominatorDown = shifts.denDown
+            self.width = max(num.width, den.width) + 2 * shifts.hPad
+            self._padding = shifts.hPad
+            self._barOverhang = 0
+            self.ascent = pads.top + shifts.numUp + num.ascent
+            self.descent = pads.bottom + shifts.denDown + den.descent
+            updateNumeratorPosition()
+            updateDenominatorPosition()
+            return
+        }
 
         var numUp = numeratorShiftUp
         var denDown = denominatorShiftDown
@@ -556,21 +582,26 @@ public class MTRuleDisplay: MTDisplay {
 public class MTAccentDisplay: MTDisplay {
     public var accent: MTDisplay?
     public var accentee: MTDisplay?
+    /// When false, the accent is drawn below the accentee (e.g. `\underbrace`).
+    public var placeAbove: Bool = true
 
-    public init(accent: MTDisplay?, accentee: MTDisplay?, range: NSRange) {
+    public init(accent: MTDisplay?, accentee: MTDisplay?, range: NSRange, placeAbove: Bool = true) {
         self.accent = accent
         self.accentee = accentee
+        self.placeAbove = placeAbove
         super.init()
         self.range = range
 
         if let acc = accent, let aee = accentee {
-            // Width is determined by the accentee
-            self.width = aee.width
-            // Descent matches the accentee
-            self.descent = aee.descent
-            // Ascent must encompass both the accent (which may sit above the accentee)
-            // and the accentee itself.
-            self.ascent = max(aee.ascent, max(0, acc.position.y + acc.ascent))
+            self.width = max(aee.width, acc.width)
+            if placeAbove {
+                self.descent = aee.descent
+                self.ascent = max(aee.ascent, max(0, acc.position.y + acc.ascent))
+            } else {
+                self.ascent = aee.ascent
+                let accentBottom = max(0, -(acc.position.y) + acc.descent)
+                self.descent = aee.descent + accentBottom
+            }
         }
     }
 
@@ -601,6 +632,78 @@ public class MTAccentDisplay: MTDisplay {
         super.dumpDisplayTree(indent: indent)
         accent?.dumpDisplayTree(indent: indent + "  A> ")
         accentee?.dumpDisplayTree(indent: indent + "  aee> ")
+    }
+}
+
+// MARK: - MTStackDisplay
+
+/// Vertical stack for `\overset` / `\underset`.
+public class MTStackDisplay: MTDisplay {
+    public var script: MTDisplay?
+    public var base: MTDisplay?
+    public var scriptAbove: Bool
+
+    public init(script: MTDisplay?, base: MTDisplay?, scriptAbove: Bool, range: NSRange) {
+        self.script = script
+        self.base = base
+        self.scriptAbove = scriptAbove
+        super.init()
+        self.range = range
+    }
+
+    override public func draw(_ ctx: CGContext) {
+        super.draw(ctx)
+        ctx.saveGState()
+        for item in [base, script] {
+            if let d = item {
+                ctx.saveGState()
+                ctx.translateBy(x: d.position.x, y: d.position.y)
+                d.draw(ctx)
+                ctx.restoreGState()
+            }
+        }
+        ctx.restoreGState()
+    }
+}
+
+// MARK: - MTXArrowDisplay
+
+/// Stretchy arrow with optional labels for `\xrightarrow` and friends.
+///
+/// Metrics split across `TeXStackMetrics` (AMS/KaTeX + MathJax trace + empirical ink nudges).
+/// See `TeXStackMetrics` MARK extensible arrows for which constants are TeX-derived vs tuned.
+public class MTXArrowDisplay: MTDisplay {
+    public var above: MTDisplay?
+    public var below: MTDisplay?
+    public var arrow: MTDisplay?
+
+    public init(above: MTDisplay?, below: MTDisplay?, arrow: MTDisplay?, range: NSRange) {
+        self.above = above
+        self.below = below
+        self.arrow = arrow
+        super.init()
+        self.range = range
+    }
+
+    override public func draw(_ ctx: CGContext) {
+        super.draw(ctx)
+        ctx.saveGState()
+        for item in [above, arrow, below] {
+            if let d = item {
+                ctx.saveGState()
+                ctx.translateBy(x: d.position.x, y: d.position.y)
+                d.draw(ctx)
+                ctx.restoreGState()
+            }
+        }
+        ctx.restoreGState()
+    }
+
+    override public func dumpDisplayTree(indent: String = "") {
+        super.dumpDisplayTree(indent: indent)
+        above?.dumpDisplayTree(indent: indent + "  ^> ")
+        arrow?.dumpDisplayTree(indent: indent + "  -> ")
+        below?.dumpDisplayTree(indent: indent + "  _> ")
     }
 }
 
