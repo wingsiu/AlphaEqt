@@ -19,8 +19,14 @@ func mathItalicize(_ text: String) -> String {
             continue
         }
         if ch >= "a", ch <= "z" {
-            let offset = scalar - 0x61
-            result.append(Character(UnicodeScalar(0x1D44E + offset)!))
+            if ch == "h" {
+                // U+1D455 is reserved; mathematical italic h is U+210E (Planck constant).
+                // KaTeX symbols.ts maps "h" → \u210E for the same reason.
+                result.append(Character(UnicodeScalar(0x210E)!))
+            } else {
+                let offset = scalar - 0x61
+                result.append(Character(UnicodeScalar(0x1D44E + offset)!))
+            }
         } else if ch >= "A", ch <= "Z" {
             let offset = scalar - 0x41
             result.append(Character(UnicodeScalar(0x1D434 + offset)!))

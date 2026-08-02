@@ -121,7 +121,22 @@ final class RenderingTests: XCTestCase {
 
     func testHorizBrace() {
         assertRenders(#"\overbrace{x+y}^{n}"#)
+        assertRenders(#"\overbrace{abcdefgh}^{n}"#)
         assertRenders(#"\underbrace{x+y}_{k}"#)
+        assertRenders(#"\underbrace{abcdefgh}_{k}"#)
+    }
+
+    func testMathItalicH() {
+        assertRenders(#"h"#)
+        let font = MathFont.stix2Font.mtfont(size: 30)
+        let lexer = Lexer(input: "h")
+        let nodes = LatexParser().parse(tokens: lexer.tokenize())
+        let ts = Typesetter(font: font, style: .display)
+        guard let display = ts.createDisplay(nodes) else {
+            XCTFail("render nil")
+            return
+        }
+        XCTAssertLessThan(display.width, 25, "italic h should not be a missing-glyph placeholder")
     }
 
     func testStackOversetUnderset() {

@@ -1779,10 +1779,10 @@ public class Typesetter: @unchecked Sendable {
         guard CTFontGetGlyphsForCharacters(font.ctFont, up, &baseGlyph, 1) else { return accentee }
         guard let accentBase = buildStretchyGlyphDisplay(baseGlyph: baseGlyph, accentName: accentName,
                                                          targetWidth: accentee.width, node: node) else { return accentee }
+        scaleHorizontalConstruction(accentBase, toWidth: accentee.width)
         let placeAbove = accentName == "overbrace"
         let fs = font.size
         let bodyKern = TeXStackMetrics.horizBraceBodyKern(fs)
-        let ax = (accentee.width - accentBase.width) / 2
         accentee.position = .zero
         let ay: CGFloat
         if placeAbove {
@@ -1791,7 +1791,7 @@ public class Typesetter: @unchecked Sendable {
         } else {
             ay = -(accentee.descent + bodyKern * 0.35 + accentBase.ascent * 0.45)
         }
-        accentBase.position = CGPoint(x: ax, y: ay)
+        accentBase.position = CGPoint(x: 0, y: ay)
         return MTAccentDisplay(accent: accentBase, accentee: accentee, range: node.indexRange, placeAbove: placeAbove)
     }
 
