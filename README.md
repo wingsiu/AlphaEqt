@@ -40,6 +40,24 @@ AlphaEqt is built in distinct stages:
 **Usage Example:**  
 (Coming soon)
 
+## M1 Analyse seeding
+
+HKDSE Mathematics Module 1 past-paper topic maps load from the Synology workbook `math/M1/analyse.xlsx`. The topic number stored for a question is the number in that cell: 1–16 before 2012 and on the first column labelled `12`, and 1–12 for SP (sample paper, 2011), PP (practice paper, 2022), the second `12`, and later years. Seed order is SP, then PP, then those two 2012 columns. Compulsory-core Analyse tables are not modified.
+
+```bash
+python3 db/seed_analyse_m1.py --dry-run
+```
+
+Run details are in [db/README.md](db/README.md). The table layout is in [docs/CONTENT_MODEL.md](docs/CONTENT_MODEL.md).
+
+## Pure Maths and M2 Analyse seeding
+
+Pure Maths and DSE M2 past-paper topic maps load from the same Synology workbook, `math/M2/PManalyse.xlsx` (`M2_ANALYSE_XLSX`, often `/Volumes/math/M2/PManalyse.xlsx`). The upper block is Pure Maths Paper 1 for years before 2012, and M2 from SP, PP, and the single 2012 column onward. The lower block is Pure Maths Paper 2 through 2011. Topic tokens are the text in the cells, including Pure Maths codes past the M2 list (`16`, `17`, `0X`, `14X`, and the rest of the sheet). They are stored in `analyse_pm_*`. Compulsory-core Analyse and the M1 tables are not modified.
+
+```bash
+python3 db/seed_analyse_pm.py --dry-run
+```
+
 ---
 
 ## Project Roadmap
