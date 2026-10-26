@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import json
+import os
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -239,6 +241,179 @@ class HoksiSolutionTest(unittest.TestCase):
         self.assertIn("Pure Maths", hs.gap_report())
         self.assertIn("hkcee-maths-solutions", hs.gap_report())
 
+    def test_live_question_columns_write_content_blocks(self):
+        bundle = self._bundle(self._one_row(r"\sum p = 1"))
+        tables = _live_tables()
+        with self.assertRaises(ValueError) as caught:
+            hs.layout_from_columns(tables)
+        self.assertIn("question_no", str(caught.exception))
+        sql = hs.render_for_tables(bundle, tables)
+        self.assertIn("INSERT INTO content_blocks", sql)
+        self.assertIn("`stem_block_id`", sql)
+        self.assertIn("`content_block_id`", sql)
+        self.assertIn("`sortorder`", sql)
+        self.assertIn("`qkind`", sql)
+        self.assertIn("'sq'", sql)
+        self.assertIn("'hoksi'", sql)
+        self.assertIn("dse2015-math-m1-q1:zh-HK", sql)
+        self.assertIn("dse2015-math-m1-q1:stem", sql)
+        self.assertIn(r"\\sum", sql)
+        self.assertNotIn("question_no", sql)
+        self.assertNotIn("`source_pdf`", sql)
+        self.assertNotIn("`topic_id`", sql)
+        self.assertNotIn("`level`", sql)
+        self.assertNotIn("`marks`", sql)
+        self.assertNotIn("`body`", sql)
+        self.assertNotRegex(sql, r"(?i)\balter\s+table\b")
+        self.assertNotRegex(sql, r"(?i)\bcreate\s+table\b")
+        self.assertNotIn("DELETE ", sql)
+        for statement in sql.split(";"):
+            if "UPDATE content_blocks" in statement:
+                self.assertNotIn(":stem", statement)
+            self.assertNotIn("UPDATE questions", statement)
+        solution_insert = _statement_with(sql, "INSERT INTO solutions")
+        self.assertIn("dse2015-math-m1-q1:zh-HK", solution_insert)
+        self.assertRegex(solution_insert, r", 1\s+FROM")
+
+    def test_both_languages_use_sortorder_one_and_two(self):
+        english = self._one_row("English")
+        english.lang = "en"
+        bundle = self._bundle(self._one_row("中文"), english)
+        sql = hs.render_editorial_sql(bundle, _live_tables())
+        chinese = [
+            part
+            for part in sql.split(";")
+            if "INSERT INTO solutions" in part and "dse2015-math-m1-q1:zh-HK" in part
+        ]
+        western = [
+            part
+            for part in sql.split(";")
+            if "INSERT INTO solutions" in part and "dse2015-math-m1-q1:en" in part
+        ]
+        self.assertEqual(len(chinese), 1)
+        self.assertEqual(len(western), 1)
+        self.assertRegex(chinese[0], r", 1\s+FROM")
+        self.assertRegex(western[0], r", 2\s+FROM")
+        self.assertIn("中文", sql)
+        self.assertIn("English", sql)
+
+    def test_solution_without_question_id_sorts_by_question_number(self):
+        tables = _live_tables()
+        tables["solutions"] = _cols("id", "paper_id", "content_block_id", "sortorder")
+        sql = hs.render_editorial_sql(self._bundle(self._one_row("body")), tables)
+        insert = [
+            part
+            for part in sql.split(";")
+            if "INSERT INTO solutions" in part
+        ][0]
+        self.assertIn("`paper_id`", insert)
+        self.assertNotIn("question_id", insert)
+        self.assertRegex(insert, r", 11\s+FROM")
+
+    def test_unique_paper_sortorder_does_not_collapse_languages(self):
+        tables = _live_tables()
+        tables["solutions"] = _cols(
+            "id", "question_id", "paper_id", "content_block_id", "sortorder"
+        )
+        sql = hs.render_editorial_sql(
+            self._bundle(self._one_row("body")),
+            tables,
+            unique_keys={"solutions": (("paper_id", "sortorder"),)},
+        )
+        insert = [part for part in sql.split(";") if "INSERT INTO solutions" in part][0]
+        self.assertIn("`question_id`", insert)
+        self.assertRegex(insert, r", 11\s+FROM")
+
+    def test_editorial_refuses_a_block_table_with_no_text_column(self):
+        tables = _live_tables()
+        tables["content_blocks"] = _cols("id", "kind", nullable={"kind"})
+        with self.assertRaises(ValueError) as caught:
+            hs.render_editorial_sql(self._bundle(self._one_row("body")), tables)
+        self.assertIn("no text column", str(caught.exception))
+
+    def test_editorial_refuses_to_invent_topic_id_or_qkind(self):
+        tables = _live_tables()
+        tables["questions"] = _cols(
+            "created",
+            "id",
+            "level",
+            "marks",
+            "paper_id",
+            "qkind",
+            "source_type",
+            "stem_block_id",
+            "topic_id",
+            "updated",
+            nullable={"level", "marks", "stem_block_id"},
+            types={
+                "qkind": "enum('mc','sq')",
+                "source_type": "enum('ocr','hoksi','editorial')",
+                "created": "timestamp",
+                "updated": "timestamp",
+            },
+            defaults={
+                "created": "current_timestamp()",
+                "updated": "current_timestamp()",
+            },
+        )
+        with self.assertRaises(ValueError) as caught:
+            hs.render_editorial_sql(self._bundle(self._one_row("body")), tables)
+        self.assertIn("topic_id", str(caught.exception))
+        self.assertIn("invent a topic id", str(caught.exception))
+
+        tables = _live_tables()
+        tables["questions"] = _cols(
+            "id",
+            "paper_id",
+            "qkind",
+            "stem_block_id",
+            nullable={"stem_block_id"},
+            types={"qkind": "enum('mc')"},
+        )
+        with self.assertRaises(ValueError) as caught:
+            hs.render_editorial_sql(self._bundle(self._one_row("body")), tables)
+        self.assertIn("qkind", str(caught.exception))
+        self.assertIn("mc", str(caught.exception))
+
+    def test_missing_content_blocks_does_not_fall_back_to_question_no(self):
+        tables = _live_tables()
+        del tables["content_blocks"]
+        with self.assertRaises(ValueError) as caught:
+            hs.render_for_tables(self._bundle(self._one_row("body")), tables)
+        message = str(caught.exception)
+        self.assertIn("content_blocks", message)
+        self.assertIn("question_no", message)
+        self.assertNotIn("solutions_schema", message)
+
+    def test_show_columns_keeps_enum_and_defaults(self):
+        import seed_hoksi_solutions as seed
+
+        text = "\n".join(
+            [
+                "Field\tType\tNull\tKey\tDefault\tExtra",
+                "id\tint(11)\tNO\tPRI\tNULL\tauto_increment",
+                "qkind\tenum('mc','sq')\tNO\t\tNULL\t",
+                "created\ttimestamp\tNO\t\tcurrent_timestamp()\t",
+            ]
+        )
+        columns = seed.parse_show_columns(text)
+        self.assertEqual(columns["id"].key, "PRI")
+        self.assertIn("auto_increment", columns["id"].extra)
+        self.assertFalse(columns["id"].must_fill())
+        self.assertEqual(columns["qkind"].column_type, "enum('mc','sq')")
+        self.assertTrue(columns["qkind"].must_fill())
+        self.assertEqual(columns["created"].default, "current_timestamp()")
+        self.assertFalse(columns["created"].must_fill())
+        index = "\n".join(
+            [
+                "Table\tNon_unique\tKey_name\tSeq_in_index\tColumn_name",
+                "solutions\t0\tuq_paper_sort\t1\tpaper_id",
+                "solutions\t0\tuq_paper_sort\t2\tsortorder",
+                "solutions\t1\tidx_block\t1\tcontent_block_id",
+            ]
+        )
+        self.assertEqual(hs.parse_show_index(index), (("paper_id", "sortorder"),))
+
     def test_solution_text_mentioning_core_does_not_fail_the_scope_check(self):
         row = self._one_row("see sq_keys and analyse_sq, not math-cp1")
         bundle = hs.Bundle(
@@ -301,12 +476,365 @@ class HoksiSolutionTest(unittest.TestCase):
             source_url="https://hoksiresources.com/zh-HK/articles/hkdse-maths-m1-solutions-2015-q1",
         )
 
+    def _bundle(self, *rows: hs.SolutionRow) -> hs.Bundle:
+        return hs.Bundle(
+            source="fixture",
+            subject="m1",
+            lang=",".join(row.lang for row in rows),
+            rows=rows,
+            planned=tuple(row.planned for row in rows),
+        )
 
-def _cols(*names: str, nullable: set[str] | None = None) -> dict[str, hs.ColumnInfo]:
-    optional = nullable or set()
+
+def _statement_with(sql: str, needle: str) -> str:
+    matches = [part for part in sql.split(";") if needle in part]
+    if len(matches) != 1:
+        raise AssertionError(f"expected one statement containing {needle!r}, found {len(matches)}")
+    return matches[0]
+
+
+def _live_tables() -> dict[str, dict[str, hs.ColumnInfo]]:
     return {
-        name: hs.ColumnInfo(name=name, nullable=name in optional) for name in names
+        "papers": _cols("id", "slug", "title", "source_pdf", nullable={"source_pdf"}),
+        "questions": _cols(
+            "created",
+            "id",
+            "level",
+            "marks",
+            "paper_id",
+            "qkind",
+            "source_type",
+            "stem_block_id",
+            "topic_id",
+            "updated",
+            nullable={"level", "marks", "topic_id", "stem_block_id"},
+            types={
+                "qkind": "enum('mc','sq')",
+                "source_type": "enum('ocr','hoksi','editorial')",
+                "created": "timestamp",
+                "updated": "timestamp",
+            },
+            defaults={
+                "created": "current_timestamp()",
+                "updated": "current_timestamp()",
+            },
+        ),
+        "solutions": _cols("id", "question_id", "content_block_id", "sortorder"),
+        "content_blocks": _cols(
+            "id",
+            "content",
+            "html",
+            "kind",
+            "format",
+            "lang",
+            "source",
+            "source_slug",
+            nullable={"html", "kind", "format", "lang", "source", "source_slug"},
+        ),
     }
+
+
+def _cols(
+    *names: str,
+    nullable: set[str] | None = None,
+    types: dict[str, str] | None = None,
+    defaults: dict[str, str] | None = None,
+    keys: dict[str, str] | None = None,
+) -> dict[str, hs.ColumnInfo]:
+    optional = nullable or set()
+    column_types = types or {}
+    column_defaults = defaults or {}
+    column_keys = keys or {}
+    return {
+        name: hs.ColumnInfo(
+            name=name,
+            nullable=name in optional,
+            column_type=column_types.get(name, ""),
+            default=column_defaults.get(name),
+            extra="auto_increment" if name == "id" else "",
+            key=column_keys.get(name, "PRI" if name == "id" else ""),
+        )
+        for name in names
+    }
+
+
+class EditorialApplyTest(unittest.TestCase):
+    def test_apply_writes_content_blocks_and_leaves_core_rows(self):
+        if not os.environ.get("MYSQL_PWD") or not os.environ.get("MYSQL_USER"):
+            self.skipTest("MYSQL_PWD and MYSQL_USER are not set")
+        if not _root_mysql("SELECT 1"):
+            self.skipTest("local MariaDB root socket is unavailable")
+
+        database = "hoksi_editorial_test"
+        user = os.environ["MYSQL_USER"]
+        self.assertTrue(
+            _root_mysql(
+                f"DROP DATABASE IF EXISTS `{database}`;"
+                f"CREATE DATABASE `{database}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+                f"GRANT ALL PRIVILEGES ON `{database}`.* TO '{user}'@'127.0.0.1';"
+                "FLUSH PRIVILEGES;"
+            )
+        )
+        try:
+            self.assertEqual(_mysql(database, _EDITORIAL_DDL), 0)
+            with tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                _write_pack(root, "zh-HK", "中文解")
+                _write_pack(root, "en", "English")
+                first = _seed(root, database)
+                self.assertEqual(first.returncode, 0, first.stderr)
+                self.assertEqual(
+                    _mysql(
+                        database,
+                        "UPDATE content_blocks SET content = 'OCR-STEM' "
+                        "WHERE source_slug = 'dse2015-math-m1-q1:stem';",
+                    ),
+                    0,
+                )
+                _write_pack(root, "zh-HK", "中文解-revised")
+                second = _seed(root, database)
+                self.assertEqual(second.returncode, 0, second.stderr)
+
+            counts = _mysql_query(
+                database,
+                """
+                SELECT
+                  (SELECT COUNT(*) FROM papers WHERE slug = 'dse2015-math-m1'),
+                  (SELECT COUNT(*) FROM questions q
+                     JOIN papers p ON p.id = q.paper_id
+                    WHERE p.slug = 'dse2015-math-m1'),
+                  (SELECT COUNT(*) FROM solutions s
+                     JOIN questions q ON q.id = s.question_id
+                     JOIN papers p ON p.id = q.paper_id
+                    WHERE p.slug = 'dse2015-math-m1'),
+                  (SELECT COUNT(*) FROM content_blocks
+                    WHERE source_slug LIKE 'dse2015-math-m1-q1:%'),
+                  (SELECT content = 'OCR-STEM' FROM content_blocks WHERE source_slug = 'dse2015-math-m1-q1:stem'),
+                  (SELECT LOCATE('中文解-revised', content) > 0 AND LOCATE('\\\\sum', content) > 0
+                     FROM content_blocks WHERE source_slug = 'dse2015-math-m1-q1:zh-HK'),
+                  (SELECT sortorder FROM solutions s
+                     JOIN content_blocks b ON b.id = s.content_block_id
+                    WHERE b.source_slug = 'dse2015-math-m1-q1:zh-HK'),
+                  (SELECT sortorder FROM solutions s
+                     JOIN content_blocks b ON b.id = s.content_block_id
+                    WHERE b.source_slug = 'dse2015-math-m1-q1:en'),
+                  (SELECT content = 'CORE-KEEP' FROM content_blocks WHERE source_slug = 'core-keep'),
+                  (SELECT COUNT(*) FROM solutions s
+                     JOIN questions q ON q.id = s.question_id
+                     JOIN papers p ON p.id = q.paper_id
+                    WHERE p.slug = 'dse2015-math-cp1'),
+                  (SELECT note FROM analyse_m1_sq),
+                  (SELECT note FROM sq_keys),
+                  (SELECT qkind FROM questions q
+                     JOIN papers p ON p.id = q.paper_id
+                    WHERE p.slug = 'dse2015-math-m1'),
+                  (SELECT source_type FROM questions q
+                     JOIN papers p ON p.id = q.paper_id
+                    WHERE p.slug = 'dse2015-math-m1')
+                """,
+            )
+            fields = counts.split("\t")
+            self.assertEqual(fields[0], "1")
+            self.assertEqual(fields[1], "1")
+            self.assertEqual(fields[2], "2")
+            self.assertEqual(fields[3], "3")
+            self.assertEqual(fields[4], "1")
+            self.assertEqual(fields[5], "1")
+            self.assertEqual(fields[6], "1")
+            self.assertEqual(fields[7], "2")
+            self.assertEqual(fields[8], "1")
+            self.assertEqual(fields[9], "1")
+            self.assertEqual(fields[10], "keep")
+            self.assertEqual(fields[11], "core-key")
+            self.assertEqual(fields[12], "sq")
+            self.assertEqual(fields[13], "hoksi")
+        finally:
+            _root_mysql(f"DROP DATABASE IF EXISTS `{database}`;")
+
+
+_EDITORIAL_DDL = """
+CREATE TABLE papers (
+  id INT NOT NULL AUTO_INCREMENT,
+  slug VARCHAR(64) NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  source_pdf VARCHAR(255) NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_papers_slug (slug)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE content_blocks (
+  id INT NOT NULL AUTO_INCREMENT,
+  content MEDIUMTEXT NOT NULL,
+  html MEDIUMTEXT NULL,
+  kind VARCHAR(32) NULL,
+  format VARCHAR(32) NULL,
+  lang VARCHAR(16) NULL,
+  source VARCHAR(32) NULL,
+  source_slug VARCHAR(191) NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_blocks_source_slug (source_slug)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE questions (
+  id INT NOT NULL AUTO_INCREMENT,
+  paper_id INT NOT NULL,
+  level VARCHAR(16) NULL,
+  marks INT NULL,
+  qkind ENUM('mc','sq') NOT NULL,
+  source_type ENUM('ocr','hoksi','editorial') NOT NULL,
+  stem_block_id INT NULL,
+  topic_id INT NULL,
+  created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  KEY idx_questions_paper (paper_id),
+  KEY idx_questions_stem (stem_block_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE solutions (
+  id INT NOT NULL AUTO_INCREMENT,
+  question_id INT NOT NULL,
+  content_block_id INT NOT NULL,
+  sortorder INT NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_solutions_block (content_block_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE analyse_m1_sq (
+  id INT NOT NULL PRIMARY KEY,
+  note VARCHAR(32) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+CREATE TABLE sq_keys (
+  id INT NOT NULL PRIMARY KEY,
+  note VARCHAR(32) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+INSERT INTO papers (slug, title) VALUES ('dse2015-math-cp1', 'CORE');
+INSERT INTO content_blocks (content, source_slug, kind) VALUES ('CORE-KEEP', 'core-keep', 'solution');
+INSERT INTO questions (paper_id, qkind, source_type, stem_block_id)
+SELECT p.id, 'sq', 'ocr', b.id
+FROM papers p
+JOIN content_blocks b ON b.source_slug = 'core-keep'
+WHERE p.slug = 'dse2015-math-cp1';
+INSERT INTO solutions (question_id, content_block_id, sortorder)
+SELECT q.id, b.id, 1
+FROM questions q
+JOIN papers p ON p.id = q.paper_id
+JOIN content_blocks b ON b.source_slug = 'core-keep'
+WHERE p.slug = 'dse2015-math-cp1';
+INSERT INTO analyse_m1_sq (id, note) VALUES (1, 'keep');
+INSERT INTO sq_keys (id, note) VALUES (1, 'core-key');
+"""
+
+
+def _write_pack(root: Path, lang: str, body_text: str) -> None:
+    folder = "hkdse-maths-m1-solutions-2015"
+    article = "hkdse-maths-m1-solutions-2015-q1"
+    topic_dir = root / "hkdse-maths-m1-solutions" / lang
+    payload = {
+        "slug": article,
+        "name": "2015 M1 Q1",
+        "sections": [
+            {
+                "content": f"<p>{body_text}</p><span class=\"math-tex\">\\(\\sum\\)</span>",
+                "sort_order": 1,
+            }
+        ],
+        "actual_lang": "zh-HK",
+    }
+    path = topic_dir / folder / f"{article}.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    topic = {
+        "slug": "hkdse-maths-m1-solutions",
+        "name": "M1試題答案",
+        "folders": [
+            {
+                "slug": folder,
+                "name": "HKDSE 2015 M1",
+                "articles": [{"slug": article, "name": "2015 M1 Q1"}],
+            }
+        ],
+    }
+    (topic_dir / "_topic.json").write_text(json.dumps(topic), encoding="utf-8")
+
+
+def _mysql_base() -> list[str]:
+    return [
+        os.environ.get("MYSQL_BIN", "mysql"),
+        "--batch",
+        "--connect-timeout=10",
+        "-h",
+        os.environ.get("MYSQL_HOST", "127.0.0.1"),
+        "-P",
+        os.environ.get("MYSQL_PORT", "3306"),
+        "-u",
+        os.environ["MYSQL_USER"],
+    ]
+
+
+def _mysql(database: str, sql: str) -> int:
+    completed = subprocess.run(
+        [*_mysql_base(), database],
+        input=sql,
+        text=True,
+        capture_output=True,
+        check=False,
+        env=os.environ.copy(),
+    )
+    if completed.returncode != 0:
+        raise AssertionError(completed.stderr)
+    return completed.returncode
+
+
+def _mysql_query(database: str, sql: str) -> str:
+    completed = subprocess.run(
+        [*_mysql_base(), "-N", database],
+        input=sql,
+        text=True,
+        capture_output=True,
+        check=False,
+        env=os.environ.copy(),
+    )
+    if completed.returncode != 0:
+        raise AssertionError(completed.stderr)
+    lines = [line for line in completed.stdout.splitlines() if line.strip()]
+    if len(lines) != 1:
+        raise AssertionError(completed.stdout)
+    return lines[0]
+
+
+def _root_mysql(sql: str) -> bool:
+    completed = subprocess.run(
+        [
+            "sudo",
+            "mysql",
+            "--socket=/var/run/mysqld/mysqld.sock",
+            "--batch",
+        ],
+        input=sql,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    return completed.returncode == 0
+
+
+def _seed(root: Path, database: str) -> subprocess.CompletedProcess[str]:
+    env = os.environ.copy()
+    env["MYSQL_DATABASE"] = database
+    env["HOKSI_DOWNLOAD_ROOT"] = str(root)
+    return subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "seed_hoksi_solutions.py"),
+            "--apply",
+            "--subject",
+            "m1",
+            "--year",
+            "2015",
+        ],
+        text=True,
+        capture_output=True,
+        check=False,
+        env=env,
+        cwd=str(ROOT.parent),
+    )
 
 
 if __name__ == "__main__":

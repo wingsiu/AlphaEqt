@@ -231,7 +231,7 @@ AlphaEqtContent's `vite.hoksi-download.ts` saves core, M1, and M2 from `https://
 /Users/alpha/Desktop/swift/AlphaEqtContent/downloads/hoksi/hkdse-maths-m2-solutions/{zh-HK,en}/
 ```
 
-M1 is 211 articles in each language. M2 is 215. Omit `--lang` and both languages are loaded. The `solutions.lang` value is the directory name. Pure Maths and M&S are blocked.
+M1 is 211 articles in each language. M2 is 215. Omit `--lang` and both languages are loaded. The language is the directory name (`zh-HK` or `en`), stored on the content block when that column exists and as `solutions.sortorder` 1 or 2. Pure Maths and M&S are blocked.
 
 | Subject | Hoksi topic | What it is |
 | --- | --- | --- |
@@ -260,15 +260,24 @@ Checked on 26 October 2026, both module topics list 17 folders and no missing qu
 
 211 M1 articles and 215 M2 articles. 2026 is in the pack, so those rows are Hoksi suggested solutions. A year that is not listed is not invented. DiskStation marking-scheme PDFs are not read. Nothing is OCR'd.
 
-Each article is HTML with `<span class="math-tex">\(\ldots\)</span>`. The loader keeps that HTML on `solutions.html` and writes Markdown on `solutions.body`, with `\(...\)` turned into `$...$` and `\[...\]` into `$$`. That is the same light conversion AlphaEqtContent uses, plus Markdown tables so a probability grid is not flattened. `format` is `markdown` when that conversion yields text, and `html` when the article is only markup.
+Each article is HTML with `<span class="math-tex">\(\ldots\)</span>`. The loader turns that into Markdown, with `\(...\)` becoming `$...$` and `\[...\]` becoming `$$`, and keeps the original HTML when `content_blocks` has a separate HTML column. That is the same light conversion AlphaEqtContent uses, plus Markdown tables so a probability grid is not flattened.
 
 ### What `--apply` writes
 
-`db/solutions_schema.sql` creates `papers`, `questions`, and `solutions` when all three are absent. When they already exist, `--apply` reads `SHOW COLUMNS` and maps the usual names (`body` or `content`, `question_no` or `number`, `paper_id`, and so on). It stops without writing if a solution cannot be hung off `questions` and `papers`. It does not alter an existing table. `CREATE TABLE IF NOT EXISTS` is not used as a way to change columns that are already there.
+Live `alphaeqt` already stores stems and solutions in `content_blocks`. `--apply` reads `SHOW COLUMNS` and writes that shape:
 
-Deletes are limited to the paper slugs in that run, and to `source = 'hoksi'` when that column exists. `analyse_m1_*`, `analyse_pm_*`, the compulsory Analyse tables, `sq_keys`, `answers`, and `hints` are not in the statement.
+| Row | How it is stored |
+| --- | --- |
+| `papers` | `slug` such as `dse2015-math-m1`, plus `title` when that column exists. `source_pdf` is left alone. |
+| `content_blocks` | One label block per question (`source_slug` `{question}:stem`) and one worked-solution block per language (`{question}:zh-HK`, `{question}:en`). The solution block is updated on re-apply. The label block is not, so a stem already stored there stays put. |
+| `questions` | `paper_id`, `stem_block_id`, `qkind` (`sq` when that enum allows it), `source_type` (`hoksi` when that enum allows it). `topic_id`, `level`, and `marks` stay null. There is no `question_no` column on the live table, and this loader does not add one. |
+| `solutions` | `content_block_id` plus `sortorder`. `1` is zh-HK and `2` is en. `question_id` is set when that column exists, which is how answers attach to a question. The table has no `body` or `lang` column; the language lives on the content block when that column exists, and on `sortorder` either way. |
 
-Sample and practice papers store `year_label` `SP` or `PP` and a NULL `year`, so the 2022 practice paper is `dsepp-math-m1` and the 2022 exam stays `dse2022-math-m1`.
+`--apply` does not `ALTER` and does not create `db/solutions_schema.sql`. That file is a different shape (`question_no`, `solutions.body`) and is not the live database. If `content_blocks` has no text column, or a `NOT NULL` column such as `topic_id` cannot be filled, the command exits before any write and prints the column list.
+
+A question is found again by its Hoksi stem block, not by a question number. Re-apply inserts rows that are missing and updates the worked-solution text. It does not delete other solutions and it does not retarget `stem_block_id` on a question that already points at a different block. `analyse_m1_*`, `analyse_pm_*`, the compulsory Analyse tables, `sq_keys`, `answers`, and `hints` are not in the statement.
+
+Sample and practice papers use slugs `dsesp-math-m1` and `dsepp-math-m1`. A `year` column, when the live table has one and it allows null, stays null for those papers so the practice paper does not share the exam year.
 
 `hoksi_solutions.load_bundle` is the read hook for a later API. This change does not add that API.
 

@@ -1,12 +1,17 @@
 #!/usr/bin/env python3
-"""Load Hoksi M1/M2 worked solutions into alphaeqt papers, questions, and solutions.
+"""Load Hoksi M1/M2 worked solutions into the live alphaeqt editorial tables.
 
 The default is a dry run. It reads the JSON tree written by
 db/download_hoksi_solutions.py (the same layout as core's
 downloads/hoksi/hkdse-maths-core-solutions) and prints how many solution
 rows would be written. It does not connect to MySQL.
 
---apply writes only slugs dse{year}-math-m1, dse{year}-math-m2, dsesp-math-m1,
+--apply and --emit-sql read SHOW COLUMNS and write through content_blocks:
+questions.stem_block_id points at a label block, and solutions.content_block_id
+plus sortorder point at the worked solution. They do not ALTER tables and
+they do not create a question_no/body schema.
+
+Slugs are only dse{year}-math-m1, dse{year}-math-m2, dsesp-math-m1,
 dsesp-math-m2, dsepp-math-m1, and dsepp-math-m2. Analyse tables, sq_keys,
 answers, hints, and core compulsory papers are not modified.
 
@@ -27,23 +32,19 @@ import argparse
 import os
 import subprocess
 import sys
-from pathlib import Path
 
 from hoksi_solutions import (
     ColumnInfo,
-    canonical_layout,
     gap_report,
-    layout_from_columns,
     load_bundle,
+    parse_show_index,
+    render_for_tables,
     render_report,
-    render_sql,
     resolve_download_root,
     TOPIC_BY_SUBJECT,
 )
 
-SCRIPT_DIR = Path(__file__).resolve().parent
-SCHEMA_PATH = SCRIPT_DIR / "solutions_schema.sql"
-CONTENT_TABLES = ("papers", "questions", "solutions")
+PROBE_TABLES = ("papers", "questions", "solutions", "content_blocks")
 
 
 def mysql_command(database: str) -> list[str]:
@@ -79,11 +80,22 @@ def require_database() -> str:
     database = os.environ.get("MYSQL_DATABASE", "")
     if not database:
         raise SystemExit(
-            "Refusing to apply: set MYSQL_DATABASE (and MYSQL_HOST, MYSQL_PORT, "
+            "Refusing to write SQL: set MYSQL_DATABASE (and MYSQL_HOST, MYSQL_PORT, "
             "MYSQL_USER, MYSQL_PWD) on the machine that hosts alphaeqt. "
-            "This script does not contact a database during --dry-run."
+            "--apply and --emit-sql read SHOW COLUMNS so the statement matches "
+            "the live content_blocks model. --dry-run does not connect."
         )
     return database
+
+
+def _header_index(header: list[str], name: str) -> int | None:
+    return header.index(name) if name in header else None
+
+
+def _cell(parts: list[str], index: int | None) -> str:
+    if index is None or index >= len(parts):
+        return ""
+    return parts[index]
 
 
 def parse_show_columns(text: str) -> dict[str, ColumnInfo]:
@@ -91,30 +103,66 @@ def parse_show_columns(text: str) -> dict[str, ColumnInfo]:
     if not lines:
         return {}
     header = lines[0].split("\t")
-    try:
-        field_index = header.index("Field")
-        null_index = header.index("Null")
-    except ValueError as exc:
-        raise SystemExit(f"unexpected SHOW COLUMNS header: {header}") from exc
+    field_index = _header_index(header, "Field")
+    null_index = _header_index(header, "Null")
+    if field_index is None or null_index is None:
+        raise SystemExit(f"unexpected SHOW COLUMNS header: {header}")
+    type_index = _header_index(header, "Type")
+    key_index = _header_index(header, "Key")
+    default_index = _header_index(header, "Default")
+    extra_index = _header_index(header, "Extra")
     columns: dict[str, ColumnInfo] = {}
     for line in lines[1:]:
         parts = line.split("\t")
         name = parts[field_index]
-        columns[name] = ColumnInfo(name=name, nullable=parts[null_index].upper() == "YES")
+        raw_default = _cell(parts, default_index)
+        if raw_default.upper() in {"", "NULL", r"\N"}:
+            default = None
+        else:
+            default = raw_default
+        columns[name] = ColumnInfo(
+            name=name,
+            nullable=_cell(parts, null_index).upper() == "YES",
+            column_type=_cell(parts, type_index),
+            default=default,
+            extra=_cell(parts, extra_index),
+            key=_cell(parts, key_index),
+        )
     return columns
+
+
+def _probe_statement(sql: str, database: str, label: str) -> subprocess.CompletedProcess[str] | None:
+    completed = mysql_exec(sql, database, capture=True)
+    if completed.returncode != 0:
+        stderr = (completed.stderr or "").lower()
+        if "1146" in stderr or "doesn't exist" in stderr or "does not exist" in stderr:
+            return None
+        sys.stderr.write(completed.stderr or "")
+        raise SystemExit(f"mysql exited {completed.returncode} while reading {label}")
+    return completed
 
 
 def probe_tables(database: str) -> dict[str, dict[str, ColumnInfo]]:
     found: dict[str, dict[str, ColumnInfo]] = {}
-    for table in CONTENT_TABLES:
-        completed = mysql_exec(f"SHOW COLUMNS FROM `{table}`;", database, capture=True)
-        if completed.returncode != 0:
-            stderr = (completed.stderr or "").lower()
-            if "1146" in stderr or "doesn't exist" in stderr or "does not exist" in stderr:
-                continue
-            sys.stderr.write(completed.stderr or "")
-            raise SystemExit(f"mysql exited {completed.returncode} while reading {table}")
+    for table in PROBE_TABLES:
+        completed = _probe_statement(f"SHOW COLUMNS FROM `{table}`;", database, table)
+        if completed is None:
+            continue
         found[table] = parse_show_columns(completed.stdout or "")
+    return found
+
+
+def probe_unique_keys(database: str, tables: dict[str, dict[str, ColumnInfo]]) -> dict[str, tuple[tuple[str, ...], ...]]:
+    found: dict[str, tuple[tuple[str, ...], ...]] = {}
+    for table in tables:
+        completed = _probe_statement(f"SHOW INDEX FROM `{table}`;", database, f"{table} indexes")
+        if completed is None:
+            found[table] = ()
+            continue
+        try:
+            found[table] = parse_show_index(completed.stdout or "")
+        except ValueError as exc:
+            raise SystemExit(str(exc)) from exc
     return found
 
 
@@ -149,20 +197,23 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--emit-sql",
         action="store_true",
-        help="Print SQL for db/solutions_schema.sql. Does not connect.",
+        help=(
+            "Print INSERT/UPDATE SQL for the live columns. Connects only to run "
+            "SHOW COLUMNS / SHOW INDEX. Requires MYSQL_DATABASE."
+        ),
     )
     parser.add_argument(
         "--with-schema",
         action="store_true",
-        help="With --emit-sql, prepend db/solutions_schema.sql.",
+        help="Rejected. db/solutions_schema.sql is not the live alphaeqt shape.",
     )
     parser.add_argument(
         "--apply",
         action="store_true",
         help=(
-            "Write through the local mysql client. Creates papers/questions/solutions "
-            "only when all three are absent. When they already exist, maps known "
-            "column names and refuses if a solution cannot be attached."
+            "Write through the local mysql client into content_blocks and the "
+            "existing papers, questions, and solutions tables. Does not ALTER "
+            "and does not create a question_no/body schema."
         ),
     )
     return parser
@@ -208,33 +259,25 @@ def main(argv: list[str] | None = None) -> int:
         print(report, file=sys.stderr)
         return 1
 
+    if args.with_schema:
+        print(
+            "error: db/solutions_schema.sql is not the live alphaeqt shape. "
+            "--apply writes content_blocks and does not create that file.",
+            file=sys.stderr,
+        )
+        return 2
+
     if args.emit_sql or args.apply:
         try:
-            if args.apply:
-                database = require_database()
-                tables = probe_tables(database)
-                present = [name for name in CONTENT_TABLES if name in tables]
-                if not present:
-                    sql = SCHEMA_PATH.read_text(encoding="utf-8") + "\n" + render_sql(bundle)
-                elif present == list(CONTENT_TABLES):
-                    sql = render_sql(bundle, layout_from_columns(tables))
-                else:
-                    print(
-                        "content tables are only partly present: "
-                        + ", ".join(present)
-                        + ". Refusing to create the missing ones beside an existing shape.",
-                        file=sys.stderr,
-                    )
-                    return 1
-                completed = mysql_exec(sql, database, capture=False)
-                if completed.returncode != 0:
-                    return completed.returncode
-            else:
-                sql = render_sql(bundle, canonical_layout())
-                if args.with_schema:
-                    sql = SCHEMA_PATH.read_text(encoding="utf-8") + "\n" + sql
+            database = require_database()
+            tables = probe_tables(database)
+            sql = render_for_tables(bundle, tables, probe_unique_keys(database, tables))
+            if args.emit_sql:
                 sys.stdout.write(sql)
                 return 0
+            completed = mysql_exec(sql, database, capture=False)
+            if completed.returncode != 0:
+                return completed.returncode
         except ValueError as exc:
             print(f"error: {exc}", file=sys.stderr)
             return 1

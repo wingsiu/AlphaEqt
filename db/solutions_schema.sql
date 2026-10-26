@@ -1,25 +1,22 @@
--- Worked solutions for HKDSE M1 and M2, loaded from Hoksi LaTeX/HTML.
+-- NOT the live alphaeqt shape. Do not source this file into ans4u.me.
 --
--- This file creates the editorial parent rows the solution text hangs on:
---   papers → questions → solutions
+-- Live alphaeqt already has papers, questions, solutions, and content_blocks.
+-- Question text hangs off questions.stem_block_id. Worked-solution text hangs
+-- off solutions.content_block_id. db/seed_hoksi_solutions.py --apply writes
+-- that model and does not execute this file.
 --
--- It does not create or alter:
+-- The statements below are a standalone local shape (question_no and
+-- solutions.body) kept so the legacy mapper can be read on its own. They are
+-- not created on a database that already has the editorial columns.
+--
+-- This file does not create or alter:
 --   analyse_mc, analyse_mc_units, analyse_sq, analyse_sq_units,
 --   analyse_units, analyse_unit_qtypes,
 --   analyse_m1_*, analyse_pm_*,
---   sq_keys, mc_keys, answers, hints
+--   sq_keys, mc_keys, answers, hints, content_blocks
 --
 -- Core compulsory papers (slugs such as dse2015-math-cp1) are not written
--- by db/seed_hoksi_solutions.py. Pure Maths and M&S have no Hoksi pack;
--- this schema does not invent those rows.
---
--- CREATE TABLE IF NOT EXISTS does not change a table that already exists.
--- db/seed_hoksi_solutions.py --apply probes columns and refuses to write
--- when papers, questions, or solutions already exist with a shape it
--- cannot map. It creates these tables only when all three are absent.
---
--- answers and hints stay empty: a Hoksi M1/M2 article is one worked
--- solution, not a separate key or hint.
+-- by db/seed_hoksi_solutions.py. Pure Maths and M&S have no Hoksi pack.
 
 SET NAMES utf8mb4;
 

@@ -149,7 +149,7 @@ python3 db/seed_analyse_pm.py --apply
 
 # Hoksi worked solutions (M1, M2)
 
-Loads the M1 and M2 packs already saved beside core into `papers`, `questions`, and `solutions`. AlphaEqtContent's `vite.hoksi-download.ts` is what wrote those files (the same call core uses for `hkdse-maths-core-solutions`). There is no core MySQL seeder for that pack; this script is the loader, and it does not read or rewrite the core topic.
+Loads the M1 and M2 packs already saved beside core into the live editorial tables. Solution text goes into `content_blocks`. `questions.stem_block_id` points at a label block and `solutions.content_block_id` plus `sortorder` point at the worked solution. AlphaEqtContent's `vite.hoksi-download.ts` is what wrote those files (the same call core uses for `hkdse-maths-core-solutions`). There is no core MySQL seeder for that pack; this script is the loader, and it does not read or rewrite the core topic.
 
 On disk:
 
@@ -159,11 +159,6 @@ On disk:
 ```
 
 Each language directory has `_topic.json`, then `<folder>/<article>.json` and `<folder>/<article>.md`. M1 is 211 articles per language (SP, PP, 2012–2026). M2 is 215 per language. The seeder stores one solution per article per language, so a full apply is 422 M1 rows and 430 M2 rows.
-
-| Subject | Topic | Paper slug |
-| --- | --- | --- |
-| M1 | `hkdse-maths-m1-solutions` | `dse2015-math-m1`, `dsesp-math-m1`, `dsepp-math-m1` |
-| M2 | `hkdse-maths-m2-solutions` | `dse2015-math-m2`, `dsesp-math-m2`, `dsepp-math-m2` |
 
 | Subject | Topic | Paper slug |
 | --- | --- | --- |
@@ -236,15 +231,16 @@ export MYSQL_DATABASE=alphaeqt
 python3 db/seed_hoksi_solutions.py --apply --subject m1 --year 2015
 ```
 
-When `papers`, `questions`, and `solutions` are all absent, `--apply` creates them from `db/solutions_schema.sql` and then inserts the rows. When the tables already exist, it maps columns such as `body` / `content` and `question_no` / `number`, and it exits before writing if a solution cannot be attached. It does not `ALTER` an existing table.
+`--apply` reads `SHOW COLUMNS` and writes the live content_blocks model. It does not `ALTER`, and it does not create `db/solutions_schema.sql` (that file is a `question_no` / `solutions.body` shape, which live `questions` does not have). `qkind` is `sq` and `source_type` is `hoksi` when those enums allow it. `topic_id`, `level`, `marks`, and `source_pdf` are left null. `sortorder` is 1 for zh-HK and 2 for en. If a required column cannot be filled, the command prints the column list and writes nothing.
 
-After apply, `dse2015-math-m1` should have 24 `solutions` rows (12 questions × zh-HK and en):
+After apply, `dse2015-math-m1` should have 24 `solutions` rows (12 questions × zh-HK and en), each pointing at its own content block:
 
 ```sql
 SELECT p.slug, COUNT(*)
 FROM papers p
 JOIN questions q ON q.paper_id = p.id
 JOIN solutions s ON s.question_id = q.id
+JOIN content_blocks b ON b.id = s.content_block_id
 WHERE p.slug = 'dse2015-math-m1'
 GROUP BY p.slug;
 ```
@@ -267,13 +263,13 @@ python3 db/seed_hoksi_solutions.py --apply --subject m2
 
 A full dry-run is 422 M1 solutions (211 × 2 languages) and 430 M2 solutions (215 × 2).
 
-`--inventory` only prints the live catalogue and the gaps. A year filter on download fetches those articles only; `--apply` for a subject then requires every selected article file to be present. Re-running a subject replaces `source = 'hoksi'` solutions for the slugs in that run and leaves every other paper alone.
+`--inventory` only prints the live catalogue and the gaps. A year filter on download fetches those articles only; `--apply` for a subject then requires every selected article file to be present. Re-running a subject updates the Hoksi solution blocks for the articles in that run and inserts rows that are missing. It does not rewrite a stem block that already exists, and it leaves every other paper alone.
 
 ```bash
 python3 db/seed_hoksi_solutions.py --emit-sql --subject m1 --year 2015 > /tmp/m1-2015-solutions.sql
 ```
 
-`--emit-sql` targets `db/solutions_schema.sql` and does not connect. Add `--with-schema` to prepend that file. Use `--apply` when the live tables use different column names.
+`--emit-sql` needs `MYSQL_DATABASE` as well. It runs `SHOW COLUMNS` and prints the same INSERT/UPDATE statement `--apply` would run. It does not create tables. `--with-schema` is rejected.
 
 ## Gaps
 
@@ -282,5 +278,5 @@ python3 db/seed_hoksi_solutions.py --emit-sql --subject m1 --year 2015 > /tmp/m1
 - HKCEE Mathematics is a blocked topic. It is the old compulsory syllabus, not a module paper.
 - Core compulsory stays on its own path. This loader never writes a `math-cp` or `math-core` slug.
 - `answers` and `hints` stay empty. The Hoksi article is the worked solution.
-- zh-HK and en are both loaded when both directories are on disk. The language column is the directory name (`zh-HK` or `en`), not `actual_lang` inside the JSON.
+- zh-HK and en are both loaded when both directories are on disk. The language is the directory name (`zh-HK` or `en`), not `actual_lang` inside the JSON. On the live table that is `solutions.sortorder` 1 and 2, and `content_blocks.lang` when that column exists.
 - 2026 M1 (13 questions) and 2026 M2 (12 questions) are in the Hoksi pack. Years the inventory does not list are skipped.

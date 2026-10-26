@@ -60,7 +60,7 @@ python3 db/seed_analyse_pm.py --dry-run
 
 ## M1 and M2 worked solutions
 
-Hoksi suggested solutions for Module 1 and Module 2 load into `papers`, `questions`, and `solutions` from the packs AlphaEqtContent already saved next to core:
+Hoksi suggested solutions for Module 1 and Module 2 load into `content_blocks`, with `questions.stem_block_id` and `solutions.content_block_id`, from the packs AlphaEqtContent already saved next to core:
 
 `/Users/alpha/Desktop/swift/AlphaEqtContent/downloads/hoksi/hkdse-maths-m1-solutions/` and `.../hkdse-maths-m2-solutions/` (zh-HK and en). Paper slugs look like `dse2015-math-m1`. Pure Maths and M&S are blocked. The core pack is not written.
 
