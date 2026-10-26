@@ -324,6 +324,50 @@ class HoksiSolutionTest(unittest.TestCase):
         self.assertIn("`question_id`", insert)
         self.assertRegex(insert, r", 11\s+FROM")
 
+    def test_source_type_char1_prefers_s_then_p(self):
+        tables = _live_tables()
+        questions = dict(tables["questions"])
+        questions["source_type"] = hs.ColumnInfo(
+            name="source_type",
+            nullable=False,
+            column_type="char(1)",
+        )
+        tables["questions"] = questions
+        sql = hs.render_editorial_sql(self._bundle(self._one_row("body")), tables)
+        insert = _statement_with(sql, "INSERT INTO questions")
+        self.assertIn("'S'", insert)
+        self.assertNotIn("'hoksi'", insert)
+        self.assertNotIn("'P'", insert)
+
+        questions["source_type"] = hs.ColumnInfo(
+            name="source_type",
+            nullable=False,
+            column_type="enum('ocr','P')",
+        )
+        sql = hs.render_editorial_sql(self._bundle(self._one_row("body")), tables)
+        insert = _statement_with(sql, "INSERT INTO questions")
+        self.assertIn("'P'", insert)
+        self.assertNotIn("'S'", insert)
+        self.assertNotIn("'hoksi'", insert)
+
+        self.assertEqual(
+            hs._choose_literal(
+                hs.ColumnInfo(name="source_type", nullable=False, column_type="varchar(1)"),
+                hs.SOURCE_TYPE_CANDIDATES,
+                "questions.source_type",
+            ),
+            "'S'",
+        )
+        self.assertEqual(hs.SOURCE_TYPE_CANDIDATES[:2], ("S", "P"))
+        with self.assertRaises(ValueError) as caught:
+            hs._choose_literal(
+                hs.ColumnInfo(name="source_type", nullable=False, column_type="char(1)"),
+                ("hoksi", "editorial"),
+                "questions.source_type",
+            )
+        self.assertIn("char(1)", str(caught.exception))
+        self.assertIn("hoksi", str(caught.exception))
+
     def test_editorial_refuses_a_block_table_with_no_text_column(self):
         tables = _live_tables()
         tables["content_blocks"] = _cols("id", "kind", nullable={"kind"})

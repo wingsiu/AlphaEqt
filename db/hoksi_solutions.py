@@ -106,7 +106,9 @@ QUESTION_STEM_ALIASES = ("stem_block_id", "stem_id")
 QUESTION_QKIND_ALIASES = ("qkind", "kind", "question_kind", "q_kind")
 QUESTION_SOURCE_TYPE_ALIASES = ("source_type", "source", "origin")
 QKIND_CANDIDATES = ("sq", "structured", "long", "written", "subjective")
-SOURCE_TYPE_CANDIDATES = ("hoksi", "editorial", "import")
+# Live questions.source_type is CHAR(1). Observed values are S and P.
+# Wider columns and enums that do not list S or P fall through to hoksi.
+SOURCE_TYPE_CANDIDATES = ("S", "P", "hoksi", "editorial", "import")
 BLOCK_SOURCE_CANDIDATES = ("hoksi",)
 STEM_KIND_CANDIDATES = ("stem", "question", "prompt", "question_stem")
 SOLUTION_KIND_CANDIDATES = ("solution", "worked", "worked_solution", "answer")
@@ -1371,6 +1373,7 @@ def _dump_tables(
 
 
 _ENUM_RE = re.compile(r"^(?:enum|set)\((.*)\)\s*$", re.IGNORECASE)
+_CHAR_WIDTH_RE = re.compile(r"\b(?:var)?char\((\d+)\)", re.IGNORECASE)
 
 
 def enum_members(column_type: str) -> tuple[str, ...] | None:
@@ -1382,19 +1385,46 @@ def enum_members(column_type: str) -> tuple[str, ...] | None:
     return tuple(re.findall(r"'((?:\\'|[^'])*)'", match.group(1)))
 
 
+def _fits_width(column: ColumnInfo, value: str) -> bool:
+    """False when CHAR(n) or VARCHAR(n) cannot store `value`.
+
+    SHOW COLUMNS reports the width in characters. A live `source_type`
+    CHAR(1) rejects `hoksi` with ERROR 1406, so that candidate is skipped.
+    """
+    match = _CHAR_WIDTH_RE.search(column.column_type)
+    if not match:
+        return True
+    return len(value) <= int(match.group(1))
+
+
 def _choose_literal(
     column: ColumnInfo | None, candidates: tuple[str, ...], label: str
 ) -> str | None:
-    """A SQL literal for `column`, or None when the column should be omitted."""
+    """A SQL literal for `column`, or None when the column should be omitted.
+
+    Enum and set columns use the first candidate that is a member. Other
+    string columns use the first candidate that fits the declared width.
+    Preference is the candidate order, so `S` wins over `P` and over `hoksi`
+    when all three fit.
+    """
     if column is None:
         return None
     allowed = enum_members(column.column_type)
+    viable = [candidate for candidate in candidates if _fits_width(column, candidate)]
     if allowed is None:
-        return sql_str(candidates[0])
+        if viable:
+            return sql_str(viable[0])
+        if not column.must_fill():
+            return None
+        tried = ", ".join(candidates)
+        raise ValueError(
+            f"{label} column {column.name} {column.column_type} cannot store {tried}. "
+            "Refusing to write a value that does not fit."
+        )
     folded = {value.lower(): value for value in allowed}
-    for candidate in candidates:
+    for candidate in viable:
         match = folded.get(candidate.lower())
-        if match is not None:
+        if match is not None and _fits_width(column, match):
             return sql_str(match)
     if not column.must_fill():
         return None

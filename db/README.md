@@ -231,7 +231,7 @@ export MYSQL_DATABASE=alphaeqt
 python3 db/seed_hoksi_solutions.py --apply --subject m1 --year 2015
 ```
 
-`--apply` reads `SHOW COLUMNS` and writes the live content_blocks model. It does not `ALTER`, and it does not create `db/solutions_schema.sql` (that file is a `question_no` / `solutions.body` shape, which live `questions` does not have). `qkind` is `sq` and `source_type` is `hoksi` when those enums allow it. `topic_id`, `level`, `marks`, and `source_pdf` are left null. `sortorder` is 1 for zh-HK and 2 for en. If a required column cannot be filled, the command prints the column list and writes nothing.
+`--apply` reads `SHOW COLUMNS` and writes the live content_blocks model. It does not `ALTER`, and it does not create `db/solutions_schema.sql` (that file is a `question_no` / `solutions.body` shape, which live `questions` does not have). `qkind` is `sq` when that column allows it. Live `source_type` is `CHAR(1)` (`S` and `P`), so the value written is `S`, or `P` when the enum does not list `S`. A longer token such as `hoksi` is used only when it fits and `S`/`P` are not accepted. `topic_id`, `level`, `marks`, and `source_pdf` are left null. `sortorder` is 1 for zh-HK and 2 for en. If a required column cannot be filled, the command prints the column list and writes nothing.
 
 After apply, `dse2015-math-m1` should have 24 `solutions` rows (12 questions × zh-HK and en), each pointing at its own content block:
 
