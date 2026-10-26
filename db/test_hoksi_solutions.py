@@ -202,6 +202,32 @@ class HoksiSolutionTest(unittest.TestCase):
         self.assertNotIn("2011", sql)
         self.assertNotIn("2022", sql)
 
+    def test_both_on_disk_languages_stay_separate_rows(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self._write_article(root, "zh-HK", "中文", actual_lang="zh-HK")
+            self._write_article(root, "en", "English", actual_lang="zh-HK")
+            self.assertEqual(
+                [lang for lang, _path in hs.language_dirs(root, "hkdse-maths-m1-solutions")],
+                ["zh-HK", "en"],
+            )
+            bundle = hs.load_bundle(root, "m1", years={"2015"})
+            self.assertEqual(bundle.errors, ())
+            self.assertEqual(sorted(row.lang for row in bundle.rows), ["en", "zh-HK"])
+            english = next(row for row in bundle.rows if row.lang == "en")
+            self.assertIn("English", english.body)
+            self.assertIn("/en/articles/", english.source_url)
+            sql = hs.render_sql(bundle)
+            self.assertIn("'en'", sql)
+            self.assertIn("'zh-HK'", sql)
+            report = hs.render_report(bundle)
+            self.assertIn("solutions: 2", report)
+            self.assertIn("langs: en 1, zh-HK 1", report)
+
+    def test_on_disk_root_is_searched_before_a_partial_checkout(self):
+        roots = [str(path) for path in hs.candidate_download_roots()]
+        self.assertEqual(roots[0], "/Users/alpha/Desktop/swift/AlphaEqtContent/downloads/hoksi")
+
     def test_gap_subjects_do_not_emit_sql(self):
         bundle = hs.load_bundle(Path("."), "pm")
         self.assertEqual(bundle.rows, ())
@@ -225,6 +251,32 @@ class HoksiSolutionTest(unittest.TestCase):
         sql = hs.render_sql(bundle)
         self.assertIn("sq_keys", sql)
         self.assertIn("dse2015-math-m1", sql)
+
+    def _write_article(self, root: Path, lang: str, body_text: str, actual_lang: str) -> None:
+        folder = "hkdse-maths-m1-solutions-2015"
+        article = "hkdse-maths-m1-solutions-2015-q1"
+        topic_dir = root / "hkdse-maths-m1-solutions" / lang
+        payload = {
+            "slug": article,
+            "name": "2015 M1 Q1",
+            "sections": [{"content": f"<p>{body_text}</p>", "sort_order": 1}],
+            "actual_lang": actual_lang,
+        }
+        path = topic_dir / folder / f"{article}.json"
+        path.parent.mkdir(parents=True)
+        path.write_text(json.dumps(payload), encoding="utf-8")
+        topic = {
+            "slug": "hkdse-maths-m1-solutions",
+            "name": "M1試題答案",
+            "folders": [
+                {
+                    "slug": folder,
+                    "name": "HKDSE 2015 M1",
+                    "articles": [{"slug": article, "name": "2015 M1 Q1"}],
+                }
+            ],
+        }
+        (topic_dir / "_topic.json").write_text(json.dumps(topic), encoding="utf-8")
 
     def _one_row(self, body: str) -> hs.SolutionRow:
         planned = hs.PlannedQuestion(

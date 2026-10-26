@@ -60,10 +60,12 @@ python3 db/seed_analyse_pm.py --dry-run
 
 ## M1 and M2 worked solutions
 
-Hoksi suggested solutions for Module 1 and Module 2 load into `papers`, `questions`, and `solutions`. The download uses the same API and `downloads/hoksi/<topic>/<lang>/` tree as core `hkdse-maths-core-solutions`. Paper slugs look like `dse2015-math-m1` and `dse2015-math-m2`. Pure Maths and M&S have no Hoksi pack, and the compulsory-core pack is not written.
+Hoksi suggested solutions for Module 1 and Module 2 load into `papers`, `questions`, and `solutions` from the packs AlphaEqtContent already saved next to core:
+
+`/Users/alpha/Desktop/swift/AlphaEqtContent/downloads/hoksi/hkdse-maths-m1-solutions/` and `.../hkdse-maths-m2-solutions/` (zh-HK and en). Paper slugs look like `dse2015-math-m1`. Pure Maths and M&S are blocked. The core pack is not written.
 
 ```bash
-python3 db/download_hoksi_solutions.py --subject m1 --year 2015
+export HOKSI_DOWNLOAD_ROOT="/Users/alpha/Desktop/swift/AlphaEqtContent/downloads/hoksi"
 python3 db/seed_hoksi_solutions.py --dry-run --subject m1 --year 2015
 ```
 

@@ -10,9 +10,13 @@ rows would be written. It does not connect to MySQL.
 dsesp-math-m2, dsepp-math-m1, and dsepp-math-m2. Analyse tables, sq_keys,
 answers, hints, and core compulsory papers are not modified.
 
+The on-disk packs (zh-HK and en) live at
+/Users/alpha/Desktop/swift/AlphaEqtContent/downloads/hoksi/. Omit --lang
+to load every language directory found there.
+
 Examples:
-  python3 db/download_hoksi_solutions.py --subject m1 --year 2015
-  python3 db/seed_hoksi_solutions.py --dry-run --subject m1 --year 2015
+  HOKSI_DOWNLOAD_ROOT=/Users/alpha/Desktop/swift/AlphaEqtContent/downloads/hoksi \\
+    python3 db/seed_hoksi_solutions.py --dry-run --subject m1 --year 2015
   python3 db/seed_hoksi_solutions.py --emit-sql --subject m1 --year 2015
   python3 db/seed_hoksi_solutions.py --apply --subject m1 --year 2015
 """
@@ -123,10 +127,18 @@ def build_parser() -> argparse.ArgumentParser:
         default=[],
         help="Year label to load (2015, SP, PP). Repeatable. Default: every downloaded folder.",
     )
-    parser.add_argument("--lang", default="zh-HK")
+    parser.add_argument(
+        "--lang",
+        default=None,
+        help="zh-HK or en. Omit to load every language directory on disk (both, when both were downloaded).",
+    )
     parser.add_argument(
         "--download-root",
-        help="Hoksi tree. Default: HOKSI_DOWNLOAD_ROOT, then ./downloads/hoksi, then AlphaEqtContent.",
+        help=(
+            "Hoksi tree. Default: HOKSI_DOWNLOAD_ROOT, then "
+            "/Users/alpha/Desktop/swift/AlphaEqtContent/downloads/hoksi, "
+            "then ./downloads/hoksi."
+        ),
     )
     parser.add_argument("--dry-run", action="store_true", help="Print the report. This is the default.")
     parser.add_argument(

@@ -224,14 +224,21 @@ Question slugs append `-q` and the question number (`dse2015-math-m1-q1`). One H
 
 ### Where the text comes from
 
-The same site and API as core. AlphaEqtContent downloads `hkdse-maths-core-solutions` from `https://hoksiresources.com/api` into `downloads/hoksi/<topic>/<lang>/` (`_topic.json`, one JSON article, one Markdown article). Module solutions use that tree:
+AlphaEqtContent's `vite.hoksi-download.ts` saves core, M1, and M2 from `https://hoksiresources.com/api` into `downloads/hoksi/<topic>/<lang>/` (`_topic.json`, one JSON article, one Markdown article). There is no MySQL seeder for the core pack. Module solutions are read from the tree already on disk:
+
+```text
+/Users/alpha/Desktop/swift/AlphaEqtContent/downloads/hoksi/hkdse-maths-m1-solutions/{zh-HK,en}/
+/Users/alpha/Desktop/swift/AlphaEqtContent/downloads/hoksi/hkdse-maths-m2-solutions/{zh-HK,en}/
+```
+
+M1 is 211 articles in each language. M2 is 215. Omit `--lang` and both languages are loaded. The `solutions.lang` value is the directory name. Pure Maths and M&S are blocked.
 
 | Subject | Hoksi topic | What it is |
 | --- | --- | --- |
-| M1 | `hkdse-maths-m1-solutions` | Suggested worked solutions, `zh-HK` |
-| M2 | `hkdse-maths-m2-solutions` | Suggested worked solutions, `zh-HK` |
-| Pure Maths | *(none)* | No subject and no topic on Hoksi |
-| M&S | *(none)* | No subject and no topic on Hoksi |
+| M1 | `hkdse-maths-m1-solutions` | Suggested worked solutions, `zh-HK` and `en` |
+| M2 | `hkdse-maths-m2-solutions` | Suggested worked solutions, `zh-HK` and `en` |
+| Pure Maths | *(none)* | Blocked. No Hoksi topic |
+| M&S | *(none)* | Blocked. No Hoksi topic |
 
 `hkcee-maths-solutions` is HKCEE Mathematics (Paper 1 sections and Paper 2 multiple choice, 1998–2011 in the current pack). It is not Mathematics & Statistics and it is not Pure Maths. The loader refuses it.
 

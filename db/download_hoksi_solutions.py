@@ -30,6 +30,8 @@ from hoksi_solutions import (
     BLOCKED_TOPICS,
     HOKSI_API,
     HOKSI_ORIGIN,
+    ON_DISK_ROOT,
+    PACK_LANGS,
     TOPIC_BY_SUBJECT,
     catalogue_summary,
     folder_year_label,
@@ -62,7 +64,15 @@ def default_root() -> Path:
     env = os.environ.get("HOKSI_DOWNLOAD_ROOT")
     if env:
         return Path(env).expanduser()
+    if ON_DISK_ROOT.is_dir():
+        return ON_DISK_ROOT
     return Path("downloads") / "hoksi"
+
+
+def langs_to_fetch(values: list[str]) -> list[str]:
+    if not values or "all" in values:
+        return list(PACK_LANGS)
+    return values
 
 
 def write_json(path: Path, payload: dict) -> None:
@@ -175,10 +185,19 @@ def build_parser() -> argparse.ArgumentParser:
         default=[],
         help="Limit articles to this year label (2015, SP, PP). Repeatable. Default: every folder.",
     )
-    parser.add_argument("--lang", default="zh-HK", help="Hoksi language. Core used zh-HK.")
+    parser.add_argument(
+        "--lang",
+        action="append",
+        default=[],
+        help="zh-HK, en, or all. Repeatable. Default: both zh-HK and en.",
+    )
     parser.add_argument(
         "--download-root",
-        help="Output root. Default: HOKSI_DOWNLOAD_ROOT or ./downloads/hoksi.",
+        help=(
+            "Output root. Default: HOKSI_DOWNLOAD_ROOT, the AlphaEqtContent "
+            "tree at /Users/alpha/Desktop/swift/AlphaEqtContent/downloads/hoksi "
+            "when that directory exists, otherwise ./downloads/hoksi."
+        ),
     )
     parser.add_argument(
         "--refresh",
@@ -203,14 +222,17 @@ def main(argv: list[str] | None = None) -> int:
     if not args.subject:
         print("pass --subject m1 or --subject m2, or --inventory", file=sys.stderr)
         return 2
+    if args.subject in {"pm", "ms"}:
+        print(gap_report(), file=sys.stderr)
+        return 1
     root = Path(args.download_root).expanduser() if args.download_root else default_root()
-    return download_subject(
-        args.subject,
-        root,
-        set(args.year) if args.year else None,
-        args.lang,
-        args.refresh,
-    )
+    years = set(args.year) if args.year else None
+    status = 0
+    for lang in langs_to_fetch(args.lang):
+        status = download_subject(args.subject, root, years, lang, args.refresh)
+        if status != 0:
+            return status
+    return status
 
 
 if __name__ == "__main__":

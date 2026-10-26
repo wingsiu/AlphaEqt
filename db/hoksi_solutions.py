@@ -31,6 +31,10 @@ TOPIC_BY_SUBJECT = {
     "m2": "hkdse-maths-m2-solutions",
 }
 
+# Both languages are already saved beside the core pack.
+ON_DISK_ROOT = Path("/Users/alpha/Desktop/swift/AlphaEqtContent/downloads/hoksi")
+PACK_LANGS = ("zh-HK", "en")
+
 BLOCKED_TOPICS = {
     "hkdse-maths-core-solutions": (
         "core compulsory solutions stay on the existing core path; "
@@ -220,10 +224,10 @@ def gap_report() -> str:
     return "\n".join(
         [
             "Hoksi subject hkdse-maths exposes solution topics for core, M1, and M2.",
-            "M1 pack: hkdse-maths-m1-solutions (suggested worked solutions, zh-HK).",
-            "M2 pack: hkdse-maths-m2-solutions (suggested worked solutions, zh-HK).",
-            "Pure Maths: no Hoksi subject or topic. Nothing is ingested for pm.",
-            "M&S: no Hoksi subject or topic. Nothing is ingested for ms.",
+            "M1 pack: hkdse-maths-m1-solutions (suggested worked solutions, zh-HK and en).",
+            "M2 pack: hkdse-maths-m2-solutions (suggested worked solutions, zh-HK and en).",
+            "Pure Maths: blocked. No Hoksi subject or topic, so nothing is ingested.",
+            "M&S: blocked. No Hoksi subject or topic, so nothing is ingested.",
             "hkcee-maths-solutions is HKCEE Mathematics (1998–2011 Paper 1/2),",
             "not Mathematics & Statistics and not Pure Maths. It is not ingested.",
             "2026 M1 and 2026 M2 are present on Hoksi as suggested solutions.",
@@ -237,22 +241,54 @@ def gap_report() -> str:
 
 
 def candidate_download_roots() -> list[Path]:
-    """Places a core-style Hoksi tree may already live."""
+    """Places a core-style Hoksi tree may already live.
+
+    The packs downloaded by AlphaEqtContent sit next to core at ON_DISK_ROOT.
+    """
     home = Path.home()
     return [
-        Path("downloads") / "hoksi",
-        Path("AlphaEqtContent") / "downloads" / "hoksi",
+        ON_DISK_ROOT,
         home / "Desktop" / "swift" / "AlphaEqtContent" / "downloads" / "hoksi",
+        Path("AlphaEqtContent") / "downloads" / "hoksi",
         home / "swift" / "AlphaEqtContent" / "downloads" / "hoksi",
         home / "AlphaEqtContent" / "downloads" / "hoksi",
+        Path("downloads") / "hoksi",
     ]
+
+
+def language_dirs(root: Path, topic_slug: str) -> tuple[tuple[str, Path], ...]:
+    """Return `(lang, directory)` for each saved Hoksi language.
+
+    AlphaEqtContent writes `downloads/hoksi/<topic>/<lang>/`. An older zh-HK
+    download may sit directly in `<topic>/`.
+    """
+    base = root / topic_slug
+    if not base.is_dir():
+        return ()
+    found: list[tuple[str, Path]] = []
+    seen: set[str] = set()
+    for lang in PACK_LANGS + ("zh-TW", "zh"):
+        path = base / lang
+        if (path / "_topic.json").is_file():
+            found.append((lang, path))
+            seen.add(lang)
+    if base.is_dir():
+        for child in sorted(base.iterdir(), key=lambda item: item.name):
+            if not child.is_dir() or child.name in seen or child.name.startswith("."):
+                continue
+            if (child / "_topic.json").is_file():
+                found.append((child.name, child))
+                seen.add(child.name)
+    if "zh-HK" not in seen and (base / "_topic.json").is_file():
+        found.insert(0, ("zh-HK", base))
+    return tuple(found)
 
 
 def resolve_download_root(
     explicit: str | None,
     env: str | None,
     topic_slug: str | None = None,
-    lang: str = "zh-HK",
+    lang: str | None = None,
 ) -> Path:
     if explicit:
         path = Path(explicit).expanduser()
@@ -272,7 +308,7 @@ def resolve_download_root(
             continue
         if first_existing is None:
             first_existing = root
-        if topic_slug and (root / topic_slug / lang / "_topic.json").is_file():
+        if topic_slug and _topic_is_present(root, topic_slug, lang):
             return root
     if first_existing is not None and topic_slug is None:
         return first_existing
@@ -593,56 +629,87 @@ def _read_json(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _topic_is_present(root: Path, topic_slug: str, lang: str | None) -> bool:
+    pairs = language_dirs(root, topic_slug)
+    if lang is None:
+        return bool(pairs)
+    return any(saved == lang for saved, _path in pairs)
+
+
 def load_bundle(
     root: Path,
     subject: str,
     *,
     years: set[str] | None = None,
-    lang: str = "zh-HK",
+    lang: str | None = None,
 ) -> Bundle:
     """Load one subject from a core-style `downloads/hoksi` tree.
+
+    `lang=None` reads every language directory on disk (`zh-HK` and `en`
+    when both were downloaded). The stored language is that directory name,
+    so an English file whose API payload still says `zh-HK` stays `en`.
 
     A later API can call this and serve `bundle.rows` without SQL.
     """
     if subject in GAP_SUBJECTS:
         message = (
-            "Pure Maths has no Hoksi solution pack."
+            "Pure Maths is blocked: no Hoksi solution pack."
             if subject == "pm"
-            else "M&S has no Hoksi solution pack. hkcee-maths-solutions is HKCEE Mathematics, not M&S."
+            else "M&S is blocked: no Hoksi solution pack. hkcee-maths-solutions is HKCEE Mathematics, not M&S."
         )
         return Bundle(
             source="",
             subject=subject,
-            lang=lang,
+            lang=lang or "",
             notices=(Notice("warning", message),),
         )
     if subject not in TOPIC_BY_SUBJECT:
         return Bundle(
             source="",
             subject=subject,
-            lang=lang,
+            lang=lang or "",
             notices=(Notice("error", f"unknown subject {subject}"),),
         )
 
     topic_slug = TOPIC_BY_SUBJECT[subject]
-    topic_dir = root / topic_slug / lang
-    topic_path = topic_dir / "_topic.json"
-    if not topic_path.is_file():
+    pairs = language_dirs(root, topic_slug)
+    if lang is not None:
+        pairs = tuple(pair for pair in pairs if pair[0] == lang)
+    if not pairs:
+        expected = root / topic_slug / (lang or "zh-HK")
         return Bundle(
-            source=str(topic_dir),
+            source=str(root / topic_slug),
             subject=subject,
-            lang=lang,
+            lang=lang or "",
             notices=(
                 Notice(
                     "error",
-                    f"missing {topic_path}. Download with "
+                    f"missing Hoksi articles under {expected}. "
+                    f"The packs already on disk are in {ON_DISK_ROOT}. "
+                    "Re-download from AlphaEqtContent (Download Hoksi) or "
                     f"python3 db/download_hoksi_solutions.py --subject {subject}"
                     + (f" --year {' --year '.join(sorted(years))}" if years else ""),
                 ),
             ),
         )
 
-    topic = _read_json(topic_path)
+    bundles = [
+        _load_language(root, subject, topic_slug, saved_lang, topic_dir, years)
+        for saved_lang, topic_dir in pairs
+    ]
+    return _merge_bundles(bundles, source=str(root / topic_slug))
+
+
+def _load_language(
+    root: Path,
+    subject: str,
+    topic_slug: str,
+    lang: str,
+    topic_dir: Path,
+    years: set[str] | None,
+) -> Bundle:
+    del root
+    topic = _read_json(topic_dir / "_topic.json")
     planned, notices = plan_from_topic(topic, subject, years)
     rows: list[SolutionRow] = []
     notice_list = list(notices)
@@ -652,40 +719,38 @@ def load_bundle(
         if json_path.is_file():
             article = _read_json(json_path)
             body, raw_html, body_format = body_from_article(article, item.question_title)
-            article_lang = str(article.get("actual_lang") or article.get("requested_lang") or lang)
         elif md_path.is_file():
             body = md_path.read_text(encoding="utf-8")
             raw_html = ""
             body_format = "markdown"
-            article_lang = lang
             notice_list.append(
-                Notice("warning", f"{item.article_slug} has Markdown only; HTML was not saved")
+                Notice("warning", f"{lang} {item.article_slug} has Markdown only; HTML was not saved")
             )
         else:
             notice_list.append(
                 Notice(
                     "error",
-                    f"missing article file for {item.paper_slug} Q{item.question_no}: {json_path}",
+                    f"missing {lang} article for {item.paper_slug} Q{item.question_no}: {json_path}",
                 )
             )
             continue
         if not body.strip():
             notice_list.append(
-                Notice("error", f"{item.article_slug} has an empty solution body")
+                Notice("error", f"{lang} {item.article_slug} has an empty solution body")
             )
             continue
         if body_format == "html":
             notice_list.append(
                 Notice(
                     "warning",
-                    f"{item.article_slug} has no text after HTML conversion; "
+                    f"{lang} {item.article_slug} has no text after HTML conversion; "
                     "the original HTML is stored as the body",
                 )
             )
         rows.append(
             SolutionRow(
                 planned=item,
-                lang=article_lang or lang,
+                lang=lang,
                 body=body,
                 html=raw_html,
                 body_format=body_format,
@@ -702,6 +767,38 @@ def load_bundle(
     )
 
 
+def _merge_bundles(bundles: list[Bundle], source: str) -> Bundle:
+    if len(bundles) == 1:
+        only = bundles[0]
+        return Bundle(
+            source=source,
+            subject=only.subject,
+            lang=only.lang,
+            rows=only.rows,
+            notices=only.notices,
+            planned=only.planned,
+        )
+    rows: list[SolutionRow] = []
+    notices: list[Notice] = []
+    planned: list[PlannedQuestion] = []
+    langs: list[str] = []
+    subject = bundles[0].subject
+    for bundle in bundles:
+        rows.extend(bundle.rows)
+        notices.extend(bundle.notices)
+        planned.extend(bundle.planned)
+        if bundle.lang:
+            langs.append(bundle.lang)
+    return Bundle(
+        source=source,
+        subject=subject,
+        lang=",".join(langs),
+        rows=tuple(rows),
+        notices=tuple(notices),
+        planned=tuple(planned),
+    )
+
+
 def render_report(bundle: Bundle) -> str:
     lines = [
         f"source: {bundle.source or '(none)'}",
@@ -711,12 +808,22 @@ def render_report(bundle: Bundle) -> str:
     by_paper: dict[str, list[SolutionRow]] = {}
     for row in bundle.rows:
         by_paper.setdefault(row.planned.paper_slug, []).append(row)
+    counts: dict[str, int] = {}
+    for row in bundle.rows:
+        counts[row.lang] = counts.get(row.lang, 0) + 1
+    if counts:
+        lines.append(
+            "langs: " + ", ".join(f"{lang} {counts[lang]}" for lang in sorted(counts))
+        )
     lines.append(f"papers: {len(by_paper)}")
     lines.append(f"solutions: {len(bundle.rows)}")
     for slug in sorted(by_paper):
-        numbers = sorted(row.planned.question_no for row in by_paper[slug])
-        span = f"q{numbers[0]}-q{numbers[-1]}" if numbers else "none"
-        lines.append(f"{slug}: {len(numbers)} solutions ({span})")
+        group = by_paper[slug]
+        questions = sorted({row.planned.question_no for row in group})
+        span = f"q{questions[0]}-q{questions[-1]}" if questions else "none"
+        lines.append(
+            f"{slug}: {len(group)} solutions, {len(questions)} questions ({span})"
+        )
     for notice in bundle.notices:
         lines.append(f"{notice.level}: {notice.message}")
     if bundle.subject in GAP_SUBJECTS and not bundle.rows:
