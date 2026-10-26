@@ -50,6 +50,14 @@ python3 db/seed_analyse_m1.py --dry-run
 
 Run details are in [db/README.md](db/README.md). The table layout is in [docs/CONTENT_MODEL.md](docs/CONTENT_MODEL.md).
 
+## Pure Maths and M2 Analyse seeding
+
+Pure Maths and DSE M2 past-paper topic maps load from the same Synology workbook, `math/M2/PManalyse.xlsx` (`M2_ANALYSE_XLSX`, often `/Volumes/math/M2/PManalyse.xlsx`). The upper block is Pure Maths Paper 1 for years before 2012, and M2 from SP, PP, and the single 2012 column onward. The lower block is Pure Maths Paper 2 through 2011. Topic tokens are the text in the cells, including Pure Maths codes past the M2 list (`16`, `17`, `0X`, `14X`, and the rest of the sheet). They are stored in `analyse_pm_*`. Compulsory-core Analyse and the M1 tables are not modified.
+
+```bash
+python3 db/seed_analyse_pm.py --dry-run
+```
+
 ---
 
 ## Project Roadmap
