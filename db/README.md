@@ -4,6 +4,15 @@ Seeds the HKDSE Mathematics Module 1 past-paper Analyse map into MySQL.
 
 The topic number stored for each question is the number printed in `math/M1/analyse.xlsx`. A cell such as `10,12` or `4, 7` becomes those topic numbers, in that order. The legend under the grid (column A, with the short name in column B and the full name in column F) supplies the labels. Blank legend names stay blank. Nothing in this folder renumbers those codes.
 
+Which numbers are legal depends on the column:
+
+- Before 2012 (`94`–`99`, `00`–`11`): topics **1–16** (`syllabus = ms`, the older M&S list). The sheet uses 13, 14, and 16 here.
+- 2012 and after (both columns labelled `12`, then `13`–`26`), plus `SP`, `PP`, and `ON`: topics **1–12** (`syllabus = dse`).
+
+`SP` and `PP` in this workbook are the new-syllabus papers: their cells stay inside 1–12 and use topics 1, 5, and 10, which the pre-2012 columns never use. `ON` is accepted as a 2012-and-after paper; it is not a column in the current file. Topics 13–16 are seeded only on `ms`.
+
+The current Sheet1 fails that check in one cell: `12#T` question 11 (T12) is topic 13. `--check` exits non-zero, and `--emit-sql` / `--apply` will not write the map until that cell is inside 1–12.
+
 Compulsory-core Analyse (`math/HKDSE/Analyse.xls`, `db/seed_analyse.py`, `analyse_schema.sql`, tables `analyse_mc`, `analyse_mc_units`, `analyse_sq`, `analyse_sq_units`, `analyse_units`, `analyse_unit_qtypes`) is a separate map. This script does not open that workbook and does not create or modify those tables. See [docs/CONTENT_MODEL.md](../docs/CONTENT_MODEL.md).
 
 ## Workbook
@@ -39,7 +48,7 @@ python3 db/seed_analyse_m1.py --check
 python3 db/test_seed_analyse_m1.py
 ```
 
-`--dry-run` is the default. `--check` exits non-zero when a cell is not a topic number.
+`--dry-run` is the default. `--check` exits non-zero when a cell is not a topic number in range for that column. On the current fixture that is `12#T` question 11, topic 13.
 
 Use another copy of the workbook with `--xlsx` or `M1_ANALYSE_XLSX`. The first existing path wins if you set neither: the NAS and mount locations above, then `math/M1/analyse.xlsx` relative to the current directory, then the fixture in this repo.
 
@@ -61,5 +70,7 @@ python3 db/seed_analyse_m1.py --apply
 ```
 
 `--apply` creates the `analyse_m1_*` tables if they are missing, then replaces their rows. `--emit-sql` prints that replacement SQL and does not connect. Add `--with-schema` to prepend `db/analyse_m1_schema.sql`.
+
+If an earlier draft of these tables was created with `unit_code` as the only key, drop `analyse_m1_sq_units`, `analyse_m1_sq`, and `analyse_m1_units` before applying `db/analyse_m1_schema.sql`. `CREATE TABLE IF NOT EXISTS` will not add the `syllabus` column.
 
 `MYSQL_DEFAULTS_FILE` is passed through as `--defaults-extra-file` when a login path file is preferable to `MYSQL_PWD`.

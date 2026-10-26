@@ -2,7 +2,9 @@
 """Seed HKDSE M1 Analyse maps from math/M1/analyse.xlsx.
 
 Topic and unit identifiers are the topic numbers printed in the workbook
-(legend column A and the year x question cells). This script does not
+(legend column A and the year x question cells). Years before 2012 use
+topics 1-16. Years 2012 and after, plus SP, PP, and ON, use topics 1-12.
+This script does not
 renumber them and does not read or write the compulsory-core tables
 (analyse_mc, analyse_sq, analyse_units, and the related junction tables).
 
@@ -45,9 +47,23 @@ CORE_RELATIVE = Path("math") / "HKDSE" / "Analyse.xls"
 YEAR_HEADER = re.compile(r"^(?:\d{2,4}|[A-Za-z]{1,6})$")
 TOPIC_LIST = re.compile(r"^\d+(?:\s*,\s*\d+)*$")
 
+# ms: M&S / older syllabus. dse: 2012 and after, including this workbook's SP/PP and ON.
+SYLLABUS_MS = "ms"
+SYLLABUS_DSE = "dse"
+MS_TOPICS = (1, 16)
+DSE_TOPICS = (1, 12)
+
+
+@dataclass(frozen=True)
+class LegendTopic:
+    code: int
+    short_name: str | None
+    name: str | None
+
 
 @dataclass(frozen=True)
 class Unit:
+    syllabus: str
     code: int
     short_name: str | None
     name: str | None
@@ -61,9 +77,11 @@ class Question:
     label_occurrence: int
     source_column: str
     column_index: int
+    source_row: int
     question_no: int
     raw_cell: str
     unit_codes: tuple[int, ...]
+    syllabus: str
 
 
 @dataclass(frozen=True)
@@ -121,6 +139,50 @@ def resolve_xlsx(explicit: str | None = None, env: str | None = None) -> Path:
     )
 
 
+def calendar_year(label: str) -> int | None:
+    """Map a header to a calendar year. 94 → 1994, 00 → 2000, 12 → 2012."""
+    if not re.fullmatch(r"\d{2,4}", label):
+        return None
+    year = int(label)
+    if year < 100:
+        year += 1900 if year >= 90 else 2000
+    return year
+
+
+def syllabus_for(label: str, _occurrence: int) -> str:
+    """Topic-number range for one year column.
+
+    Verified against math/M1/analyse.xlsx:
+
+    - 94–99 and 00–11 are before 2012. Those columns use topics 13, 14, and 16.
+      Allowed topics are 1–16 (M&S / older syllabus).
+    - 12 and later calendar years, both columns labelled 12, are 2012 and after.
+      Allowed topics are 1–12.
+    - SP and PP in this workbook use only 1–12, including topics 1, 5, and 10,
+      which no pre-2012 column uses. They are the new-syllabus sample and
+      practice papers, so allowed topics are 1–12. An older-regime SP/PP would
+      be 1–16; this file does not contain that paper.
+    - ON is a 2012-and-after paper code. Allowed topics are 1–12.
+    """
+    token = label.strip().upper()
+    if token == "ON" or token in {"SP", "PP"}:
+        return SYLLABUS_DSE
+    year = calendar_year(label.strip())
+    if year is None:
+        raise ValueError(f"year label {label!r} has no M1 syllabus rule")
+    if year < 2012:
+        return SYLLABUS_MS
+    return SYLLABUS_DSE
+
+
+def topic_bounds(syllabus: str) -> tuple[int, int]:
+    if syllabus == SYLLABUS_MS:
+        return MS_TOPICS
+    if syllabus == SYLLABUS_DSE:
+        return DSE_TOPICS
+    raise ValueError(f"unknown syllabus {syllabus!r}")
+
+
 def cell_text(value: object) -> str:
     if value is None:
         return ""
@@ -175,7 +237,7 @@ def load_m1_workbook(path: Path) -> WorkbookMap:
         workbook = load_workbook(path, data_only=False, read_only=False)
 
     notices: list[Notice] = []
-    units_by_code: dict[int, Unit] = {}
+    legend_by_code: dict[int, LegendTopic] = {}
     questions: list[Question] = []
 
     try:
@@ -183,36 +245,70 @@ def load_m1_workbook(path: Path) -> WorkbookMap:
             parsed = _parse_sheet(sheet, notices)
             if parsed is None:
                 continue
-            sheet_units, sheet_questions = parsed
-            for unit in sheet_units:
-                existing = units_by_code.get(unit.code)
+            sheet_legend, sheet_questions = parsed
+            for topic in sheet_legend:
+                existing = legend_by_code.get(topic.code)
                 if existing is None:
-                    units_by_code[unit.code] = unit
-                elif existing != unit:
+                    legend_by_code[topic.code] = topic
+                elif existing != topic:
                     raise ValueError(
-                        f"topic {unit.code} has conflicting legend rows: "
-                        f"{existing} vs {unit}"
+                        f"topic {topic.code} has conflicting legend rows: "
+                        f"{existing} vs {topic}"
                     )
             questions.extend(sheet_questions)
     finally:
         workbook.close()
 
-    referenced = {code for question in questions for code in question.unit_codes}
-    for code in sorted(referenced - set(units_by_code)):
-        notices.append(
-            Notice(
-                "warning",
-                f"topic number {code} is used in a cell but has no legend row; "
-                "imported with a blank name",
+    notices.extend(_range_errors(questions))
+    for code in sorted(legend_by_code):
+        if code < 1 or code > MS_TOPICS[1]:
+            notices.append(
+                Notice(
+                    "error",
+                    f"legend topic {code} is outside the older-syllabus range "
+                    f"{MS_TOPICS[0]}-{MS_TOPICS[1]}",
+                )
             )
-        )
-        units_by_code[code] = Unit(code, None, None)
-
-    units = tuple(units_by_code[code] for code in sorted(units_by_code))
+    units = scoped_units(legend_by_code)
     return WorkbookMap(path=path, units=units, questions=tuple(questions), notices=tuple(notices))
 
 
-def _parse_sheet(sheet, notices: list[Notice]) -> tuple[list[Unit], list[Question]] | None:
+def scoped_units(legend_by_code: dict[int, LegendTopic]) -> tuple[Unit, ...]:
+    """Seed ms topics 1–16 and dse topics 1–12. Names come from the legend."""
+    rows: list[Unit] = []
+    for syllabus, (_low, high) in ((SYLLABUS_MS, MS_TOPICS), (SYLLABUS_DSE, DSE_TOPICS)):
+        for code in range(1, high + 1):
+            topic = legend_by_code.get(code)
+            rows.append(
+                Unit(
+                    syllabus=syllabus,
+                    code=code,
+                    short_name=None if topic is None else topic.short_name,
+                    name=None if topic is None else topic.name,
+                )
+            )
+    return tuple(rows)
+
+
+def _range_errors(questions: list[Question]) -> list[Notice]:
+    notices: list[Notice] = []
+    for question in questions:
+        low, high = topic_bounds(question.syllabus)
+        outside = [str(code) for code in question.unit_codes if code < low or code > high]
+        if not outside:
+            continue
+        notices.append(
+            Notice(
+                "error",
+                f"{question.sheet_name}!{question.source_column}{question.source_row} "
+                f"{question.year_key} Q{question.question_no} syllabus {question.syllabus}: "
+                f"topic {', '.join(outside)} is outside {low}-{high}",
+            )
+        )
+    return notices
+
+
+def _parse_sheet(sheet, notices: list[Notice]) -> tuple[list[LegendTopic], list[Question]] | None:
     header_row = _find_header_row(sheet)
     if header_row is None:
         notices.append(Notice("info", f"{sheet.title}: no year header, skipped"))
@@ -322,9 +418,11 @@ def _parse_questions(
                     label_occurrence=occurrence,
                     source_column=letter,
                     column_index=column,
+                    source_row=row,
                     question_no=number,
                     raw_cell=cell_text(value),
                     unit_codes=codes,
+                    syllabus=syllabus_for(label, occurrence),
                 )
             )
     return questions
@@ -341,15 +439,15 @@ def _label_occurrence(year_columns: list[tuple[int, str, str]], column: int) -> 
     raise AssertionError(f"column {column} missing from year headers")
 
 
-def _parse_legend(sheet, legend_start: int) -> list[Unit]:
-    units: list[Unit] = []
+def _parse_legend(sheet, legend_start: int) -> list[LegendTopic]:
+    topics: list[LegendTopic] = []
     seen: set[int] = set()
     blank_run = 0
     for row in range(legend_start, sheet.max_row + 1):
         number = question_number(sheet.cell(row, 1).value)
         if number is None:
             blank_run += 1
-            if blank_run >= 1 and units:
+            if blank_run >= 1 and topics:
                 # One blank row ends the legend block.
                 if all(sheet.cell(row, column).value is None for column in range(1, 7)):
                     break
@@ -360,8 +458,8 @@ def _parse_legend(sheet, legend_start: int) -> list[Unit]:
         seen.add(number)
         short_name = _optional_name(sheet.cell(row, 2).value)
         name = _optional_name(sheet.cell(row, 6).value)
-        units.append(Unit(number, short_name, name))
-    return units
+        topics.append(LegendTopic(number, short_name, name))
+    return topics
 
 
 def _optional_name(value: object) -> str | None:
@@ -379,7 +477,8 @@ def render_sql(mapping: WorkbookMap) -> str:
     lines = [
         "-- Generated by db/seed_analyse_m1.py",
         f"-- Source: {mapping.path}",
-        "-- Topic numbers are the workbook codes. Compulsory analyse_* tables are not touched.",
+        "-- Topic numbers are the workbook codes, scoped by syllabus.",
+        "-- ms topics are 1-16. dse topics are 1-12. Compulsory analyse_* tables are not touched.",
         "SET NAMES utf8mb4;",
         "START TRANSACTION;",
         "DELETE FROM analyse_m1_sq_units;",
@@ -387,7 +486,9 @@ def render_sql(mapping: WorkbookMap) -> str:
         "DELETE FROM analyse_m1_units;",
     ]
     if mapping.units:
-        lines.append("INSERT INTO analyse_m1_units (unit_code, short_name, name) VALUES")
+        lines.append(
+            "INSERT INTO analyse_m1_units (syllabus, unit_code, short_name, name) VALUES"
+        )
         lines.append(
             ",\n".join(_unit_values(unit) for unit in mapping.units) + ";"
         )
@@ -395,7 +496,7 @@ def render_sql(mapping: WorkbookMap) -> str:
         lines.append(
             "INSERT INTO analyse_m1_sq "
             "(id, sheet_name, year_key, year_label, label_occurrence, source_column, "
-            "question_no, raw_cell) VALUES"
+            "question_no, raw_cell, syllabus) VALUES"
         )
         question_rows = []
         for sq_id, question in enumerate(mapping.questions, start=1):
@@ -404,17 +505,19 @@ def render_sql(mapping: WorkbookMap) -> str:
                 f"{sq_id}, {sql_str(question.sheet_name)}, {sql_str(question.year_key)}, "
                 f"{sql_str(question.year_label)}, {question.label_occurrence}, "
                 f"{sql_str(question.source_column)}, {question.question_no}, "
-                f"{sql_str(question.raw_cell)}"
+                f"{sql_str(question.raw_cell)}, {sql_str(question.syllabus)}"
                 ")"
             )
         lines.append(",\n".join(question_rows) + ";")
         lines.append(
-            "INSERT INTO analyse_m1_sq_units (sq_id, position, unit_code) VALUES"
+            "INSERT INTO analyse_m1_sq_units (sq_id, position, syllabus, unit_code) VALUES"
         )
         link_rows = []
         for sq_id, question in enumerate(mapping.questions, start=1):
             for position, code in enumerate(question.unit_codes, start=1):
-                link_rows.append(f"({sq_id}, {position}, {code})")
+                link_rows.append(
+                    f"({sq_id}, {position}, {sql_str(question.syllabus)}, {code})"
+                )
         lines.append(",\n".join(link_rows) + ";")
     lines.append("COMMIT;")
     lines.append("")
@@ -422,7 +525,10 @@ def render_sql(mapping: WorkbookMap) -> str:
 
 
 def _unit_values(unit: Unit) -> str:
-    return f"({unit.code}, {sql_nullable(unit.short_name)}, {sql_nullable(unit.name)})"
+    return (
+        f"({sql_str(unit.syllabus)}, {unit.code}, "
+        f"{sql_nullable(unit.short_name)}, {sql_nullable(unit.name)})"
+    )
 
 
 def sql_nullable(value: str | None) -> str:
@@ -444,14 +550,23 @@ def render_report(mapping: WorkbookMap) -> str:
         if question.year_key not in seen:
             seen.add(question.year_key)
             year_keys.append(question.year_key)
-    lines = [
-        f"source: {mapping.path}",
-        f"units: {len(mapping.units)}",
-        f"questions: {len(mapping.questions)}",
-        f"topic links: {link_count}",
-        "year_key: " + ", ".join(year_keys),
-        "unit codes: " + ", ".join(str(unit.code) for unit in mapping.units),
-    ]
+    lines = [f"source: {mapping.path}"]
+    for syllabus, bounds in ((SYLLABUS_MS, MS_TOPICS), (SYLLABUS_DSE, DSE_TOPICS)):
+        group = [question for question in mapping.questions if question.syllabus == syllabus]
+        group_links = sum(len(question.unit_codes) for question in group)
+        group_units = [unit.code for unit in mapping.units if unit.syllabus == syllabus]
+        lines.append(
+            f"syllabus {syllabus} topics {bounds[0]}-{bounds[1]}: "
+            f"units {len(group_units)} ({group_units[0]}-{group_units[-1]}), "
+            f"questions {len(group)}, topic links {group_links}"
+        )
+    lines.extend(
+        [
+            f"questions: {len(mapping.questions)}",
+            f"topic links: {link_count}",
+            "year_key: " + ", ".join(year_keys),
+        ]
+    )
     for notice in mapping.notices:
         lines.append(f"{notice.level}: {notice.message}")
     if mapping.errors:
@@ -521,7 +636,10 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--check",
         action="store_true",
-        help="Parse and exit 1 if a cell cannot be read as a topic number.",
+        help=(
+            "Parse and exit 1 if a cell is not a topic number in range for that "
+            "column: 1-16 before 2012, 1-12 for 2012 and after, SP, PP, and ON."
+        ),
     )
     parser.add_argument(
         "--emit-sql",

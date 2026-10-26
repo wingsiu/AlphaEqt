@@ -6,11 +6,12 @@ from __future__ import annotations
 import importlib.util
 import re
 import sys
+import tempfile
 import unittest
 import warnings
 from pathlib import Path
 
-from openpyxl import load_workbook
+from openpyxl import Workbook, load_workbook
 from openpyxl.utils import get_column_letter
 
 ROOT = Path(__file__).resolve().parent
@@ -37,24 +38,29 @@ class SeedAnalyseM1Test(unittest.TestCase):
         self.assertTrue(FIXTURE.is_file())
 
     def test_topic_numbers_match_excel_codes(self):
-        codes = [unit.code for unit in self.mapping.units]
-        self.assertEqual(codes, list(range(1, 17)))
-        by_code = {unit.code: unit for unit in self.mapping.units}
-        self.assertEqual(by_code[1].short_name, "binomial")
-        self.assertEqual(by_code[1].name, "Binomial")
-        self.assertEqual(by_code[3].short_name, "limit")
-        self.assertEqual(by_code[3].name, "limits")
-        self.assertEqual(by_code[5].name, "Application of Differentiation(1)")
-        self.assertIsNone(by_code[13].short_name)
-        self.assertIsNone(by_code[13].name)
-        self.assertIsNone(by_code[15].name)
-        self.assertIsNone(by_code[16].short_name)
+        ms = [unit.code for unit in self.mapping.units if unit.syllabus == "ms"]
+        dse = [unit.code for unit in self.mapping.units if unit.syllabus == "dse"]
+        self.assertEqual(ms, list(range(1, 17)))
+        self.assertEqual(dse, list(range(1, 13)))
+        by_key = {(unit.syllabus, unit.code): unit for unit in self.mapping.units}
+        self.assertEqual(by_key[("ms", 1)].short_name, "binomial")
+        self.assertEqual(by_key[("dse", 1)].name, "Binomial")
+        self.assertEqual(by_key[("ms", 3)].short_name, "limit")
+        self.assertEqual(by_key[("dse", 5)].name, "Application of Differentiation(1)")
+        self.assertIsNone(by_key[("ms", 13)].short_name)
+        self.assertIsNone(by_key[("ms", 13)].name)
+        self.assertIsNone(by_key[("ms", 15)].name)
+        self.assertIsNone(by_key[("ms", 16)].short_name)
+        self.assertNotIn(("dse", 13), by_key)
+        self.assertNotIn(("dse", 16), by_key)
 
     def test_grid_counts_and_cell_order(self):
         self.assertEqual(len(self.mapping.questions), 448)
         links = sum(len(question.unit_codes) for question in self.mapping.questions)
         self.assertEqual(links, 498)
-        self.assertEqual(self.mapping.errors, ())
+        self.assertEqual(len(self.mapping.errors), 1)
+        self.assertIn("12#T", self.mapping.errors[0].message)
+        self.assertIn("topic 13 is outside 1-12", self.mapping.errors[0].message)
 
         def find(year_key: str, question_no: int):
             matches = [
@@ -66,19 +72,30 @@ class SeedAnalyseM1Test(unittest.TestCase):
             return matches[0]
 
         self.assertEqual(find("94", 1).unit_codes, (12,))
+        self.assertEqual(find("94", 1).syllabus, "ms")
         self.assertEqual(find("94", 1).source_column, "B")
         self.assertEqual(find("00", 1).year_label, "00")
+        self.assertEqual(find("00", 1).syllabus, "ms")
         self.assertEqual(find("00", 1).unit_codes, (6,))
         self.assertEqual(find("09", 8).raw_cell, "4, 7")
         self.assertEqual(find("09", 8).unit_codes, (4, 7))
+        self.assertEqual(find("11", 10).unit_codes, (14,))
+        self.assertEqual(find("11", 10).syllabus, "ms")
         self.assertEqual(find("25", 1).unit_codes, (10, 12))
+        self.assertEqual(find("25", 1).syllabus, "dse")
         self.assertEqual(find("SP", 14).unit_codes, (12,))
+        self.assertEqual(find("SP", 14).syllabus, "dse")
+        self.assertEqual(find("PP", 1).syllabus, "dse")
         self.assertEqual(find("12#T", 2).unit_codes, (4,))
+        self.assertEqual(find("12#T", 11).unit_codes, (13,))
+        self.assertEqual(find("12#T", 11).syllabus, "dse")
         self.assertEqual(find("12#U", 2).unit_codes, (8,))
+        self.assertEqual(find("12#U", 2).syllabus, "dse")
         self.assertEqual(find("12#T", 2).year_label, "12")
         self.assertEqual(find("12#T", 2).label_occurrence, 1)
         self.assertEqual(find("12#U", 2).label_occurrence, 2)
         self.assertEqual(find("26", 1).unit_codes, (10,))
+        self.assertEqual(find("26", 1).syllabus, "dse")
 
     def test_every_grid_cell_uses_the_excel_topic_numbers(self):
         with warnings.catch_warnings():
@@ -118,6 +135,10 @@ class SeedAnalyseM1Test(unittest.TestCase):
                     self.assertEqual(match.raw_cell, raw)
                     self.assertEqual(match.label_occurrence, occurrence)
                     self.assertEqual(match.source_column, letter)
+                    self.assertEqual(
+                        match.syllabus,
+                        self.mod.syllabus_for(label, occurrence),
+                    )
                     seen += 1
             self.assertEqual(seen, len(self.mapping.questions))
         finally:
@@ -131,14 +152,31 @@ class SeedAnalyseM1Test(unittest.TestCase):
         self.assertEqual(sheets, {"Sheet1"})
 
     def test_sql_uses_excel_codes_and_skips_core_tables(self):
-        sql = self.mod.render_sql(self.mapping)
-        self.assertIn("(1, 'binomial', 'Binomial')", sql)
-        self.assertIn("(13, NULL, NULL)", sql)
-        self.assertIn("(15, NULL, NULL)", sql)
-        self.assertIn("'12#T'", sql)
+        with self.assertRaises(ValueError):
+            self.mod.render_sql(self.mapping)
+        kept = tuple(
+            question
+            for question in self.mapping.questions
+            if not (question.year_key == "12#T" and question.question_no == 11)
+        )
+        clean = self.mod.WorkbookMap(
+            path=self.mapping.path,
+            units=self.mapping.units,
+            questions=kept,
+            notices=tuple(notice for notice in self.mapping.notices if notice.level != "error"),
+        )
+        sql = self.mod.render_sql(clean)
+        self.assertIn("('ms', 1, 'binomial', 'Binomial')", sql)
+        self.assertIn("('dse', 1, 'binomial', 'Binomial')", sql)
+        self.assertIn("('ms', 13, NULL, NULL)", sql)
+        self.assertIn("('ms', 15, NULL, NULL)", sql)
+        self.assertNotIn("('dse', 13,", sql)
+        self.assertNotIn("('dse', 16,", sql)
         self.assertIn("'12#U'", sql)
         self.assertIn("'00'", sql)
         self.assertNotIn("2000", sql)
+        self.assertNotIn("'12#T', '12', 1, 'T', 11, '13', 'dse'", sql)
+        self.assertNotRegex(sql, r"'dse', 13\)")
         for name in (
             "analyse_mc",
             "analyse_mc_units",
@@ -163,6 +201,37 @@ class SeedAnalyseM1Test(unittest.TestCase):
             "analyse_unit_qtypes",
         ):
             self.assertNotIn(f"CREATE TABLE IF NOT EXISTS {name}", schema)
+
+    def test_out_of_range_topics_fail_validation(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "analyse.xlsx"
+            book = Workbook()
+            sheet = book.active
+            sheet.title = "Sheet1"
+            sheet["A2"] = 1
+            sheet["B1"] = "11"
+            sheet["C1"] = 16
+            sheet["D1"] = "SP"
+            sheet["E1"] = "ON"
+            sheet["B2"] = 16
+            sheet["C2"] = 13
+            sheet["D2"] = 13
+            sheet["E2"] = 12
+            book.save(path)
+            mapping = self.mod.load_m1_workbook(path)
+        by_year = {question.year_key: question for question in mapping.questions}
+        self.assertEqual(by_year["11"].syllabus, "ms")
+        self.assertEqual(by_year["11"].unit_codes, (16,))
+        self.assertEqual(by_year["16"].syllabus, "dse")
+        self.assertEqual(by_year["SP"].syllabus, "dse")
+        self.assertEqual(by_year["ON"].syllabus, "dse")
+        messages = [notice.message for notice in mapping.errors]
+        self.assertTrue(any("16 Q1" in message and "topic 13" in message for message in messages))
+        self.assertTrue(any("SP Q1" in message and "topic 13" in message for message in messages))
+        self.assertFalse(any(message.startswith("Sheet1!") and " ON " in message for message in messages))
+        self.assertFalse(any(" 11 Q1" in message for message in messages))
+        dse_codes = [unit.code for unit in mapping.units if unit.syllabus == "dse"]
+        self.assertEqual(dse_codes, list(range(1, 13)))
 
     def test_resolve_prefers_explicit_path(self):
         resolved = self.mod.resolve_xlsx(str(FIXTURE), None)
