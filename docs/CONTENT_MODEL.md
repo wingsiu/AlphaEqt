@@ -207,6 +207,82 @@ Dry-run on the current fixture: 937 questions and 1045 topic links.
 - `db/fixtures/M2/PManalyse.xlsx` — offline copy of the workbook
 - `db/README.md` — how to dry-run and how to apply against alphaeqt
 
+## Worked solutions (Hoksi)
+
+Analyse rows are topic numbers. Worked solutions are a different path: `papers` → `questions` → `solutions`. `answers`, `hints`, and `sq_keys` are not filled from these packs. Core compulsory Hoksi text previously landed in `sq_keys`; this loader does not read that pack and does not write `sq_keys`.
+
+Paper slugs follow the shape described for `db/import_docx_tex.py`. That importer is not in this repository. `db/editorial_api.py` reads these slugs. It does not write them.
+
+| Paper | Slug |
+| --- | --- |
+| 2015 M1 | `dse2015-math-m1` |
+| 2015 M2 | `dse2015-math-m2` |
+| M1 sample paper | `dsesp-math-m1` |
+| M2 practice paper | `dsepp-math-m2` |
+
+Question slugs append `-q` and the question number (`dse2015-math-m1-q1`). One Hoksi article is one question. Parts such as `(a)` and `(b)` stay inside that solution.
+
+### Where the text comes from
+
+AlphaEqtContent's `vite.hoksi-download.ts` saves core, M1, and M2 from `https://hoksiresources.com/api` into `downloads/hoksi/<topic>/<lang>/` (`_topic.json`, one JSON article, one Markdown article). There is no MySQL seeder for the core pack. Module solutions are read from the tree already on disk:
+
+```text
+/Users/alpha/Desktop/swift/AlphaEqtContent/downloads/hoksi/hkdse-maths-m1-solutions/{zh-HK,en}/
+/Users/alpha/Desktop/swift/AlphaEqtContent/downloads/hoksi/hkdse-maths-m2-solutions/{zh-HK,en}/
+```
+
+M1 is 211 articles in each language. M2 is 215. Omit `--lang` and both languages are loaded. The language is the directory name (`zh-HK` or `en`), stored on the content block when that column exists and as `solutions.sortorder` 1 or 2. Pure Maths and M&S are blocked.
+
+| Subject | Hoksi topic | What it is |
+| --- | --- | --- |
+| M1 | `hkdse-maths-m1-solutions` | Suggested worked solutions, `zh-HK` and `en` |
+| M2 | `hkdse-maths-m2-solutions` | Suggested worked solutions, `zh-HK` and `en` |
+| Pure Maths | *(none)* | Blocked. No Hoksi topic |
+| M&S | *(none)* | Blocked. No Hoksi topic |
+
+`hkcee-maths-solutions` is HKCEE Mathematics (Paper 1 sections and Paper 2 multiple choice, 1998–2011 in the current pack). It is not Mathematics & Statistics and it is not Pure Maths. The loader refuses it.
+
+Checked on 26 October 2026, both module topics list 17 folders and no missing question number inside a paper. The index is `db/fixtures/hoksi/m1_topic.json` and `db/fixtures/hoksi/m2_topic.json`. Refresh it with `python3 db/download_hoksi_solutions.py --inventory`.
+
+| Slug | Questions |
+| --- | --- |
+| `dsesp-math-m1` | 14 |
+| `dsepp-math-m1` | 13 |
+| `dse2012-math-m1` … `dse2014-math-m1` | 13 each |
+| `dse2015-math-m1` … `dse2025-math-m1` | 12 each |
+| `dse2026-math-m1` | 13 |
+| `dsesp-math-m2`, `dsepp-math-m2` | 14 each |
+| `dse2012-math-m2`, `dse2013-math-m2` | 14 each |
+| `dse2014-math-m2` | 13 |
+| `dse2015-math-m2` … `dse2023-math-m2` | 12 each |
+| `dse2024-math-m2`, `dse2025-math-m2` | 13 each |
+| `dse2026-math-m2` | 12 |
+
+211 M1 articles and 215 M2 articles. 2026 is in the pack, so those rows are Hoksi suggested solutions. A year that is not listed is not invented. DiskStation marking-scheme PDFs are not read. Nothing is OCR'd.
+
+Each article is HTML with `<span class="math-tex">\(\ldots\)</span>`. The loader turns that into Markdown, with `\(...\)` becoming `$...$` and `\[...\]` becoming `$$`, and keeps the original HTML when `content_blocks` has a separate HTML column. That is the same light conversion AlphaEqtContent uses, plus Markdown tables so a probability grid is not flattened.
+
+### What `--apply` writes
+
+Live `alphaeqt` already stores stems and solutions in `content_blocks`. `--apply` reads `SHOW COLUMNS` and writes that shape:
+
+| Row | How it is stored |
+| --- | --- |
+| `papers` | `slug` such as `dse2015-math-m1`, plus `title` when that column exists. `source_pdf` is left alone. |
+| `content_blocks` | One label block per question (`source_slug` `{question}:stem`) and one worked-solution block per language (`{question}:zh-HK`, `{question}:en`). The solution block is updated on re-apply. The label block is not, so a stem already stored there stays put. |
+| `questions` | `paper_id`, `stem_block_id`, `qkind` (`sq` when that enum allows it), `source_type`. Live `source_type` is `CHAR(1)` with values such as `S` and `P`, so the loader writes `S` (then `P` if `S` is not an allowed enum member). `hoksi` is written only when the column is wide enough and does not accept `S` or `P`. `topic_id`, `level`, and `marks` stay null. There is no `question_no` column on the live table, and this loader does not add one. |
+| `solutions` | `content_block_id` plus `sortorder`. `1` is zh-HK and `2` is en. `question_id` is set when that column exists, which is how answers attach to a question. The table has no `body` or `lang` column; the language lives on the content block when that column exists, and on `sortorder` either way. |
+
+`--apply` does not `ALTER` and does not create `db/solutions_schema.sql`. That file is a different shape (`question_no`, `solutions.body`) and is not the live database. If `content_blocks` has no text column, or a `NOT NULL` column such as `topic_id` cannot be filled, the command exits before any write and prints the column list.
+
+A question is found again by its Hoksi stem block, not by a question number. Re-apply inserts rows that are missing and updates the worked-solution text. It does not delete other solutions and it does not retarget `stem_block_id` on a question that already points at a different block. `analyse_m1_*`, `analyse_pm_*`, the compulsory Analyse tables, `sq_keys`, `answers`, and `hints` are not in the statement.
+
+Sample and practice papers use slugs `dsesp-math-m1` and `dsepp-math-m1`. A `year` column, when the live table has one and it allows null, stays null for those papers so the practice paper does not share the exam year.
+
+`hoksi_solutions.load_bundle` reads the packs. `db/editorial_api.py` reads the `content_blocks` rows this loader writes (`{question}:zh-HK` and `{question}:en`). The loader does not start that server.
+
+Commands, the M1 2015 pilot, and the batch order are in [db/README.md](../db/README.md).
+
 ## Analyse HTTP API
 
 `db/editorial_api.py` serves the three GET paths used for compulsory Analyse:

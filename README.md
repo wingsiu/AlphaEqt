@@ -58,6 +58,19 @@ Pure Maths and DSE M2 past-paper topic maps load from the same Synology workbook
 python3 db/seed_analyse_pm.py --dry-run
 ```
 
+## M1 and M2 worked solutions
+
+Hoksi suggested solutions for Module 1 and Module 2 load into `content_blocks`, with `questions.stem_block_id` and `solutions.content_block_id`, from the packs AlphaEqtContent already saved next to core:
+
+`/Users/alpha/Desktop/swift/AlphaEqtContent/downloads/hoksi/hkdse-maths-m1-solutions/` and `.../hkdse-maths-m2-solutions/` (zh-HK and en). Paper slugs look like `dse2015-math-m1`. Pure Maths and M&S are blocked. The core pack is not written.
+
+```bash
+export HOKSI_DOWNLOAD_ROOT="/Users/alpha/Desktop/swift/AlphaEqtContent/downloads/hoksi"
+python3 db/seed_hoksi_solutions.py --dry-run --subject m1 --year 2015
+```
+
+The M1 2015 pilot, the batch commands, and the gaps are in [db/README.md](db/README.md). The table layout is in [docs/CONTENT_MODEL.md](docs/CONTENT_MODEL.md).
+
 ## Analyse lookup API
 
 `db/editorial_api.py` serves `/analyse/lookup`, `/analyse/units`, and `/analyse/gaps`. A call with no `subject`, `band`, or module slug still reads only the compulsory Analyse tables. M1 and M2 use the same paths (`subject=m1`, `subject=m2`, or a slug such as `dse2015-math-m1`). Pure Maths and M&S stay analyse-only: solution lookup is blocked because those syllabi have no worked-solution pack.

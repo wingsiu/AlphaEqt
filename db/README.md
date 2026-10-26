@@ -147,6 +147,140 @@ python3 db/seed_analyse_pm.py --apply
 
 `MYSQL_DEFAULTS_FILE` is passed through as `--defaults-extra-file` when a login path file is preferable to `MYSQL_PWD`.
 
+# Hoksi worked solutions (M1, M2)
+
+Loads the M1 and M2 packs already saved beside core into the live editorial tables. Solution text goes into `content_blocks`. `questions.stem_block_id` points at a label block and `solutions.content_block_id` plus `sortorder` point at the worked solution. AlphaEqtContent's `vite.hoksi-download.ts` is what wrote those files (the same call core uses for `hkdse-maths-core-solutions`). There is no core MySQL seeder for that pack; this script is the loader, and it does not read or rewrite the core topic.
+
+On disk:
+
+```text
+/Users/alpha/Desktop/swift/AlphaEqtContent/downloads/hoksi/hkdse-maths-m1-solutions/{zh-HK,en}/
+/Users/alpha/Desktop/swift/AlphaEqtContent/downloads/hoksi/hkdse-maths-m2-solutions/{zh-HK,en}/
+```
+
+Each language directory has `_topic.json`, then `<folder>/<article>.json` and `<folder>/<article>.md`. M1 is 211 articles per language (SP, PP, 2012–2026). M2 is 215 per language. The seeder stores one solution per article per language, so a full apply is 422 M1 rows and 430 M2 rows.
+
+| Subject | Topic | Paper slug |
+| --- | --- | --- |
+| M1 | `hkdse-maths-m1-solutions` | `dse2015-math-m1`, `dsesp-math-m1`, `dsepp-math-m1` |
+| M2 | `hkdse-maths-m2-solutions` | `dse2015-math-m2`, `dsesp-math-m2`, `dsepp-math-m2` |
+
+Pure Maths and M&S are blocked: Hoksi has no pack for them, and this loader will not invent one. `hkcee-maths-solutions` is HKCEE Mathematics, not M&S, and is refused. Core `hkdse-maths-core-solutions` is not read and not written. Analyse tables, `sq_keys`, `answers`, and `hints` are not modified. See [docs/CONTENT_MODEL.md](../docs/CONTENT_MODEL.md).
+
+The offline indexes (article names only, no solution text) are `db/fixtures/hoksi/m1_topic.json` and `db/fixtures/hoksi/m2_topic.json`, captured 26 October 2026. Both packs run from 2012 through 2026 plus the sample paper (`SP`) and the practice paper (`PP`), with no missing question number inside a paper. 2026 is included because those articles are on Hoksi. They are suggested solutions, not an official marking scheme invented here.
+
+## Re-download
+
+Use the AlphaEqtContent dev app, which calls `vite.hoksi-download.ts`:
+
+```bash
+cd /Users/alpha/Desktop/swift/AlphaEqtContent
+npm run dev
+```
+
+Set the topic URL and the Language menu, then click Download Hoksi. Do that for both languages of each module:
+
+- `https://hoksiresources.com/zh-HK/topics/hkdse-maths-m1-solutions` with 中文 (zh-HK)
+- `https://hoksiresources.com/en/topics/hkdse-maths-m1-solutions` with English (en)
+- the same two URLs with `hkdse-maths-m2-solutions` instead of `m1`
+
+Files are written under `/Users/alpha/Desktop/swift/AlphaEqtContent/downloads/hoksi/<topic>/<lang>/`. Do not point this at Pure Maths, M&S, HKCEE, or the core topic if the goal is this loader.
+
+The same API from this repo, into that directory:
+
+```bash
+export HOKSI_DOWNLOAD_ROOT="/Users/alpha/Desktop/swift/AlphaEqtContent/downloads/hoksi"
+python3 db/download_hoksi_solutions.py --subject m1
+python3 db/download_hoksi_solutions.py --subject m2
+```
+
+That fetches zh-HK and en. Add `--refresh` to replace files already on disk. Add `--lang zh-HK` or `--lang en` for one language. `--subject pm` and `--subject ms` exit without downloading.
+
+## Pilot: M1 2015
+
+The packs are already on disk, so the pilot does not need a new download. From the AlphaEqt repo root, on the machine that has that tree:
+
+```bash
+export HOKSI_DOWNLOAD_ROOT="/Users/alpha/Desktop/swift/AlphaEqtContent/downloads/hoksi"
+python3 db/seed_hoksi_solutions.py --dry-run --subject m1 --year 2015
+python3 db/test_hoksi_solutions.py
+```
+
+`--dry-run` does not connect to MySQL. With both languages present it reports:
+
+```text
+langs: en 12, zh-HK 12
+papers: 1
+solutions: 24
+dse2015-math-m1: 24 solutions, 12 questions (q1-q12)
+result: ok
+```
+
+Omit `--lang` to load every language directory. Pass `--lang zh-HK` or `--lang en` to load one.
+
+Apply that pilot on the alphaeqt machine:
+
+```bash
+export HOKSI_DOWNLOAD_ROOT="/Users/alpha/Desktop/swift/AlphaEqtContent/downloads/hoksi"
+export MYSQL_HOST=127.0.0.1
+export MYSQL_PORT=3306
+export MYSQL_USER=alphaeqt
+export MYSQL_PWD="..."          # read by the mysql client, not printed by this script
+export MYSQL_DATABASE=alphaeqt
+
+python3 db/seed_hoksi_solutions.py --apply --subject m1 --year 2015
+```
+
+`--apply` reads `SHOW COLUMNS` and writes the live content_blocks model. It does not `ALTER`, and it does not create `db/solutions_schema.sql` (that file is a `question_no` / `solutions.body` shape, which live `questions` does not have). `qkind` is `sq` when that column allows it. Live `source_type` is `CHAR(1)` (`S` and `P`), so the value written is `S`, or `P` when the enum does not list `S`. A longer token such as `hoksi` is used only when it fits and `S`/`P` are not accepted. `topic_id`, `level`, `marks`, and `source_pdf` are left null. `sortorder` is 1 for zh-HK and 2 for en. If a required column cannot be filled, the command prints the column list and writes nothing.
+
+After apply, `dse2015-math-m1` should have 24 `solutions` rows (12 questions × zh-HK and en), each pointing at its own content block:
+
+```sql
+SELECT p.slug, COUNT(*)
+FROM papers p
+JOIN questions q ON q.paper_id = p.id
+JOIN solutions s ON s.question_id = q.id
+JOIN content_blocks b ON b.id = s.content_block_id
+WHERE p.slug = 'dse2015-math-m1'
+GROUP BY p.slug;
+```
+
+`MYSQL_DEFAULTS_FILE` is passed through as `--defaults-extra-file` when a login path file is preferable to `MYSQL_PWD`.
+
+The seeder finds `/Users/alpha/Desktop/swift/AlphaEqtContent/downloads/hoksi` on its own when `HOKSI_DOWNLOAD_ROOT` is unset and that directory exists. It still will not read the core topic sitting beside the module packs.
+
+## Batch the rest of M1 and M2
+
+Run this after the 2015 pilot looks right. It reads the packs already on disk. It does not create Pure Maths or M&S rows.
+
+```bash
+export HOKSI_DOWNLOAD_ROOT="/Users/alpha/Desktop/swift/AlphaEqtContent/downloads/hoksi"
+python3 db/seed_hoksi_solutions.py --dry-run --subject m1
+python3 db/seed_hoksi_solutions.py --dry-run --subject m2
+python3 db/seed_hoksi_solutions.py --apply --subject m1
+python3 db/seed_hoksi_solutions.py --apply --subject m2
+```
+
+A full dry-run is 422 M1 solutions (211 × 2 languages) and 430 M2 solutions (215 × 2).
+
+`--inventory` only prints the live catalogue and the gaps. A year filter on download fetches those articles only; `--apply` for a subject then requires every selected article file to be present. Re-running a subject updates the Hoksi solution blocks for the articles in that run and inserts rows that are missing. It does not rewrite a stem block that already exists, and it leaves every other paper alone.
+
+```bash
+python3 db/seed_hoksi_solutions.py --emit-sql --subject m1 --year 2015 > /tmp/m1-2015-solutions.sql
+```
+
+`--emit-sql` needs `MYSQL_DATABASE` as well. It runs `SHOW COLUMNS` and prints the same INSERT/UPDATE statement `--apply` would run. It does not create tables. `--with-schema` is rejected.
+
+## Gaps
+
+- Pure Maths: no Hoksi topic. Do not invent papers from another source in this loader.
+- M&S: no Hoksi topic. Do not point `hkcee-maths-solutions` at M&S.
+- HKCEE Mathematics is a blocked topic. It is the old compulsory syllabus, not a module paper.
+- Core compulsory stays on its own path. This loader never writes a `math-cp` or `math-core` slug.
+- `answers` and `hints` stay empty. The Hoksi article is the worked solution.
+- zh-HK and en are both loaded when both directories are on disk. The language is the directory name (`zh-HK` or `en`), not `actual_lang` inside the JSON. On the live table that is `solutions.sortorder` 1 and 2, and `content_blocks.lang` when that column exists.
+- 2026 M1 (13 questions) and 2026 M2 (12 questions) are in the Hoksi pack. Years the inventory does not list are skipped.
+
 # Analyse HTTP API
 
 `db/editorial_api.py` serves `GET /analyse/lookup`, `/analyse/units`, and `/analyse/gaps`.
