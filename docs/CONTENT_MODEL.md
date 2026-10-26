@@ -206,3 +206,63 @@ Dry-run on the current fixture: 937 questions and 1045 topic links.
 - `db/seed_analyse_pm.py` — reader and SQL generator
 - `db/fixtures/M2/PManalyse.xlsx` — offline copy of the workbook
 - `db/README.md` — how to dry-run and how to apply against alphaeqt
+
+## Worked solutions (Hoksi)
+
+Analyse rows are topic numbers. Worked solutions are a different path: `papers` → `questions` → `solutions`. `answers`, `hints`, and `sq_keys` are not filled from these packs. Core compulsory Hoksi text previously landed in `sq_keys`; this loader does not read that pack and does not write `sq_keys`.
+
+There is no `editorial_api` and no `db/import_docx_tex.py` in this repository. Paper slugs follow the shape that importer is described as using.
+
+| Paper | Slug |
+| --- | --- |
+| 2015 M1 | `dse2015-math-m1` |
+| 2015 M2 | `dse2015-math-m2` |
+| M1 sample paper | `dsesp-math-m1` |
+| M2 practice paper | `dsepp-math-m2` |
+
+Question slugs append `-q` and the question number (`dse2015-math-m1-q1`). One Hoksi article is one question. Parts such as `(a)` and `(b)` stay inside that solution.
+
+### Where the text comes from
+
+The same site and API as core. AlphaEqtContent downloads `hkdse-maths-core-solutions` from `https://hoksiresources.com/api` into `downloads/hoksi/<topic>/<lang>/` (`_topic.json`, one JSON article, one Markdown article). Module solutions use that tree:
+
+| Subject | Hoksi topic | What it is |
+| --- | --- | --- |
+| M1 | `hkdse-maths-m1-solutions` | Suggested worked solutions, `zh-HK` |
+| M2 | `hkdse-maths-m2-solutions` | Suggested worked solutions, `zh-HK` |
+| Pure Maths | *(none)* | No subject and no topic on Hoksi |
+| M&S | *(none)* | No subject and no topic on Hoksi |
+
+`hkcee-maths-solutions` is HKCEE Mathematics (Paper 1 sections and Paper 2 multiple choice, 1998–2011 in the current pack). It is not Mathematics & Statistics and it is not Pure Maths. The loader refuses it.
+
+Checked on 26 October 2026, both module topics list 17 folders and no missing question number inside a paper. The index is `db/fixtures/hoksi/m1_topic.json` and `db/fixtures/hoksi/m2_topic.json`. Refresh it with `python3 db/download_hoksi_solutions.py --inventory`.
+
+| Slug | Questions |
+| --- | --- |
+| `dsesp-math-m1` | 14 |
+| `dsepp-math-m1` | 13 |
+| `dse2012-math-m1` … `dse2014-math-m1` | 13 each |
+| `dse2015-math-m1` … `dse2025-math-m1` | 12 each |
+| `dse2026-math-m1` | 13 |
+| `dsesp-math-m2`, `dsepp-math-m2` | 14 each |
+| `dse2012-math-m2`, `dse2013-math-m2` | 14 each |
+| `dse2014-math-m2` | 13 |
+| `dse2015-math-m2` … `dse2023-math-m2` | 12 each |
+| `dse2024-math-m2`, `dse2025-math-m2` | 13 each |
+| `dse2026-math-m2` | 12 |
+
+211 M1 articles and 215 M2 articles. 2026 is in the pack, so those rows are Hoksi suggested solutions. A year that is not listed is not invented. DiskStation marking-scheme PDFs are not read. Nothing is OCR'd.
+
+Each article is HTML with `<span class="math-tex">\(\ldots\)</span>`. The loader keeps that HTML on `solutions.html` and writes Markdown on `solutions.body`, with `\(...\)` turned into `$...$` and `\[...\]` into `$$`. That is the same light conversion AlphaEqtContent uses, plus Markdown tables so a probability grid is not flattened. `format` is `markdown` when that conversion yields text, and `html` when the article is only markup.
+
+### What `--apply` writes
+
+`db/solutions_schema.sql` creates `papers`, `questions`, and `solutions` when all three are absent. When they already exist, `--apply` reads `SHOW COLUMNS` and maps the usual names (`body` or `content`, `question_no` or `number`, `paper_id`, and so on). It stops without writing if a solution cannot be hung off `questions` and `papers`. It does not alter an existing table. `CREATE TABLE IF NOT EXISTS` is not used as a way to change columns that are already there.
+
+Deletes are limited to the paper slugs in that run, and to `source = 'hoksi'` when that column exists. `analyse_m1_*`, `analyse_pm_*`, the compulsory Analyse tables, `sq_keys`, `answers`, and `hints` are not in the statement.
+
+Sample and practice papers store `year_label` `SP` or `PP` and a NULL `year`, so the 2022 practice paper is `dsepp-math-m1` and the 2022 exam stays `dse2022-math-m1`.
+
+`hoksi_solutions.load_bundle` is the read hook for a later API. This change does not add that API.
+
+Commands, the M1 2015 pilot, and the batch order are in [db/README.md](../db/README.md).

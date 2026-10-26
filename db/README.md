@@ -146,3 +146,109 @@ python3 db/seed_analyse_pm.py --apply
 `unit_code` uses `utf8mb4_bin` so `0X` and `0x` are different keys. A table created earlier with `utf8mb4_unicode_ci` rejects the seed. `db/analyse_pm_schema.sql` alters those columns when you apply it again. `CREATE TABLE IF NOT EXISTS` alone does not change the collation.
 
 `MYSQL_DEFAULTS_FILE` is passed through as `--defaults-extra-file` when a login path file is preferable to `MYSQL_PWD`.
+
+# Hoksi worked solutions (M1, M2)
+
+Loads suggested worked solutions from Hoksi into `papers`, `questions`, and `solutions`. The download is the same API and directory layout core used for `hkdse-maths-core-solutions`:
+
+```text
+https://hoksiresources.com/api/topics/<topic>
+downloads/hoksi/<topic>/<lang>/_topic.json
+downloads/hoksi/<topic>/<lang>/<folder>/<article>.json
+downloads/hoksi/<topic>/<lang>/<folder>/<article>.md
+```
+
+| Subject | Topic | Paper slug |
+| --- | --- | --- |
+| M1 | `hkdse-maths-m1-solutions` | `dse2015-math-m1`, `dsesp-math-m1`, `dsepp-math-m1` |
+| M2 | `hkdse-maths-m2-solutions` | `dse2015-math-m2`, `dsesp-math-m2`, `dsepp-math-m2` |
+
+Pure Maths and M&S have no Hoksi pack. `hkcee-maths-solutions` is HKCEE Mathematics, not M&S, and is not downloaded. Core `hkdse-maths-core-solutions` is not downloaded and not written. Analyse tables, `sq_keys`, `answers`, and `hints` are not modified. Marking-scheme PDFs are not read. See [docs/CONTENT_MODEL.md](../docs/CONTENT_MODEL.md).
+
+The offline indexes (article names only, no solution text) are `db/fixtures/hoksi/m1_topic.json` and `db/fixtures/hoksi/m2_topic.json`, captured 26 October 2026. Both packs run from 2012 through 2026 plus the sample paper (`SP`) and the practice paper (`PP`), with no missing question number inside a paper. 2026 is included because those articles are on Hoksi. They are suggested solutions, not an official marking scheme invented here.
+
+## Pilot: M1 2015
+
+From the repo root, on a machine that can reach Hoksi:
+
+```bash
+python3 db/download_hoksi_solutions.py --subject m1 --year 2015
+python3 db/seed_hoksi_solutions.py --dry-run --subject m1 --year 2015
+python3 db/test_hoksi_solutions.py
+```
+
+`--dry-run` does not connect to MySQL. A complete 2015 download reports:
+
+```text
+papers: 1
+solutions: 12
+dse2015-math-m1: 12 solutions (q1-q12)
+result: ok
+```
+
+Apply that pilot on the alphaeqt machine:
+
+```bash
+export MYSQL_HOST=127.0.0.1
+export MYSQL_PORT=3306
+export MYSQL_USER=alphaeqt
+export MYSQL_PWD="..."          # read by the mysql client, not printed by this script
+export MYSQL_DATABASE=alphaeqt
+
+python3 db/seed_hoksi_solutions.py --apply --subject m1 --year 2015
+```
+
+When `papers`, `questions`, and `solutions` are all absent, `--apply` creates them from `db/solutions_schema.sql` and then inserts the 12 solutions. When the tables already exist, it maps columns such as `body` / `content` and `question_no` / `number`, and it exits before writing if a solution cannot be attached. It does not `ALTER` an existing table.
+
+After apply, `dse2015-math-m1` should have 12 `solutions` rows:
+
+```sql
+SELECT p.slug, COUNT(*)
+FROM papers p
+JOIN questions q ON q.paper_id = p.id
+JOIN solutions s ON s.question_id = q.id
+WHERE p.slug = 'dse2015-math-m1'
+GROUP BY p.slug;
+```
+
+`MYSQL_DEFAULTS_FILE` is passed through as `--defaults-extra-file` when a login path file is preferable to `MYSQL_PWD`.
+
+To keep the files beside the core download, set the root to that tree (the script still will not write the core topic):
+
+```bash
+export HOKSI_DOWNLOAD_ROOT="$HOME/Desktop/swift/AlphaEqtContent/downloads/hoksi"
+```
+
+The seeder also looks there, and in `./downloads/hoksi`, when `HOKSI_DOWNLOAD_ROOT` is unset.
+
+## Batch the remaining M1 and M2 papers
+
+Run this after the 2015 pilot looks right. It does not create Pure Maths or M&S rows.
+
+```bash
+python3 db/download_hoksi_solutions.py --inventory
+python3 db/download_hoksi_solutions.py --subject m1
+python3 db/download_hoksi_solutions.py --subject m2
+python3 db/seed_hoksi_solutions.py --dry-run --subject m1
+python3 db/seed_hoksi_solutions.py --dry-run --subject m2
+python3 db/seed_hoksi_solutions.py --apply --subject m1
+python3 db/seed_hoksi_solutions.py --apply --subject m2
+```
+
+`--inventory` only prints the live catalogue and the gaps. A year filter on download fetches those articles only; `--apply` for a subject then requires every selected article file to be present. Re-running a subject replaces `source = 'hoksi'` solutions for the slugs in that run and leaves every other paper alone.
+
+```bash
+python3 db/seed_hoksi_solutions.py --emit-sql --subject m1 --year 2015 > /tmp/m1-2015-solutions.sql
+```
+
+`--emit-sql` targets `db/solutions_schema.sql` and does not connect. Add `--with-schema` to prepend that file. Use `--apply` when the live tables use different column names.
+
+## Gaps
+
+- Pure Maths: no Hoksi topic. Do not invent papers from another source in this loader.
+- M&S: no Hoksi topic. Do not point `hkcee-maths-solutions` at M&S.
+- HKCEE Mathematics is a blocked topic. It is the old compulsory syllabus, not a module paper.
+- Core compulsory stays on its own path. This loader never writes a `math-cp` or `math-core` slug.
+- `answers` and `hints` stay empty. The Hoksi article is the worked solution.
+- English is not the default. Pass `--lang en` only after checking that Hoksi returns `actual_lang` `en` for that article. The pilot is `zh-HK`, which is what core downloaded.
+- 2026 M1 (13 questions) and 2026 M2 (12 questions) are in the Hoksi pack. Years the inventory does not list are skipped.

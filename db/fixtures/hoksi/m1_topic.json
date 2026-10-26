@@ -1,0 +1,953 @@
+{
+  "slug": "hkdse-maths-m1-solutions",
+  "name": "M1試題答案",
+  "description": "香港中學文憑試數學科M1歷屆試題的建議答案",
+  "folders": [
+    {
+      "slug": "item-1777870959310",
+      "name": "HKDSE 2026 M1",
+      "articles": [
+        {
+          "slug": "hkdse-2026-m1-q1",
+          "name": "2026 M1 Q1"
+        },
+        {
+          "slug": "hkdse-2026-m1-q3",
+          "name": "2026 M1 Q3"
+        },
+        {
+          "slug": "hkdse-2026-m1-q8",
+          "name": "2026 M1 Q8"
+        },
+        {
+          "slug": "hkdse-2026-m1-q2",
+          "name": "2026 M1 Q2"
+        },
+        {
+          "slug": "hkdse-2026-m1-q5",
+          "name": "2026 M1 Q5"
+        },
+        {
+          "slug": "hkdse-2026-m1-q12",
+          "name": "2026 M1 Q12"
+        },
+        {
+          "slug": "hkdse-2026-m1-q4",
+          "name": "2026 M1 Q4"
+        },
+        {
+          "slug": "hkdse-2026-m1-q7",
+          "name": "2026 M1 Q7"
+        },
+        {
+          "slug": "hkdse-2026-m1-q10",
+          "name": "2026 M1 Q10"
+        },
+        {
+          "slug": "hkdse-2026-m1-q13",
+          "name": "2026 M1 Q13"
+        },
+        {
+          "slug": "hkdse-2026-m1-q6",
+          "name": "2026 M1 Q6"
+        },
+        {
+          "slug": "hkdse-2026-m1-q11",
+          "name": "2026 M1 Q11"
+        },
+        {
+          "slug": "hkdse-2026-m1-q9",
+          "name": "2026 M1 Q9"
+        }
+      ]
+    },
+    {
+      "slug": "hkdse-maths-m1-solutions-2017",
+      "name": "HKDSE 2017 M1",
+      "articles": [
+        {
+          "slug": "hkdse-maths-m1-solutions-2017-q1",
+          "name": "2017 M1 Q1"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2017-q2",
+          "name": "2017 M1 Q2"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2017-q3",
+          "name": "2017 M1 Q3"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2017-q4",
+          "name": "2017 M1 Q4"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2017-q5",
+          "name": "2017 M1 Q5"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2017-q6",
+          "name": "2017 M1 Q6"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2017-q7",
+          "name": "2017 M1 Q7"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2017-q8",
+          "name": "2017 M1 Q8"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2017-q9",
+          "name": "2017 M1 Q9"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2017-q10",
+          "name": "2017 M1 Q10"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2017-q11",
+          "name": "2017 M1 Q11"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2017-q12",
+          "name": "2017 M1 Q12"
+        }
+      ]
+    },
+    {
+      "slug": "hkdse-maths-m1-solutions-2016",
+      "name": "HKDSE 2016 M1",
+      "articles": [
+        {
+          "slug": "hkdse-maths-m1-solutions-2016-q2",
+          "name": "2016 M1 Q2"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2016-q3",
+          "name": "2016 M1 Q3"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2016-q4",
+          "name": "2016 M1 Q4"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2016-q5",
+          "name": "2016 M1 Q5"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2016-q1",
+          "name": "2016 M1 Q1"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2016-q12",
+          "name": "2016 M1 Q12"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2016-q6",
+          "name": "2016 M1 Q6"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2016-q7",
+          "name": "2016 M1 Q7"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2016-q8",
+          "name": "2016 M1 Q8"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2016-q9",
+          "name": "2016 M1 Q9"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2016-q10",
+          "name": "2016 M1 Q10"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2016-q11",
+          "name": "2016 M1 Q11"
+        }
+      ]
+    },
+    {
+      "slug": "hkdse-maths-m1-solutions-2015",
+      "name": "HKDSE 2015 M1",
+      "articles": [
+        {
+          "slug": "hkdse-maths-m1-solutions-2015-q12",
+          "name": "2015 M1 Q12"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2015-q1",
+          "name": "2015 M1 Q1"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2015-q2",
+          "name": "2015 M1 Q2"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2015-q3",
+          "name": "2015 M1 Q3"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2015-q4",
+          "name": "2015 M1 Q4"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2015-q5",
+          "name": "2015 M1 Q5"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2015-q6",
+          "name": "2015 M1 Q6"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2015-q7",
+          "name": "2015 M1 Q7"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2015-q8",
+          "name": "2015 M1 Q8"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2015-q9",
+          "name": "2015 M1 Q9"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2015-q10",
+          "name": "2015 M1 Q10"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2015-q11",
+          "name": "2015 M1 Q11"
+        }
+      ]
+    },
+    {
+      "slug": "hkdse-maths-m1-solutions-2024",
+      "name": "HKDSE 2024 M1",
+      "articles": [
+        {
+          "slug": "hkdse-maths-m1-solutions-2024-q1",
+          "name": "2024 M1 Q1"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2024-q2",
+          "name": "2024 M1 Q2"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2024-q3",
+          "name": "2024 M1 Q3"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2024-q4",
+          "name": "2024 M1 Q4"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2024-q5",
+          "name": "2024 M1 Q5"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2024-q6",
+          "name": "2024 M1 Q6"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2024-q7",
+          "name": "2024 M1 Q7"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2024-q8",
+          "name": "2024 M1 Q8"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2024-q9",
+          "name": "2024 M1 Q9"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2024-q10",
+          "name": "2024 M1 Q10"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2024-q11",
+          "name": "2024 M1 Q11"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2024-q12",
+          "name": "2024 M1 Q12"
+        }
+      ]
+    },
+    {
+      "slug": "hkdse-maths-m1-solutions-2025",
+      "name": "HKDSE 2025 M1",
+      "articles": [
+        {
+          "slug": "hkdse-maths-m1-solutions-2025-q1",
+          "name": "2025 M1 Q1"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2025-q2",
+          "name": "2025 M1 Q2"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2025-q3",
+          "name": "2025 M1 Q3"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2025-q4",
+          "name": "2025 M1 Q4"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2025-q5",
+          "name": "2025 M1 Q5"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2025-q6",
+          "name": "2025 M1 Q6"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2025-q7",
+          "name": "2025 M1 Q7"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2025-q8",
+          "name": "2025 M1 Q8"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2025-q9",
+          "name": "2025 M1 Q9"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2025-q10",
+          "name": "2025 M1 Q10"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2025-q11",
+          "name": "2025 M1 Q11"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2025-q12",
+          "name": "2025 M1 Q12"
+        }
+      ]
+    },
+    {
+      "slug": "hkdse-maths-m1-solutions-2019",
+      "name": "HKDSE 2019 M1",
+      "articles": [
+        {
+          "slug": "hkdse-maths-m1-solutions-2019-q3",
+          "name": "2019 M1 Q3"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2019-q4",
+          "name": "2019 M1 Q4"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2019-q5",
+          "name": "2019 M1 Q5"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2019-q6",
+          "name": "2019 M1 Q6"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2019-q7",
+          "name": "2019 M1 Q7"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2019-q8",
+          "name": "2019 M1 Q8"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2019-q9",
+          "name": "2019 M1 Q9"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2019-q10",
+          "name": "2019 M1 Q10"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2019-q11",
+          "name": "2019 M1 Q11"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2019-q12",
+          "name": "2019 M1 Q12"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2019-q1",
+          "name": "2019 M1 Q1"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2019-q2",
+          "name": "2019 M1 Q2"
+        }
+      ]
+    },
+    {
+      "slug": "hkdse-maths-m1-solutions-2018",
+      "name": "HKDSE 2018 M1",
+      "articles": [
+        {
+          "slug": "hkdse-maths-m1-solutions-2018-q4",
+          "name": "2018 M1 Q4"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2018-q5",
+          "name": "2018 M1 Q5"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2018-q6",
+          "name": "2018 M1 Q6"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2018-q7",
+          "name": "2018 M1 Q7"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2018-q1",
+          "name": "2018 M1 Q1"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2018-q2",
+          "name": "2018 M1 Q2"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2018-q3",
+          "name": "2018 M1 Q3"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2018-q8",
+          "name": "2018 M1 Q8"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2018-q9",
+          "name": "2018 M1 Q9"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2018-q10",
+          "name": "2018 M1 Q10"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2018-q11",
+          "name": "2018 M1 Q11"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2018-q12",
+          "name": "2018 M1 Q12"
+        }
+      ]
+    },
+    {
+      "slug": "hkdse-maths-m1-solutions-2014",
+      "name": "HKDSE 2014 M1",
+      "articles": [
+        {
+          "slug": "hkdse-maths-m1-solutions-2014-q1",
+          "name": "2014 M1 Q1"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2014-q2",
+          "name": "2014 M1 Q2"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2014-q3",
+          "name": "2014 M1 Q3"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2014-q10",
+          "name": "2014 M1 Q10"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2014-q11",
+          "name": "2014 M1 Q11"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2014-q12",
+          "name": "2014 M1 Q12"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2014-q13",
+          "name": "2014 M1 Q13"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2014-q4",
+          "name": "2014 M1 Q4"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2014-q5",
+          "name": "2014 M1 Q5"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2014-q6",
+          "name": "2014 M1 Q6"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2014-q7",
+          "name": "2014 M1 Q7"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2014-q8",
+          "name": "2014 M1 Q8"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2014-q9",
+          "name": "2014 M1 Q9"
+        }
+      ]
+    },
+    {
+      "slug": "hkdse-maths-m1-solutions-2013",
+      "name": "HKDSE 2013 M1",
+      "articles": [
+        {
+          "slug": "hkdse-maths-m1-solutions-2013-q9",
+          "name": "2013 M1 Q9"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2013-q10",
+          "name": "2013 M1 Q10"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2013-q11",
+          "name": "2013 M1 Q11"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2013-q12",
+          "name": "2013 M1 Q12"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2013-q1",
+          "name": "2013 M1 Q1"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2013-q2",
+          "name": "2013 M1 Q2"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2013-q3",
+          "name": "2013 M1 Q3"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2013-q4",
+          "name": "2013 M1 Q4"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2013-q5",
+          "name": "2013 M1 Q5"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2013-q6",
+          "name": "2013 M1 Q6"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2013-q7",
+          "name": "2013 M1 Q7"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2013-q8",
+          "name": "2013 M1 Q8"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2013-q13",
+          "name": "2013 M1 Q13"
+        }
+      ]
+    },
+    {
+      "slug": "hkdse-maths-m1-solutions-2012",
+      "name": "HKDSE 2012 M1",
+      "articles": [
+        {
+          "slug": "hkdse-maths-m1-solutions-2012-q3",
+          "name": "2012 M1 Q3"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2012-q4",
+          "name": "2012 M1 Q4"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2012-q5",
+          "name": "2012 M1 Q5"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2012-q6",
+          "name": "2012 M1 Q6"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2012-q7",
+          "name": "2012 M1 Q7"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2012-q8",
+          "name": "2012 M1 Q8"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2012-q9",
+          "name": "2012 M1 Q9"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2012-q10",
+          "name": "2012 M1 Q10"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2012-q11",
+          "name": "2012 M1 Q11"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2012-q12",
+          "name": "2012 M1 Q12"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2012-q1",
+          "name": "2012 M1 Q1"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2012-q2",
+          "name": "2012 M1 Q2"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2012-q13",
+          "name": "2012 M1 Q13"
+        }
+      ]
+    },
+    {
+      "slug": "hkdse-maths-m1-solutions-practice-paper",
+      "name": "HKDSE Practice Paper M1",
+      "articles": [
+        {
+          "slug": "article-1344",
+          "name": "Practice Paper M1 Q1"
+        },
+        {
+          "slug": "article-1345",
+          "name": "Practice Paper M1 Q2"
+        },
+        {
+          "slug": "article-1346",
+          "name": "Practice Paper M1 Q3"
+        },
+        {
+          "slug": "article-1347",
+          "name": "Practice Paper M1 Q4"
+        },
+        {
+          "slug": "article-1348",
+          "name": "Practice Paper M1 Q5"
+        },
+        {
+          "slug": "article-1349",
+          "name": "Practice Paper M1 Q6"
+        },
+        {
+          "slug": "article-1350",
+          "name": "Practice Paper M1 Q7"
+        },
+        {
+          "slug": "article-1351",
+          "name": "Practice Paper M1 Q8"
+        },
+        {
+          "slug": "article-1352",
+          "name": "Practice Paper M1 Q9"
+        },
+        {
+          "slug": "article-1353",
+          "name": "Practice Paper M1 Q10"
+        },
+        {
+          "slug": "article-1354",
+          "name": "Practice Paper M1 Q11"
+        },
+        {
+          "slug": "article-1355",
+          "name": "Practice Paper M1 Q12"
+        },
+        {
+          "slug": "article-1356",
+          "name": "Practice Paper M1 Q13"
+        }
+      ]
+    },
+    {
+      "slug": "hkdse-maths-m1-solutions-sample-paper",
+      "name": "HKDSE Sample Paper M1",
+      "articles": [
+        {
+          "slug": "article-1357",
+          "name": "Sample Paper M1 Q1"
+        },
+        {
+          "slug": "article-1358",
+          "name": "Sample Paper M1 Q2"
+        },
+        {
+          "slug": "article-1359",
+          "name": "Sample Paper M1 Q3"
+        },
+        {
+          "slug": "article-1360",
+          "name": "Sample Paper M1 Q4"
+        },
+        {
+          "slug": "article-1361",
+          "name": "Sample Paper M1 Q5"
+        },
+        {
+          "slug": "article-1362",
+          "name": "Sample Paper M1 Q6"
+        },
+        {
+          "slug": "article-1363",
+          "name": "Sample Paper M1 Q7"
+        },
+        {
+          "slug": "article-1364",
+          "name": "Sample Paper M1 Q8"
+        },
+        {
+          "slug": "article-1365",
+          "name": "Sample Paper M1 Q9"
+        },
+        {
+          "slug": "article-1366",
+          "name": "Sample Paper M1 Q10"
+        },
+        {
+          "slug": "article-1367",
+          "name": "Sample Paper M1 Q11"
+        },
+        {
+          "slug": "article-1368",
+          "name": "Sample Paper M1 Q12"
+        },
+        {
+          "slug": "article-1369",
+          "name": "Sample Paper M1 Q13"
+        },
+        {
+          "slug": "article-1370",
+          "name": "Sample Paper M1 Q14"
+        }
+      ]
+    },
+    {
+      "slug": "hkdse-maths-m1-solutions-2020",
+      "name": "HKDSE 2020 M1",
+      "articles": [
+        {
+          "slug": "hkdse-maths-m1-solutions-2020-q6",
+          "name": "2020 M1 Q6"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2020-q7",
+          "name": "2020 M1 Q7"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2020-q8",
+          "name": "2020 M1 Q8"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2020-q9",
+          "name": "2020 M1 Q9"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2020-q1",
+          "name": "2020 M1 Q1"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2020-q2",
+          "name": "2020 M1 Q2"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2020-q3",
+          "name": "2020 M1 Q3"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2020-q4",
+          "name": "2020 M1 Q4"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2020-q5",
+          "name": "2020 M1 Q5"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2020-q10",
+          "name": "2020 M1 Q10"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2020-q11",
+          "name": "2020 M1 Q11"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2020-q12",
+          "name": "2020 M1 Q12"
+        }
+      ]
+    },
+    {
+      "slug": "hkdse-maths-m1-solutions-2021",
+      "name": "HKDSE 2021 M1",
+      "articles": [
+        {
+          "slug": "hkdse-maths-m1-solutions-2021-q8",
+          "name": "2021 M1 Q8"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2021-q9",
+          "name": "2021 M1 Q9"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2021-q10",
+          "name": "2021 M1 Q10"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2021-q11",
+          "name": "2021 M1 Q11"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2021-q1",
+          "name": "2021 M1 Q1"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2021-q2",
+          "name": "2021 M1 Q2"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2021-q3",
+          "name": "2021 M1 Q3"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2021-q4",
+          "name": "2021 M1 Q4"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2021-q12",
+          "name": "2021 M1 Q12"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2021-q5",
+          "name": "2021 M1 Q5"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2021-q6",
+          "name": "2021 M1 Q6"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2021-q7",
+          "name": "2021 M1 Q7"
+        }
+      ]
+    },
+    {
+      "slug": "hkdse-maths-m1-solutions-2022",
+      "name": "HKDSE 2022 M1",
+      "articles": [
+        {
+          "slug": "hkdse-maths-m1-solutions-2022-q8",
+          "name": "2022 M1 Q8"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2022-q9",
+          "name": "2022 M1 Q9"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2022-q10",
+          "name": "2022 M1 Q10"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2022-q11",
+          "name": "2022 M1 Q11"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2022-q1",
+          "name": "2022 M1 Q1"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2022-q2",
+          "name": "2022 M1 Q2"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2022-q3",
+          "name": "2022 M1 Q3"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2022-q4",
+          "name": "2022 M1 Q4"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2022-q5",
+          "name": "2022 M1 Q5"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2022-q6",
+          "name": "2022 M1 Q6"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2022-q7",
+          "name": "2022 M1 Q7"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2022-q12",
+          "name": "2022 M1 Q12"
+        }
+      ]
+    },
+    {
+      "slug": "hkdse-maths-m1-solutions-2023",
+      "name": "HKDSE 2023 M1",
+      "articles": [
+        {
+          "slug": "hkdse-maths-m1-solutions-2023-q1",
+          "name": "2023 M1 Q1"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2023-q2",
+          "name": "2023 M1 Q2"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2023-q3",
+          "name": "2023 M1 Q3"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2023-q4",
+          "name": "2023 M1 Q4"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2023-q5",
+          "name": "2023 M1 Q5"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2023-q6",
+          "name": "2023 M1 Q6"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2023-q7",
+          "name": "2023 M1 Q7"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2023-q8",
+          "name": "2023 M1 Q8"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2023-q9",
+          "name": "2023 M1 Q9"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2023-q10",
+          "name": "2023 M1 Q10"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2023-q11",
+          "name": "2023 M1 Q11"
+        },
+        {
+          "slug": "hkdse-maths-m1-solutions-2023-q12",
+          "name": "2023 M1 Q12"
+        }
+      ]
+    }
+  ]
+}
