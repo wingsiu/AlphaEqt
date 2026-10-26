@@ -58,9 +58,7 @@ class SeedAnalyseM1Test(unittest.TestCase):
         self.assertEqual(len(self.mapping.questions), 448)
         links = sum(len(question.unit_codes) for question in self.mapping.questions)
         self.assertEqual(links, 498)
-        self.assertEqual(len(self.mapping.errors), 1)
-        self.assertIn("12#T", self.mapping.errors[0].message)
-        self.assertIn("topic 13 is outside 1-12", self.mapping.errors[0].message)
+        self.assertEqual(self.mapping.errors, ())
 
         def find(year_key: str, question_no: int):
             matches = [
@@ -88,7 +86,8 @@ class SeedAnalyseM1Test(unittest.TestCase):
         self.assertEqual(find("PP", 1).syllabus, "dse")
         self.assertEqual(find("12#T", 2).unit_codes, (4,))
         self.assertEqual(find("12#T", 11).unit_codes, (13,))
-        self.assertEqual(find("12#T", 11).syllabus, "dse")
+        self.assertEqual(find("12#T", 11).syllabus, "ms")
+        self.assertEqual(find("12#T", 2).syllabus, "ms")
         self.assertEqual(find("12#U", 2).unit_codes, (8,))
         self.assertEqual(find("12#U", 2).syllabus, "dse")
         self.assertEqual(find("12#T", 2).year_label, "12")
@@ -167,20 +166,7 @@ class SeedAnalyseM1Test(unittest.TestCase):
         self.assertEqual(sheets, {"Sheet1"})
 
     def test_sql_uses_excel_codes_and_skips_core_tables(self):
-        with self.assertRaises(ValueError):
-            self.mod.render_sql(self.mapping)
-        kept = tuple(
-            question
-            for question in self.mapping.questions
-            if not (question.year_key == "12#T" and question.question_no == 11)
-        )
-        clean = self.mod.WorkbookMap(
-            path=self.mapping.path,
-            units=self.mapping.units,
-            questions=kept,
-            notices=tuple(notice for notice in self.mapping.notices if notice.level != "error"),
-        )
-        sql = self.mod.render_sql(clean)
+        sql = self.mod.render_sql(self.mapping)
         self.assertIn("('ms', 1, 'binomial', 'Binomial')", sql)
         self.assertIn("('dse', 1, 'binomial', 'Binomial')", sql)
         self.assertIn("('ms', 13, NULL, NULL)", sql)
@@ -190,7 +176,7 @@ class SeedAnalyseM1Test(unittest.TestCase):
         self.assertIn("'12#U'", sql)
         self.assertIn("'00'", sql)
         self.assertNotIn("2000", sql)
-        self.assertNotIn("'12#T', '12', 1, 'T', 11, '13', 'dse'", sql)
+        self.assertIn("'12#T', '12', 1, 'T', 11, '13', 'ms'", sql)
         self.assertNotRegex(sql, r"'dse', 13\)")
         for name in (
             "analyse_mc",
@@ -216,6 +202,15 @@ class SeedAnalyseM1Test(unittest.TestCase):
             "analyse_unit_qtypes",
         ):
             self.assertNotIn(f"CREATE TABLE IF NOT EXISTS {name}", schema)
+
+    def test_first_2012_column_is_ms_and_the_second_is_dse(self):
+        self.assertEqual(self.mod.syllabus_for("12", 1), "ms")
+        self.assertEqual(self.mod.syllabus_for("12", 2), "dse")
+        self.assertEqual(self.mod.syllabus_for("2012", 1), "ms")
+        self.assertEqual(self.mod.syllabus_for("2012", 2), "dse")
+        self.assertEqual(self.mod.syllabus_for("13", 1), "dse")
+        self.assertEqual(self.mod.syllabus_for("SP", 1), "dse")
+        self.assertEqual(self.mod.syllabus_for("PP", 1), "dse")
 
     def test_out_of_range_topics_fail_validation(self):
         with tempfile.TemporaryDirectory() as tmp:

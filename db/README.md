@@ -6,12 +6,12 @@ The topic number stored for each question is the number printed in `math/M1/anal
 
 Which numbers are legal depends on the column:
 
-- Before 2012 (`94`–`99`, `00`–`11`): topics **1–16** (`syllabus = ms`, the older M&S list). The sheet uses 13, 14, and 16 here.
-- `SP` (sample paper, 2011), `PP` (practice paper, 2022), 2012 and after (both columns labelled `12`, then `13`–`26`), and `ON`: topics **1–12** (`syllabus = dse`).
+- Before 2012 (`94`–`99`, `00`–`11`) and the **first** column labelled `12` (`12#T`): topics **1–16** (`syllabus = ms`, the older M&S list). Topic 13 on that column is valid.
+- `SP` (sample paper, 2011), `PP` (practice paper, 2022), the **second** column labelled `12` (`12#U`), years `13`–`26`, and `ON`: topics **1–12** (`syllabus = dse`).
 
-`SP` and `PP` stay on topics 1–12. The sheet places those columns after the two headers labelled `12`. The seed orders year keys `SP`, then `PP`, then 2012 (`12#T`, `12#U`, then `13` onward). `ON`, if a column uses that header, sits after `PP` and before 2012. Topics 13–16 are seeded only on `ms`.
+`SP` and `PP` stay on topics 1–12. The sheet places those columns after the two headers labelled `12`. The seed orders year keys `SP`, then `PP`, then `12#T` (M&S), `12#U` (DSE M1), then `13` onward. `ON`, if a column uses that header, sits after `PP` and before those 2012 columns. Topics 13–16 are seeded only on `ms`.
 
-The current Sheet1 fails that check in one cell: `12#T` question 11 (T12) is topic 13. `--check` exits non-zero, and `--emit-sql` / `--apply` will not write the map until that cell is inside 1–12.
+`--check` passes on the current Sheet1, including `12#T` question 11 (T12) topic 13.
 
 Compulsory-core Analyse (`math/HKDSE/Analyse.xls`, `db/seed_analyse.py`, `analyse_schema.sql`, tables `analyse_mc`, `analyse_mc_units`, `analyse_sq`, `analyse_sq_units`, `analyse_units`, `analyse_unit_qtypes`) is a separate map. This script does not open that workbook and does not create or modify those tables. See [docs/CONTENT_MODEL.md](../docs/CONTENT_MODEL.md).
 
@@ -35,7 +35,7 @@ On the NAS:
 
 `db/fixtures/M1/analyse.xlsx` is a copy used when the share is not mounted, so `--dry-run` and `--check` work without DiskStation. When you seed the alphaeqt database, point the script at the live share so you pick up edits made after this copy.
 
-Sheet1 is the year (row 1) by question (column A) grid. Sheet2 and Sheet3 are empty and are skipped. `SP` is the 2011 sample paper and `PP` is the 2022 practice paper. Two columns are both labelled `12`; they hold different questions, so they are stored as `12#T` and `12#U` while `year_label` stays `12`. A text header such as `00` stays `00`. Year order in the seed is the pre-2012 years, then `SP`, `PP`, then 2012 onward.
+Sheet1 is the year (row 1) by question (column A) grid. Sheet2 and Sheet3 are empty and are skipped. `SP` is the 2011 sample paper and `PP` is the 2022 practice paper. Two columns are both labelled `12`; the first (`12#T`) is M&S topics 1–16 and the second (`12#U`) is DSE M1 topics 1–12. `year_label` stays `12` for both. A text header such as `00` stays `00`. Year order in the seed is the pre-2012 years, then `SP`, `PP`, then `12#T`, `12#U`, then `13` onward.
 
 ## Dry run
 
@@ -48,7 +48,7 @@ python3 db/seed_analyse_m1.py --check
 python3 db/test_seed_analyse_m1.py
 ```
 
-`--dry-run` is the default. `--check` exits non-zero when a cell is not a topic number in range for that column. On the current fixture that is `12#T` question 11, topic 13.
+`--dry-run` is the default. `--check` exits non-zero when a cell is not a topic number in range for that column. On the current fixture it passes, including topic 13 on the first `12` column.
 
 Use another copy of the workbook with `--xlsx` or `M1_ANALYSE_XLSX`. The first existing path wins if you set neither: the NAS and mount locations above, then `math/M1/analyse.xlsx` relative to the current directory, then the fixture in this repo.
 

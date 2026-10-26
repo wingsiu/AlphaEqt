@@ -2,8 +2,9 @@
 """Seed HKDSE M1 Analyse maps from math/M1/analyse.xlsx.
 
 Topic and unit identifiers are the topic numbers printed in the workbook
-(legend column A and the year x question cells). Years before 2012 use
-topics 1-16. Years 2012 and after, plus SP, PP, and ON, use topics 1-12.
+(legend column A and the year x question cells). Years before 2012, and the
+first column labelled 12, use topics 1-16. The second column labelled 12,
+later years, SP, PP, and ON use topics 1-12.
 This script does not
 renumber them and does not read or write the compulsory-core tables
 (analyse_mc, analyse_sq, analyse_units, and the related junction tables).
@@ -149,18 +150,18 @@ def calendar_year(label: str) -> int | None:
     return year
 
 
-def syllabus_for(label: str, _occurrence: int) -> str:
+def syllabus_for(label: str, occurrence: int) -> str:
     """Topic-number range for one year column.
 
-    Verified against math/M1/analyse.xlsx:
+    The sheet has two columns labelled 12. Syllabus follows the column, not
+    the shared label:
 
-    - 94–99 and 00–11 are before 2012. Those columns use topics 13, 14, and 16.
-      Allowed topics are 1–16 (M&S / older syllabus).
-    - 12 and later calendar years, both columns labelled 12, are 2012 and after.
+    - 94–99 and 00–11, and the first column labelled 12, are M&S.
+      Allowed topics are 1–16. Topic 13 on that first 2012 column is valid.
+    - The second column labelled 12, and calendar years after 2012, are DSE M1.
       Allowed topics are 1–12.
     - SP is the 2011 sample paper and PP is the 2022 practice paper.
-      Both stay on topics 1–12. Their cells use topics 1, 5, and 10, which
-      the pre-2012 columns do not.
+      Both stay on topics 1–12.
     - ON is a 2012-and-after paper code. Allowed topics are 1–12.
     """
     token = label.strip().upper()
@@ -169,16 +170,17 @@ def syllabus_for(label: str, _occurrence: int) -> str:
     year = calendar_year(label.strip())
     if year is None:
         raise ValueError(f"year label {label!r} has no M1 syllabus rule")
-    if year < 2012:
+    if year < 2012 or (year == 2012 and occurrence == 1):
         return SYLLABUS_MS
     return SYLLABUS_DSE
 
 
 def column_sequence_key(label: str, occurrence: int, column_index: int) -> tuple[int, int, int, int]:
-    """Order year columns as pre-2012, then SP, PP, then 2012 onward.
+    """Order year columns as pre-2012, then SP, PP, then the two 2012 columns.
 
     The workbook lays SP and PP after the columns labelled 12. Seed order
-    is SP (sample paper, 2011), PP (practice paper, 2022), then 2012.
+    is SP (sample paper, 2011), PP (practice paper, 2022), then the first
+    12 (M&S) and the second 12 (DSE M1), then 13 onward.
     """
     token = label.strip().upper()
     if token == "SP":
@@ -666,7 +668,8 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help=(
             "Parse and exit 1 if a cell is not a topic number in range for that "
-            "column: 1-16 before 2012, 1-12 for 2012 and after, SP, PP, and ON."
+            "column: 1-16 before 2012 and on the first column labelled 12; "
+            "1-12 on the second 12, later years, SP, PP, and ON."
         ),
     )
     parser.add_argument(

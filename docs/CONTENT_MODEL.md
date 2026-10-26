@@ -25,17 +25,18 @@ M1 has no multiple-choice paper, and the current workbook leaves Sheet2 and Shee
 
 | syllabus | Columns in `math/M1/analyse.xlsx` | Allowed topics |
 | --- | --- | --- |
-| `ms` | `94`–`99`, `00`–`11` (before 2012). These columns use 13, 14, and 16. | 1–16 |
-| `dse` | `SP` (sample paper, 2011), `PP` (practice paper, 2022), both columns labelled `12`, then `13`–`26`, and `ON`. | 1–12 |
+| `ms` | `94`–`99`, `00`–`11`, and the first column labelled `12` (`12#T`). | 1–16 |
+| `dse` | `SP` (sample paper, 2011), `PP` (practice paper, 2022), the second column labelled `12` (`12#U`), then `13`–`26`, and `ON`. | 1–12 |
 
 Checked on the workbook attached for this seed:
 
 - Every column from `94` through `11` cites at least one topic in 13–16, and none of them cite topics 1, 5, or 10.
 - `SP` is the sample paper (2011) and `PP` is the practice paper (2022). Both use topics 1–12. Their cells cite topics 1, 5, and 10, which `94`–`11` do not.
-- In the sheet those two columns sit after the headers labelled `12`. Seed order is `… 11`, `SP`, `PP`, `12#T`, `12#U`, `13` …. `ON`, when present, follows `PP` and precedes 2012.
+- In the sheet those two columns sit after the headers labelled `12`. Seed order is `… 11`, `SP`, `PP`, `12#T` (M&S, topics 1–16), `12#U` (DSE M1, topics 1–12), `13` …. `ON`, when present, follows `PP` and precedes the 2012 columns.
+- The two headers labelled `12` are not the same syllabus. The first is older M&S, so question 11 topic 13 (`Sheet1!T12`) is in range. The second is DSE M1 and stays on topics 1–12.
 - Topics 13–16 are seeded only on `ms`. Topics 1–12 are seeded on both syllabi, with the same legend names. A 2012-or-later cell that cites 13, 14, 15, or 16 is an error, and `--emit-sql` / `--apply` refuse the workbook.
 
-The first column labelled `12` (`12#T`, cell T12, question 11) contains topic 13. That number is outside 1–12, so the current workbook fails `--check`. No other 2012-or-later cell does. Dry-run counts on this file: `ms` 226 questions and 256 links; `dse` 222 questions and 242 links.
+Dry-run on this file passes. `12#T` question 11 (cell T12) is topic 13 on the M&S column. Counts: `ms` 238 questions and 268 links; `dse` 210 questions and 230 links.
 
 - Legend column A is the topic number.
 - Legend column B is `short_name` (`binomial`, `exp and log`, …).
@@ -78,7 +79,7 @@ Names currently printed in the workbook:
 | `question_no` | Column A |
 | `raw_cell` | The cell text, so `4, 7` stays distinguishable from `4,7` |
 
-The workbook has two columns labelled `12` (T and U) with different topic maps. They are `12#T` (`label_occurrence` 1) and `12#U` (`label_occurrence` 2). Both are calendar year 2012, so both are `dse`. `SP` is the 2011 sample paper and `PP` is the 2022 practice paper; both are `dse` with topics 1–12. Header `00` is the text `00`, not 2000.
+The workbook has two columns labelled `12` (T and U) with different topic maps. They are `12#T` (`label_occurrence` 1, M&S, topics 1–16) and `12#U` (`label_occurrence` 2, DSE M1, topics 1–12). `SP` is the 2011 sample paper and `PP` is the 2022 practice paper; both are `dse` with topics 1–12. Header `00` is the text `00`, not 2000.
 
 `year_key` sequence follows pre-2012 years, then `SP`, `PP`, then 2012 onward. That is the insert order as well. It does not follow the sheet, which places `SP` and `PP` after the two `12` columns.
 

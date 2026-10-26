@@ -8,11 +8,12 @@
 -- Those core rows are compulsory-topic specific. M1 unit codes are the topic
 -- numbers printed in math/M1/analyse.xlsx. They are stored as-is and scoped
 -- by syllabus:
---   ms  = M&S / older syllabus (years before 2012): topics 1-16
+--   ms  = M&S / older syllabus, topics 1-16: years before 2012 and the
+--         first column labelled 12
 --   dse = topics 1-12: SP (sample paper 2011), PP (practice paper 2022),
---         2012 and after, and an ON paper
--- Seed order is pre-2012 years, then SP, PP, then 2012 onward. The sheet
--- itself places SP and PP after the columns labelled 12.
+--         the second column labelled 12, later years, and an ON paper
+-- Seed order is pre-2012 years, then SP, PP, then 12#T (ms), 12#U (dse),
+-- then 13 onward. The sheet itself places SP and PP after the 12 columns.
 -- The same topic number can exist in both catalogues. 13-16 exist only on ms.
 -- This schema does not renumber them and does not write seed_topics.sql
 -- (band = '1', HKDSE-M1-*).
