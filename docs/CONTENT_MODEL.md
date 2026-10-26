@@ -26,13 +26,13 @@ M1 has no multiple-choice paper, and the current workbook leaves Sheet2 and Shee
 | syllabus | Columns in `math/M1/analyse.xlsx` | Allowed topics |
 | --- | --- | --- |
 | `ms` | `94`–`99`, `00`–`11` (before 2012). These columns use 13, 14, and 16. | 1–16 |
-| `dse` | Both columns labelled `12`, then `13`–`26`. Also `SP`, `PP`, and `ON`. | 1–12 |
+| `dse` | `SP` (sample paper, 2011), `PP` (practice paper, 2022), both columns labelled `12`, then `13`–`26`, and `ON`. | 1–12 |
 
 Checked on the workbook attached for this seed:
 
 - Every column from `94` through `11` cites at least one topic in 13–16, and none of them cite topics 1, 5, or 10.
-- `SP` and `PP` cite only 1–12, and they cite topics 1, 5, and 10. They are the new-syllabus sample and practice papers, so they use the 1–12 list. An older-regime SP/PP would use 1–16; this file does not have that paper.
-- `ON` is not a column in this file. A header `ON` is seeded as `dse` (topics 1–12).
+- `SP` is the sample paper (2011) and `PP` is the practice paper (2022). Both use topics 1–12. Their cells cite topics 1, 5, and 10, which `94`–`11` do not.
+- In the sheet those two columns sit after the headers labelled `12`. Seed order is `… 11`, `SP`, `PP`, `12#T`, `12#U`, `13` …. `ON`, when present, follows `PP` and precedes 2012.
 - Topics 13–16 are seeded only on `ms`. Topics 1–12 are seeded on both syllabi, with the same legend names. A 2012-or-later cell that cites 13, 14, 15, or 16 is an error, and `--emit-sql` / `--apply` refuse the workbook.
 
 The first column labelled `12` (`12#T`, cell T12, question 11) contains topic 13. That number is outside 1–12, so the current workbook fails `--check`. No other 2012-or-later cell does. Dry-run counts on this file: `ms` 226 questions and 256 links; `dse` 222 questions and 242 links.
@@ -78,7 +78,9 @@ Names currently printed in the workbook:
 | `question_no` | Column A |
 | `raw_cell` | The cell text, so `4, 7` stays distinguishable from `4,7` |
 
-The workbook has two columns labelled `12` (T and U) with different topic maps. They are `12#T` (`label_occurrence` 1) and `12#U` (`label_occurrence` 2). Both are calendar year 2012, so both are `dse`. `SP` and `PP` in this file are the new-syllabus sample and practice papers (`dse`). Header `00` is the text `00`, not 2000.
+The workbook has two columns labelled `12` (T and U) with different topic maps. They are `12#T` (`label_occurrence` 1) and `12#U` (`label_occurrence` 2). Both are calendar year 2012, so both are `dse`. `SP` is the 2011 sample paper and `PP` is the 2022 practice paper; both are `dse` with topics 1–12. Header `00` is the text `00`, not 2000.
+
+`year_key` sequence follows pre-2012 years, then `SP`, `PP`, then 2012 onward. That is the insert order as well. It does not follow the sheet, which places `SP` and `PP` after the two `12` columns.
 
 Empty question cells are not inserted. Re-seeding deletes and reinserts only `analyse_m1_sq_units`, `analyse_m1_sq`, and `analyse_m1_units`.
 

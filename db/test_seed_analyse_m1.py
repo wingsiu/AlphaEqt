@@ -97,6 +97,21 @@ class SeedAnalyseM1Test(unittest.TestCase):
         self.assertEqual(find("26", 1).unit_codes, (10,))
         self.assertEqual(find("26", 1).syllabus, "dse")
 
+    def test_year_key_order_is_sp_then_pp_then_2012(self):
+        keys: list[str] = []
+        for question in self.mapping.questions:
+            if question.year_key not in keys:
+                keys.append(question.year_key)
+        self.assertLess(keys.index("11"), keys.index("SP"))
+        self.assertLess(keys.index("SP"), keys.index("PP"))
+        self.assertLess(keys.index("PP"), keys.index("12#T"))
+        self.assertLess(keys.index("12#T"), keys.index("12#U"))
+        self.assertLess(keys.index("12#U"), keys.index("13"))
+        self.assertEqual(
+            keys[keys.index("11"): keys.index("13") + 1],
+            ["11", "SP", "PP", "12#T", "12#U", "13"],
+        )
+
     def test_every_grid_cell_uses_the_excel_topic_numbers(self):
         with warnings.catch_warnings():
             warnings.filterwarnings(
@@ -219,6 +234,11 @@ class SeedAnalyseM1Test(unittest.TestCase):
             sheet["E2"] = 12
             book.save(path)
             mapping = self.mod.load_m1_workbook(path)
+        keys: list[str] = []
+        for question in mapping.questions:
+            if question.year_key not in keys:
+                keys.append(question.year_key)
+        self.assertEqual(keys, ["11", "SP", "ON", "16"])
         by_year = {question.year_key: question for question in mapping.questions}
         self.assertEqual(by_year["11"].syllabus, "ms")
         self.assertEqual(by_year["11"].unit_codes, (16,))

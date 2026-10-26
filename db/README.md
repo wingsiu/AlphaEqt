@@ -7,9 +7,9 @@ The topic number stored for each question is the number printed in `math/M1/anal
 Which numbers are legal depends on the column:
 
 - Before 2012 (`94`–`99`, `00`–`11`): topics **1–16** (`syllabus = ms`, the older M&S list). The sheet uses 13, 14, and 16 here.
-- 2012 and after (both columns labelled `12`, then `13`–`26`), plus `SP`, `PP`, and `ON`: topics **1–12** (`syllabus = dse`).
+- `SP` (sample paper, 2011), `PP` (practice paper, 2022), 2012 and after (both columns labelled `12`, then `13`–`26`), and `ON`: topics **1–12** (`syllabus = dse`).
 
-`SP` and `PP` in this workbook are the new-syllabus papers: their cells stay inside 1–12 and use topics 1, 5, and 10, which the pre-2012 columns never use. `ON` is accepted as a 2012-and-after paper; it is not a column in the current file. Topics 13–16 are seeded only on `ms`.
+`SP` and `PP` stay on topics 1–12. The sheet places those columns after the two headers labelled `12`. The seed orders year keys `SP`, then `PP`, then 2012 (`12#T`, `12#U`, then `13` onward). `ON`, if a column uses that header, sits after `PP` and before 2012. Topics 13–16 are seeded only on `ms`.
 
 The current Sheet1 fails that check in one cell: `12#T` question 11 (T12) is topic 13. `--check` exits non-zero, and `--emit-sql` / `--apply` will not write the map until that cell is inside 1–12.
 
@@ -35,7 +35,7 @@ On the NAS:
 
 `db/fixtures/M1/analyse.xlsx` is a copy used when the share is not mounted, so `--dry-run` and `--check` work without DiskStation. When you seed the alphaeqt database, point the script at the live share so you pick up edits made after this copy.
 
-Sheet1 is the year (row 1) by question (column A) grid. Sheet2 and Sheet3 are empty and are skipped. `SP` and `PP` are paper codes, not calendar years. Two columns are both labelled `12`; they hold different questions, so they are stored as `12#T` and `12#U` while `year_label` stays `12`. A text header such as `00` stays `00`.
+Sheet1 is the year (row 1) by question (column A) grid. Sheet2 and Sheet3 are empty and are skipped. `SP` is the 2011 sample paper and `PP` is the 2022 practice paper. Two columns are both labelled `12`; they hold different questions, so they are stored as `12#T` and `12#U` while `year_label` stays `12`. A text header such as `00` stays `00`. Year order in the seed is the pre-2012 years, then `SP`, `PP`, then 2012 onward.
 
 ## Dry run
 

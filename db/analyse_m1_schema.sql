@@ -9,7 +9,10 @@
 -- numbers printed in math/M1/analyse.xlsx. They are stored as-is and scoped
 -- by syllabus:
 --   ms  = M&S / older syllabus (years before 2012): topics 1-16
---   dse = 2012 and after, including this workbook's SP/PP and an ON paper: topics 1-12
+--   dse = topics 1-12: SP (sample paper 2011), PP (practice paper 2022),
+--         2012 and after, and an ON paper
+-- Seed order is pre-2012 years, then SP, PP, then 2012 onward. The sheet
+-- itself places SP and PP after the columns labelled 12.
 -- The same topic number can exist in both catalogues. 13-16 exist only on ms.
 -- This schema does not renumber them and does not write seed_topics.sql
 -- (band = '1', HKDSE-M1-*).

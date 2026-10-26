@@ -42,7 +42,7 @@ AlphaEqt is built in distinct stages:
 
 ## M1 Analyse seeding
 
-HKDSE Mathematics Module 1 past-paper topic maps load from the Synology workbook `math/M1/analyse.xlsx`. The topic number stored for a question is the number in that cell: 1–16 before 2012, and 1–12 from 2012 onward (including this workbook’s SP and PP). Compulsory-core Analyse tables are not modified.
+HKDSE Mathematics Module 1 past-paper topic maps load from the Synology workbook `math/M1/analyse.xlsx`. The topic number stored for a question is the number in that cell: 1–16 before 2012, and 1–12 for SP (sample paper, 2011), PP (practice paper, 2022), and 2012 onward. Seed order is SP, then PP, then 2012. Compulsory-core Analyse tables are not modified.
 
 ```bash
 python3 db/seed_analyse_m1.py --dry-run

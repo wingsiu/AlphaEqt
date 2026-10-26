@@ -158,10 +158,9 @@ def syllabus_for(label: str, _occurrence: int) -> str:
       Allowed topics are 1–16 (M&S / older syllabus).
     - 12 and later calendar years, both columns labelled 12, are 2012 and after.
       Allowed topics are 1–12.
-    - SP and PP in this workbook use only 1–12, including topics 1, 5, and 10,
-      which no pre-2012 column uses. They are the new-syllabus sample and
-      practice papers, so allowed topics are 1–12. An older-regime SP/PP would
-      be 1–16; this file does not contain that paper.
+    - SP is the 2011 sample paper and PP is the 2022 practice paper.
+      Both stay on topics 1–12. Their cells use topics 1, 5, and 10, which
+      the pre-2012 columns do not.
     - ON is a 2012-and-after paper code. Allowed topics are 1–12.
     """
     token = label.strip().upper()
@@ -173,6 +172,27 @@ def syllabus_for(label: str, _occurrence: int) -> str:
     if year < 2012:
         return SYLLABUS_MS
     return SYLLABUS_DSE
+
+
+def column_sequence_key(label: str, occurrence: int, column_index: int) -> tuple[int, int, int, int]:
+    """Order year columns as pre-2012, then SP, PP, then 2012 onward.
+
+    The workbook lays SP and PP after the columns labelled 12. Seed order
+    is SP (sample paper, 2011), PP (practice paper, 2022), then 2012.
+    """
+    token = label.strip().upper()
+    if token == "SP":
+        return (1, 0, occurrence, column_index)
+    if token == "PP":
+        return (1, 1, occurrence, column_index)
+    if token == "ON":
+        return (1, 2, occurrence, column_index)
+    year = calendar_year(label.strip())
+    if year is not None and year < 2012:
+        return (0, year, occurrence, column_index)
+    if year is not None:
+        return (2, year, occurrence, column_index)
+    return (3, 0, occurrence, column_index)
 
 
 def topic_bounds(syllabus: str) -> tuple[int, int]:
@@ -393,6 +413,14 @@ def _parse_questions(
     labels = [label for _, _, label in year_columns]
     occurrences = Counter(labels)
     questions: list[Question] = []
+    ordered_columns = sorted(
+        year_columns,
+        key=lambda item: column_sequence_key(
+            item[2],
+            _label_occurrence(year_columns, item[0]),
+            item[0],
+        ),
+    )
 
     for row in range(header_row + 1, last_question + 1):
         number = question_number(sheet.cell(row, 1).value)
@@ -400,7 +428,7 @@ def _parse_questions(
             if any(sheet.cell(row, column).value is not None for column, _, _ in year_columns):
                 raise ValueError(f"{sheet.title}!A{row} is blank but year cells are filled")
             continue
-        for column, letter, label in year_columns:
+        for column, letter, label in ordered_columns:
             value = sheet.cell(row, column).value
             if value is None or cell_text(value) == "":
                 continue
