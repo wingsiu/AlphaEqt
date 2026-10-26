@@ -280,3 +280,30 @@ python3 db/seed_hoksi_solutions.py --emit-sql --subject m1 --year 2015 > /tmp/m1
 - `answers` and `hints` stay empty. The Hoksi article is the worked solution.
 - zh-HK and en are both loaded when both directories are on disk. The language is the directory name (`zh-HK` or `en`), not `actual_lang` inside the JSON. On the live table that is `solutions.sortorder` 1 and 2, and `content_blocks.lang` when that column exists.
 - 2026 M1 (13 questions) and 2026 M2 (12 questions) are in the Hoksi pack. Years the inventory does not list are skipped.
+
+# Analyse HTTP API
+
+`db/editorial_api.py` serves `GET /analyse/lookup`, `/analyse/units`, and `/analyse/gaps`.
+
+With no `subject`, no `band`, and no module slug, those paths read only the compulsory tables (`analyse_mc`, `analyse_sq`, and the compulsory unit catalogue). They do not read `analyse_m1_*`, `analyse_pm_*`, or `content_blocks`. Compulsory paper 1 is `kind=sq`. Paper 2 is `kind=mc`. `dse2015-math-cp1` and `dse2015-math-cp2` stay on that path.
+
+| Request | Map | Solutions |
+| --- | --- | --- |
+| `subject=m1`, `band=dse`, or `dse2015-math-m1` | `analyse_m1_*` syllabus `dse` | `content_blocks`, key `dse2015-math-m1-q3:zh-HK` |
+| `subject=m2`, `band=m2`, or `dse2015-math-m2` | `analyse_pm_*` syllabus `m2`, paper 1 | same key shape for `math-m2` |
+| `subject=pm` | `analyse_pm_*` syllabus `pm` | blocked. Analyse-only. No Hoksi pack |
+| `subject=ms` | `analyse_m1_*` syllabus `ms` | blocked. Analyse-only. No Hoksi pack |
+
+`dse2012-math-m1` is the DSE column `12#U`. `subject=ms&year=2012` is the M&S column `12#T`. `subject=m1&year=2012` with no band is rejected. `0X` and `0x` stay different on Pure Maths.
+
+`--plan` does not connect. `--serve` uses the same `MYSQL_*` settings as the seed scripts and reads live column names with `SHOW COLUMNS`.
+
+```bash
+python3 db/test_editorial_api.py
+python3 db/editorial_api.py --plan lookup --year 2015 --question 1 --kind sq
+python3 db/editorial_api.py --plan lookup --slug dse2015-math-m1 --question 3
+python3 db/editorial_api.py --plan gaps --subject pm
+python3 db/editorial_api.py --serve
+```
+
+The route table is in [docs/CONTENT_MODEL.md](../docs/CONTENT_MODEL.md).
