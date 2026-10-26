@@ -40,6 +40,16 @@ AlphaEqt is built in distinct stages:
 **Usage Example:**  
 (Coming soon)
 
+## M1 Analyse seeding
+
+HKDSE Mathematics Module 1 past-paper topic maps load from the Synology workbook `math/M1/analyse.xlsx`. The topic number stored for a question is the number in that cell. Compulsory-core Analyse tables are not modified.
+
+```bash
+python3 db/seed_analyse_m1.py --dry-run
+```
+
+Run details are in [db/README.md](db/README.md). The table layout is in [docs/CONTENT_MODEL.md](docs/CONTENT_MODEL.md).
+
 ---
 
 ## Project Roadmap
