@@ -13,6 +13,8 @@
 -- The same integer means different topics on the two syllabi
 -- (3 is Polynomial on pm and Trigonometry on m2). unit_code is the token
 -- printed in the cell, stored as text so 0X, 0x, 14X, and 15X stay distinct.
+-- The column uses utf8mb4_bin. utf8mb4_unicode_ci treats 0X and 0x as one
+-- primary key, and the seed insert then fails.
 --
 -- Parallel to the compulsory-core tables and to analyse_m1_*. This file
 -- does not create or alter:
@@ -29,7 +31,7 @@ SET NAMES utf8mb4;
 
 CREATE TABLE IF NOT EXISTS analyse_pm_units (
   syllabus VARCHAR(8) NOT NULL COMMENT 'pm = Pure Maths; m2 = DSE M2 name list',
-  unit_code VARCHAR(16) NOT NULL COMMENT 'Topic token from PManalyse.xlsx, e.g. 13, 0X, 0x, 14X',
+  unit_code VARCHAR(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'Topic token from PManalyse.xlsx, e.g. 13, 0X, 0x, 14X',
   name VARCHAR(191) NULL COMMENT 'Legend name, NULL when the workbook has no name for this token',
   PRIMARY KEY (syllabus, unit_code)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -55,7 +57,7 @@ CREATE TABLE IF NOT EXISTS analyse_pm_sq_units (
   sq_id INT NOT NULL,
   position SMALLINT NOT NULL COMMENT '1-based order of the topic token inside the cell',
   syllabus VARCHAR(8) NOT NULL COMMENT 'Same syllabus as the question',
-  unit_code VARCHAR(16) NOT NULL COMMENT 'Same token as analyse_pm_units.unit_code',
+  unit_code VARCHAR(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'Same token as analyse_pm_units.unit_code',
   PRIMARY KEY (sq_id, position),
   KEY idx_analyse_pm_sq_units_unit (syllabus, unit_code),
   CONSTRAINT fk_analyse_pm_sq_units_sq
@@ -64,3 +66,18 @@ CREATE TABLE IF NOT EXISTS analyse_pm_sq_units (
   CONSTRAINT fk_analyse_pm_sq_units_unit
     FOREIGN KEY (syllabus, unit_code) REFERENCES analyse_pm_units (syllabus, unit_code)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- CREATE TABLE IF NOT EXISTS does not change unit_code on a table that
+-- already exists. An earlier apply used utf8mb4_unicode_ci, which folds
+-- 0X and 0x together. Drop the foreign key, set both columns to
+-- utf8mb4_bin, then put the key back. Safe to run again.
+ALTER TABLE analyse_pm_sq_units DROP FOREIGN KEY fk_analyse_pm_sq_units_unit;
+ALTER TABLE analyse_pm_units
+  MODIFY unit_code VARCHAR(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL
+  COMMENT 'Topic token from PManalyse.xlsx, e.g. 13, 0X, 0x, 14X';
+ALTER TABLE analyse_pm_sq_units
+  MODIFY unit_code VARCHAR(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL
+  COMMENT 'Same token as analyse_pm_units.unit_code';
+ALTER TABLE analyse_pm_sq_units
+  ADD CONSTRAINT fk_analyse_pm_sq_units_unit
+  FOREIGN KEY (syllabus, unit_code) REFERENCES analyse_pm_units (syllabus, unit_code);

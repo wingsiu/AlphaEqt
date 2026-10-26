@@ -315,6 +315,11 @@ class SeedAnalysePmTest(unittest.TestCase):
         self.assertIn("CREATE TABLE IF NOT EXISTS analyse_pm_units", schema)
         self.assertIn("CREATE TABLE IF NOT EXISTS analyse_pm_sq", schema)
         self.assertIn("CREATE TABLE IF NOT EXISTS analyse_pm_sq_units", schema)
+        self.assertEqual(schema.count("COLLATE utf8mb4_bin"), 4)
+        self.assertIn(
+            "MODIFY unit_code VARCHAR(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL",
+            schema,
+        )
         self.assertNotIn("CREATE TABLE IF NOT EXISTS analyse_m2_units", schema)
         self.assertNotIn("CREATE TABLE IF NOT EXISTS analyse_m1_units", schema)
         for name in (

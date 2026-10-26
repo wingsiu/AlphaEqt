@@ -128,7 +128,7 @@ From about 2006, Paper 1 stops citing `16`, `17`, and `0X`, but the sheet does n
 
 ### Topic tokens
 
-`analyse_pm_units.unit_code` is the token text. Integer tokens are stored without leading zeros. `raw_cell` keeps the cell text, so `8, 10` stays distinguishable from `8,10`. Suffix case is kept: `0X` and `0x` are different codes. The only `0x` on the current sheet is Paper 1, 1989, question 7.
+`analyse_pm_units.unit_code` is the token text, with collation `utf8mb4_bin` on both the unit catalogue and `analyse_pm_sq_units.unit_code`. That keeps `0X` and `0x` as different keys. `utf8mb4_unicode_ci` folds them together and the insert fails. Integer tokens are stored without leading zeros. `raw_cell` keeps the cell text, so `8, 10` stays distinguishable from `8,10`. The only `0x` on the current sheet is Paper 1, 1989, question 7. Re-applying `db/analyse_pm_schema.sql` alters an existing `unit_code` column to `utf8mb4_bin`.
 
 Pure Maths names, from the bottom legend, shared by both papers:
 

@@ -143,4 +143,6 @@ python3 db/seed_analyse_pm.py --apply
 
 `--apply` creates the `analyse_pm_*` tables if they are missing, then replaces their rows. It does not delete `analyse_m1_*` or the compulsory Analyse tables. `--emit-sql` prints that replacement SQL and does not connect. Add `--with-schema` to prepend `db/analyse_pm_schema.sql`.
 
+`unit_code` uses `utf8mb4_bin` so `0X` and `0x` are different keys. A table created earlier with `utf8mb4_unicode_ci` rejects the seed. `db/analyse_pm_schema.sql` alters those columns when you apply it again. `CREATE TABLE IF NOT EXISTS` alone does not change the collation.
+
 `MYSQL_DEFAULTS_FILE` is passed through as `--defaults-extra-file` when a login path file is preferable to `MYSQL_PWD`.
