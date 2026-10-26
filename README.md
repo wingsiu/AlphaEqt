@@ -58,6 +58,16 @@ Pure Maths and DSE M2 past-paper topic maps load from the same Synology workbook
 python3 db/seed_analyse_pm.py --dry-run
 ```
 
+## Analyse lookup API
+
+`db/editorial_api.py` serves `/analyse/lookup`, `/analyse/units`, and `/analyse/gaps`. A call with no `subject`, `band`, or module slug still reads only the compulsory Analyse tables. M1 and M2 use the same paths (`subject=m1`, `subject=m2`, or a slug such as `dse2015-math-m1`). Pure Maths and M&S stay analyse-only: solution lookup is blocked because those syllabi have no worked-solution pack.
+
+```bash
+python3 db/editorial_api.py --plan lookup --slug dse2015-math-m1 --question 3
+```
+
+Details are in [db/README.md](db/README.md) and [docs/CONTENT_MODEL.md](docs/CONTENT_MODEL.md).
+
 ---
 
 ## Project Roadmap

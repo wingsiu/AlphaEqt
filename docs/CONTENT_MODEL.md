@@ -206,3 +206,35 @@ Dry-run on the current fixture: 937 questions and 1045 topic links.
 - `db/seed_analyse_pm.py` — reader and SQL generator
 - `db/fixtures/M2/PManalyse.xlsx` — offline copy of the workbook
 - `db/README.md` — how to dry-run and how to apply against alphaeqt
+
+## Analyse HTTP API
+
+`db/editorial_api.py` serves the three GET paths used for compulsory Analyse:
+
+| Path | What it returns |
+| --- | --- |
+| `/analyse/lookup` | One question’s topic row, the unit names on that row, and (for M1/M2) worked solutions |
+| `/analyse/units` | The unit catalogue. Add `unit`, `year`, or `questions=1` to include the questions that cite a unit |
+| `/analyse/gaps` | Questions with no topic link, units that no question cites, and (for DSE M1 and M2) solution languages that were not loaded |
+
+A request with no `subject`, no `band`, and no module slug reads only `analyse_mc`, `analyse_sq`, `analyse_units`, and `analyse_unit_qtypes`. It does not read `analyse_m1_*`, `analyse_pm_*`, `content_blocks`, or `solutions`. Compulsory paper 1 is `kind=sq` (`analyse_sq`). Compulsory paper 2 is `kind=mc` (`analyse_mc`). Slugs `dse2015-math-cp1` and `dse2015-math-cp2` stay on that path.
+
+`--serve` discovers live column names with `SHOW COLUMNS`. `--plan` prints the SQL for the column names in this repo and does not connect.
+
+### Which map a request uses
+
+| Request | Tables | Solutions |
+| --- | --- | --- |
+| no subject, `subject=core`, or `dse2015-math-cp1` / `cp2` | compulsory `analyse_*` | not read |
+| `subject=m1`, `band=dse`, or `dse2015-math-m1` | `analyse_m1_*`, syllabus `dse` | `content_blocks` |
+| `subject=m2`, `band=m2`, or `dse2015-math-m2` | `analyse_pm_*`, syllabus `m2`, paper 1 | `content_blocks` |
+| `subject=pm` or `band=pm` | `analyse_pm_*`, syllabus `pm` | blocked |
+| `subject=ms` or `band=ms` | `analyse_m1_*`, syllabus `ms` | blocked |
+
+2012 is two columns on the M1 sheet. `dse2012-math-m1` is DSE M1, `year_key` `12#U`. `subject=ms&year=2012` is M&S, `year_key` `12#T`. `subject=m1&year=2012` with no band is rejected. Years before 2012 on that sheet are M&S. Years before 2012 in `PManalyse.xlsx` are Pure Maths. There is no `analyse_m2_*` table.
+
+M1 and M2 solution text is the block whose key is `{question_slug}:zh-HK` or `{question_slug}:en` (`dse2015-math-m1-q3:zh-HK`), or the `<!-- hoksi:...:solution -->` marker when that key column is absent. `solutions.sortorder` is 1 for zh-HK and 2 for en when the row is tied to a question. Sample and practice papers use `dsesp-math-m1` and `dsepp-math-m2`.
+
+Pure Maths and M&S are analyse-only. Lookup returns `"solutions": {"status": "blocked", ...}`. Gaps do not list those questions as missing Hoksi articles, because no pack was ingested. `ON` has no paper slug, so it is reported as unslugged rather than missing.
+
+`python3 db/editorial_api.py --plan` prints this routing without MySQL. `python3 db/editorial_api.py --serve` binds `127.0.0.1:8765` (override with `EDITORIAL_BIND` and `EDITORIAL_PORT`) and uses the same `MYSQL_*` variables as the seed scripts.

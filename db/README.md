@@ -146,3 +146,30 @@ python3 db/seed_analyse_pm.py --apply
 `unit_code` uses `utf8mb4_bin` so `0X` and `0x` are different keys. A table created earlier with `utf8mb4_unicode_ci` rejects the seed. `db/analyse_pm_schema.sql` alters those columns when you apply it again. `CREATE TABLE IF NOT EXISTS` alone does not change the collation.
 
 `MYSQL_DEFAULTS_FILE` is passed through as `--defaults-extra-file` when a login path file is preferable to `MYSQL_PWD`.
+
+# Analyse HTTP API
+
+`db/editorial_api.py` serves `GET /analyse/lookup`, `/analyse/units`, and `/analyse/gaps`.
+
+With no `subject`, no `band`, and no module slug, those paths read only the compulsory tables (`analyse_mc`, `analyse_sq`, and the compulsory unit catalogue). They do not read `analyse_m1_*`, `analyse_pm_*`, or `content_blocks`. Compulsory paper 1 is `kind=sq`. Paper 2 is `kind=mc`. `dse2015-math-cp1` and `dse2015-math-cp2` stay on that path.
+
+| Request | Map | Solutions |
+| --- | --- | --- |
+| `subject=m1`, `band=dse`, or `dse2015-math-m1` | `analyse_m1_*` syllabus `dse` | `content_blocks`, key `dse2015-math-m1-q3:zh-HK` |
+| `subject=m2`, `band=m2`, or `dse2015-math-m2` | `analyse_pm_*` syllabus `m2`, paper 1 | same key shape for `math-m2` |
+| `subject=pm` | `analyse_pm_*` syllabus `pm` | blocked. Analyse-only. No Hoksi pack |
+| `subject=ms` | `analyse_m1_*` syllabus `ms` | blocked. Analyse-only. No Hoksi pack |
+
+`dse2012-math-m1` is the DSE column `12#U`. `subject=ms&year=2012` is the M&S column `12#T`. `subject=m1&year=2012` with no band is rejected. `0X` and `0x` stay different on Pure Maths.
+
+`--plan` does not connect. `--serve` uses the same `MYSQL_*` settings as the seed scripts and reads live column names with `SHOW COLUMNS`.
+
+```bash
+python3 db/test_editorial_api.py
+python3 db/editorial_api.py --plan lookup --year 2015 --question 1 --kind sq
+python3 db/editorial_api.py --plan lookup --slug dse2015-math-m1 --question 3
+python3 db/editorial_api.py --plan gaps --subject pm
+python3 db/editorial_api.py --serve
+```
+
+The route table is in [docs/CONTENT_MODEL.md](../docs/CONTENT_MODEL.md).
