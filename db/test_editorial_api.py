@@ -15,7 +15,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-import editorial_api as api
+import editorial_analyse_api as api
 
 
 def tables_in(sql: str) -> set[str]:

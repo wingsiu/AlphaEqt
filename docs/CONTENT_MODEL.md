@@ -211,7 +211,7 @@ Dry-run on the current fixture: 937 questions and 1045 topic links.
 
 Analyse rows are topic numbers. Worked solutions are a different path: `papers` → `questions` → `solutions`. `answers`, `hints`, and `sq_keys` are not filled from these packs. Core compulsory Hoksi text previously landed in `sq_keys`; this loader does not read that pack and does not write `sq_keys`.
 
-Paper slugs follow the shape described for `db/import_docx_tex.py`. That importer is not in this repository. `db/editorial_api.py` reads these slugs. It does not write them.
+Paper slugs follow the shape described for `db/import_docx_tex.py`. That importer is not in this repository. `db/editorial_api.py` and `db/editorial_analyse_api.py` read these slugs. They do not write them.
 
 | Paper | Slug |
 | --- | --- |
@@ -279,13 +279,13 @@ A question is found again by its Hoksi stem block, not by a question number. Re-
 
 Sample and practice papers use slugs `dsesp-math-m1` and `dsepp-math-m1`. A `year` column, when the live table has one and it allows null, stays null for those papers so the practice paper does not share the exam year.
 
-`hoksi_solutions.load_bundle` reads the packs. `db/editorial_api.py` reads the `content_blocks` rows this loader writes (`{question}:zh-HK` and `{question}:en`). The loader does not start that server.
+`hoksi_solutions.load_bundle` reads the packs. `db/editorial_api.py` and `db/editorial_analyse_api.py` read the `content_blocks` rows this loader writes (`{question}:zh-HK` and `{question}:en`). The loader does not start either server.
 
 Commands, the M1 2015 pilot, and the batch order are in [db/README.md](../db/README.md).
 
 ## Analyse HTTP API
 
-`db/editorial_api.py` serves the three GET paths used for compulsory Analyse:
+`db/editorial_analyse_api.py` serves the three GET paths used for the compulsory Analyse planner. The Content app is separate: `uvicorn editorial_api:app` on `127.0.0.1:8505` keeps its own Analyse routes GET-only (`/analyse/lookup`, `/analyse/units/{unit}`, `/analyse/gaps`) and does not replace this planner.
 
 | Path | What it returns |
 | --- | --- |
@@ -313,7 +313,7 @@ M1 and M2 solution text is the block whose key is `{question_slug}:zh-HK` or `{q
 
 Pure Maths and M&S are analyse-only. Lookup returns `"solutions": {"status": "blocked", ...}`. Gaps do not list those questions as missing Hoksi articles, because no pack was ingested. `ON` has no paper slug, so it is reported as unslugged rather than missing.
 
-`python3 db/editorial_api.py --plan` prints this routing without MySQL. `python3 db/editorial_api.py --serve` binds `127.0.0.1:8765` (override with `EDITORIAL_BIND` and `EDITORIAL_PORT`) and uses the same `MYSQL_*` variables as the seed scripts.
+`python3 db/editorial_analyse_api.py --plan` prints this routing without MySQL. `python3 db/editorial_analyse_api.py --serve` binds `127.0.0.1:8765` (override with `EDITORIAL_BIND` and `EDITORIAL_PORT`) and uses the same `MYSQL_*` variables as the seed scripts.
 
 ## Content pages
 
@@ -321,7 +321,7 @@ A content page is an ordered list of atoms. It is not an OCR `pages` row. `db/co
 
 `questions.stem_block_id` points at the block. The live question text is `content_blocks.markdown`. A page item pins a `revision_id`, so a published page can keep showing an older revision after the block is edited.
 
-The editorial server in `db/editorial_api.py` writes these tables. Analyse routes stay GET-only.
+The FastAPI server in `db/editorial_api.py` (`uvicorn editorial_api:app` on `127.0.0.1:8505`) writes these tables. Analyse routes stay GET-only. `editorial_analyse_api.py --serve` accepts the same content-page paths on port 8765.
 
 | Method and path | What it does |
 | --- | --- |
