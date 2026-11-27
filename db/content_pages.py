@@ -13,9 +13,13 @@ Import refuses a slug that already exists. A later update inserts a new
 Writes run as one transaction and start with ``USE alphaeqt`` so
 ``binlog-do-db`` records them. Figures are markdown links, not MySQL blobs.
 
+The Content app calls these helpers through the FastAPI process
+(``uvicorn editorial_api:app`` on 127.0.0.1:8505).
+``editorial_analyse_api.py --serve`` accepts the same paths on port 8765.
+
 Example import::
 
-    curl -s -X POST http://127.0.0.1:8765/content/pages \\
+    curl -s -X POST http://127.0.0.1:8505/content/pages \\
       -H 'Content-Type: application/json' \\
       -d @- <<'JSON'
     {

@@ -283,7 +283,9 @@ python3 db/seed_hoksi_solutions.py --emit-sql --subject m1 --year 2015 > /tmp/m1
 
 # Analyse HTTP API
 
-`db/editorial_api.py` serves `GET /analyse/lookup`, `/analyse/units`, and `/analyse/gaps`.
+The Content app is `uvicorn editorial_api:app` on `127.0.0.1:8505`. That process serves topics, papers, questions, export-docx, health, mc-keys, sq-keys, and draft content pages. Its Analyse routes stay GET-only: `/analyse/lookup` (query `qno` plus `paper_slug` or `year`), `/analyse/units/{unit}`, and `/analyse/gaps`.
+
+`db/editorial_analyse_api.py` is the stdlib planner for the richer lookup. It serves `GET /analyse/lookup`, `/analyse/units`, and `/analyse/gaps`.
 
 With no `subject`, no `band`, and no module slug, those paths read only the compulsory tables (`analyse_mc`, `analyse_sq`, and the compulsory unit catalogue). They do not read `analyse_m1_*`, `analyse_pm_*`, or `content_blocks`. Compulsory paper 1 is `kind=sq`. Paper 2 is `kind=mc`. `dse2015-math-cp1` and `dse2015-math-cp2` stay on that path.
 
@@ -300,17 +302,18 @@ With no `subject`, no `band`, and no module slug, those paths read only the comp
 
 ```bash
 python3 db/test_editorial_api.py
-python3 db/editorial_api.py --plan lookup --year 2015 --question 1 --kind sq
-python3 db/editorial_api.py --plan lookup --slug dse2015-math-m1 --question 3
-python3 db/editorial_api.py --plan gaps --subject pm
-python3 db/editorial_api.py --serve
+python3 db/test_editorial_fastapi.py
+python3 db/editorial_analyse_api.py --plan lookup --year 2015 --question 1 --kind sq
+python3 db/editorial_analyse_api.py --plan lookup --slug dse2015-math-m1 --question 3
+python3 db/editorial_analyse_api.py --plan gaps --subject pm
+python3 db/editorial_analyse_api.py --serve
 ```
 
 The route table is in [docs/CONTENT_MODEL.md](../docs/CONTENT_MODEL.md).
 
 # Content pages
 
-`db/editorial_api.py --serve` also imports a draft content page. Analyse paths stay GET-only. `db/content_pages_schema.sql` matches the live `alphaeqt` tables (`utf8mb4_general_ci`). It does not insert rows. Production already has these tables; do not apply the file from a machine that is not meant to change that database. OCR `pages` are unrelated.
+`uvicorn editorial_api:app` imports a draft content page on the same process as the Content app. Analyse paths stay GET-only. `editorial_analyse_api.py --serve` accepts the same content-page paths on port 8765. `db/content_pages_schema.sql` matches the live `alphaeqt` tables (`utf8mb4_general_ci`). It does not insert rows. Production already has these tables; do not apply the file from a machine that is not meant to change that database. OCR `pages` are unrelated.
 
 `content_blocks` is `id`, `kind`, nullable `title`, `markdown`, `status` (`D`/`A`), `created`, `updated`. There is no slug. Kinds include `text` and `figure` plus `question`, `title`, `formula`, `topic`, and `theorem`. `questions.source_type` accepts `A` (author), `S` (school), and `P` (publisher). There is no `question_no` column.
 
@@ -325,7 +328,8 @@ The route table is in [docs/CONTENT_MODEL.md](../docs/CONTENT_MODEL.md).
 
 ```bash
 python3 db/test_content_pages.py
-curl -s -X POST http://127.0.0.1:8765/content/pages \
+python3 db/test_editorial_fastapi.py
+curl -s -X POST http://127.0.0.1:8505/content/pages \
   -H 'Content-Type: application/json' \
   -d '{"page":{"slug":"s6-alg-notes","title":"S6 algebra notes","kind":"note","status":"D"},"items":[{"kind":"text","title":"Note","markdown":"Draft text."}]}'
 ```

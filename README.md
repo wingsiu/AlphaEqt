@@ -73,15 +73,15 @@ The M1 2015 pilot, the batch commands, and the gaps are in [db/README.md](db/REA
 
 ## Analyse lookup API
 
-`db/editorial_api.py` serves `/analyse/lookup`, `/analyse/units`, and `/analyse/gaps`. A call with no `subject`, `band`, or module slug still reads only the compulsory Analyse tables. M1 and M2 use the same paths (`subject=m1`, `subject=m2`, or a slug such as `dse2015-math-m1`). Pure Maths and M&S stay analyse-only: solution lookup is blocked because those syllabi have no worked-solution pack.
+`uvicorn editorial_api:app` on `127.0.0.1:8505` is the Content app (topics, papers, questions, and Analyse GETs). `db/editorial_analyse_api.py` is the stdlib planner for `/analyse/lookup`, `/analyse/units`, and `/analyse/gaps`. A planner call with no `subject`, `band`, or module slug still reads only the compulsory Analyse tables. M1 and M2 use the same paths (`subject=m1`, `subject=m2`, or a slug such as `dse2015-math-m1`). Pure Maths and M&S stay analyse-only: solution lookup is blocked because those syllabi have no worked-solution pack.
 
 ```bash
-python3 db/editorial_api.py --plan lookup --slug dse2015-math-m1 --question 3
+python3 db/editorial_analyse_api.py --plan lookup --slug dse2015-math-m1 --question 3
 ```
 
 Details are in [db/README.md](db/README.md) and [docs/CONTENT_MODEL.md](docs/CONTENT_MODEL.md).
 
-The same process imports a draft content page: `POST /content/pages`. Fetch, append, edit, and publish are on `/content/pages/{slug}`. The table shape is `db/content_pages_schema.sql`.
+That same FastAPI process imports a draft content page: `POST /content/pages`. Fetch, append, edit, and publish are on `/content/pages/{slug}`. The table shape is `db/content_pages_schema.sql`.
 
 ---
 
