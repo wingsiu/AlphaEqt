@@ -231,7 +231,7 @@ export MYSQL_DATABASE=alphaeqt
 python3 db/seed_hoksi_solutions.py --apply --subject m1 --year 2015
 ```
 
-`--apply` reads `SHOW COLUMNS` and writes the live content_blocks model. It does not `ALTER`, and it does not create `db/solutions_schema.sql` (that file is a `question_no` / `solutions.body` shape, which live `questions` does not have). `qkind` is `sq` when that column allows it. Live `source_type` is `CHAR(1)` (`S` and `P`), so the value written is `S`, or `P` when the enum does not list `S`. A longer token such as `hoksi` is used only when it fits and `S`/`P` are not accepted. `topic_id`, `level`, `marks`, and `source_pdf` are left null. `sortorder` is 1 for zh-HK and 2 for en. If a required column cannot be filled, the command prints the column list and writes nothing.
+`--apply` reads `SHOW COLUMNS` and writes the live content_blocks model. It does not `ALTER`, and it does not create `db/solutions_schema.sql` (that file is a `question_no` / `solutions.body` shape, which live `questions` does not have). `qkind` is `sq` when that column allows it. Live `source_type` is `CHAR(1)` with no CHECK (`S` school, `P` publisher, `A` author). The value written for a Hoksi school paper is `S`, or `P` when the enum does not list `S`. A longer token such as `hoksi` is used only when it fits and `S`/`P` are not accepted. `A` is for a question written by the user and is accepted by the content-page import, not by this loader. `topic_id`, `level`, `marks`, and `source_pdf` are left null. `sortorder` is 1 for zh-HK and 2 for en. If a required column cannot be filled, the command prints the column list and writes nothing.
 
 After apply, `dse2015-math-m1` should have 24 `solutions` rows (12 questions × zh-HK and en), each pointing at its own content block:
 
@@ -307,3 +307,27 @@ python3 db/editorial_api.py --serve
 ```
 
 The route table is in [docs/CONTENT_MODEL.md](../docs/CONTENT_MODEL.md).
+
+# Content pages
+
+`db/editorial_api.py --serve` also imports a draft content page. Analyse paths stay GET-only. `db/content_pages_schema.sql` matches the live `alphaeqt` tables (`utf8mb4_general_ci`). It does not insert rows. Production already has these tables; do not apply the file from a machine that is not meant to change that database. OCR `pages` are unrelated.
+
+`content_blocks` is `id`, `kind`, nullable `title`, `markdown`, `status` (`D`/`A`), `created`, `updated`. There is no slug. Kinds include `text` and `figure` plus `question`, `title`, `formula`, `topic`, and `theorem`. `questions.source_type` accepts `A` (author), `S` (school), and `P` (publisher). There is no `question_no` column.
+
+| Method and path | Behavior |
+| --- | --- |
+| `POST /content/pages` | One transaction: paper (when sent), new blocks and revision 1, question rows, page with `current_version_id` null, draft version 1, items pinned to those revisions, then set `current_version_id`. Existing page slug is rejected. |
+| `GET /content/pages/{slug}` | Current version. Item markdown is the pinned revision. `question_id` is set when the block is a stem. |
+| `POST /content/pages/{slug}/items` | Append one atom to the draft version. A question may include one figure, which is the next item. |
+| `POST /content/pages/{slug}/items/{sortorder}` | On a draft only: insert a revision, update the block markdown, point that item at the new revision. |
+| `POST /content/pages/{slug}/publish` | Set the current version and the page to `A`. |
+| `POST /content/pages/{slug}/versions` | Insert the next version instead of changing a published one. |
+
+```bash
+python3 db/test_content_pages.py
+curl -s -X POST http://127.0.0.1:8765/content/pages \
+  -H 'Content-Type: application/json' \
+  -d '{"page":{"slug":"s6-alg-notes","title":"S6 algebra notes","kind":"note","status":"D"},"items":[{"kind":"text","title":"Note","markdown":"Draft text."}]}'
+```
+
+A whole paper sends `paper.slug`, `paper.title`, and `paper.source_type` (`S` for a rebuilt school paper). Each question uses its own `source_type` when present. The full example is the docstring of `db/content_pages.py`. `{"content_block_id": 1234}` reuses a block; omit `revision_id` to pin the latest revision.

@@ -106,7 +106,9 @@ QUESTION_STEM_ALIASES = ("stem_block_id", "stem_id")
 QUESTION_QKIND_ALIASES = ("qkind", "kind", "question_kind", "q_kind")
 QUESTION_SOURCE_TYPE_ALIASES = ("source_type", "source", "origin")
 QKIND_CANDIDATES = ("sq", "structured", "long", "written", "subjective")
-# Live questions.source_type is CHAR(1). Observed values are S and P.
+# Live questions.source_type is CHAR(1) with no CHECK.
+# S = school, P = publisher, A = author (the question was written by the user).
+# This loader still writes S for a Hoksi school paper when that value fits.
 # Wider columns and enums that do not list S or P fall through to hoksi.
 SOURCE_TYPE_CANDIDATES = ("S", "P", "hoksi", "editorial", "import")
 BLOCK_SOURCE_CANDIDATES = ("hoksi",)
