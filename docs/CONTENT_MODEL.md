@@ -270,7 +270,7 @@ Live `alphaeqt` already stores stems and solutions in `content_blocks`. `--apply
 | --- | --- |
 | `papers` | `slug` such as `dse2015-math-m1`, plus `title` when that column exists. `source_pdf` is left alone. |
 | `content_blocks` | One label block per question (`source_slug` `{question}:stem`) and one worked-solution block per language (`{question}:zh-HK`, `{question}:en`). The solution block is updated on re-apply. The label block is not, so a stem already stored there stays put. |
-| `questions` | `paper_id`, `stem_block_id`, `qkind` (`sq` when that enum allows it), `source_type`. Live `source_type` is `CHAR(1)` with values such as `S` and `P`, so the loader writes `S` (then `P` if `S` is not an allowed enum member). `hoksi` is written only when the column is wide enough and does not accept `S` or `P`. `topic_id`, `level`, and `marks` stay null. There is no `question_no` column on the live table, and this loader does not add one. |
+| `questions` | `paper_id`, `stem_block_id`, `qkind` (`sq` when that enum allows it), `source_type`. Live `source_type` is `CHAR(1)` with no CHECK: `S` school, `P` publisher, `A` author (a question written by the user). The loader writes `S` for a Hoksi school paper (then `P` if `S` is not an allowed enum member). `hoksi` is written only when the column is wide enough and does not accept `S` or `P`. `topic_id`, `level`, and `marks` stay null. There is no `question_no` column on the live table, and this loader does not add one. |
 | `solutions` | `content_block_id` plus `sortorder`. `1` is zh-HK and `2` is en. `question_id` is set when that column exists, which is how answers attach to a question. The table has no `body` or `lang` column; the language lives on the content block when that column exists, and on `sortorder` either way. |
 
 `--apply` does not `ALTER` and does not create `db/solutions_schema.sql`. That file is a different shape (`question_no`, `solutions.body`) and is not the live database. If `content_blocks` has no text column, or a `NOT NULL` column such as `topic_id` cannot be filled, the command exits before any write and prints the column list.
@@ -314,3 +314,22 @@ M1 and M2 solution text is the block whose key is `{question_slug}:zh-HK` or `{q
 Pure Maths and M&S are analyse-only. Lookup returns `"solutions": {"status": "blocked", ...}`. Gaps do not list those questions as missing Hoksi articles, because no pack was ingested. `ON` has no paper slug, so it is reported as unslugged rather than missing.
 
 `python3 db/editorial_api.py --plan` prints this routing without MySQL. `python3 db/editorial_api.py --serve` binds `127.0.0.1:8765` (override with `EDITORIAL_BIND` and `EDITORIAL_PORT`) and uses the same `MYSQL_*` variables as the seed scripts.
+
+## Content pages
+
+A content page is an ordered list of atoms. It is not an OCR `pages` row. `db/content_pages_schema.sql` is the live shape: `content_blocks` (kind, then nullable `title`, `markdown`, status `D`/`A`), `content_block_revisions`, `content_pages`, `content_page_versions`, and `content_page_items`. `content_blocks` has no slug. `questions` has no `question_no`; the number lives in the stem block's title and markdown. `source_type` is `A` (author), `S` (school), or `P` (publisher).
+
+`questions.stem_block_id` points at the block. The live question text is `content_blocks.markdown`. A page item pins a `revision_id`, so a published page can keep showing an older revision after the block is edited.
+
+The editorial server in `db/editorial_api.py` writes these tables. Analyse routes stay GET-only.
+
+| Method and path | What it does |
+| --- | --- |
+| `POST /content/pages` | Import a document as a new draft page. Rejects a slug that already exists. |
+| `GET /content/pages/{slug}` | Current version and items: block title, kind, pinned-revision markdown, and `question_id` when the atom is a stem. |
+| `POST /content/pages/{slug}/items` | Append one atom, or one question plus its figure, to the draft version. |
+| `POST /content/pages/{slug}/items/{sortorder}` | Edit a draft atom: new `content_block_revisions` row, update `content_blocks.markdown` (and title when sent), retarget that draft item. |
+| `POST /content/pages/{slug}/publish` | Set that version and the page to `A`. Pinned revision ids stay put. |
+| `POST /content/pages/{slug}/versions` | New draft version. Omitted `items` clone the current pins. Does not rewrite a published version. |
+
+New pages, versions, papers, and blocks are `D` until publish. A question's `source_type` is the item value, else the import's `paper.source_type`, else `A`. Answers and solutions are not page items. Figures are markdown links. `python3 db/test_content_pages.py` covers the write order without MySQL. The request body is in `db/content_pages.py`.

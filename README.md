@@ -81,6 +81,8 @@ python3 db/editorial_api.py --plan lookup --slug dse2015-math-m1 --question 3
 
 Details are in [db/README.md](db/README.md) and [docs/CONTENT_MODEL.md](docs/CONTENT_MODEL.md).
 
+The same process imports a draft content page: `POST /content/pages`. Fetch, append, edit, and publish are on `/content/pages/{slug}`. The table shape is `db/content_pages_schema.sql`.
+
 ---
 
 ## Project Roadmap

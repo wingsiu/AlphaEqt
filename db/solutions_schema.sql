@@ -1,4 +1,5 @@
 -- NOT the live alphaeqt shape. Do not source this file into ans4u.me.
+-- Live papers, questions, content_blocks, and content pages are db/content_pages_schema.sql.
 --
 -- Live alphaeqt already has papers, questions, solutions, and content_blocks.
 -- Question text hangs off questions.stem_block_id. Worked-solution text hangs

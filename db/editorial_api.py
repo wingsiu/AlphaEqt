@@ -27,6 +27,11 @@ article. There is no solution pack for either syllabus.
 small HTTP server. The mysql client uses the same ``MYSQL_*`` variables
 as the seed scripts.
 
+The same server writes draft content pages. ``POST /content/pages``
+imports a document as a draft page of atoms. ``GET /content/pages/{slug}``
+returns the current version. Append, edit, and publish are documented in
+``db/content_pages.py``. Analyse routes stay GET-only.
+
 Examples:
   python3 db/editorial_api.py --plan lookup --year 2015 --question 1 --kind sq
   python3 db/editorial_api.py --plan lookup --slug dse2015-math-m1 --question 3
@@ -48,6 +53,8 @@ from dataclasses import dataclass
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Callable
 from urllib.parse import parse_qs, urlparse
+
+import content_pages
 
 CORE_TABLES = (
     "analyse_mc",
@@ -1741,6 +1748,25 @@ def params_from_query(query: str) -> dict[str, str]:
 _XSI_NIL = "{http://www.w3.org/2001/XMLSchema-instance}nil"
 
 
+def parse_mysql_xml_all(text: str) -> list[list[dict[str, str | None]]]:
+    stripped = text.strip()
+    if not stripped:
+        return []
+    found: list[list[dict[str, str | None]]] = []
+    start = 0
+    closer = "</resultset>"
+    while True:
+        opening = stripped.find("<resultset", start)
+        if opening < 0:
+            break
+        end = stripped.find(closer, opening)
+        if end < 0:
+            raise RuntimeError(stripped[:500])
+        found.append(parse_mysql_xml(stripped[opening : end + len(closer)]))
+        start = end + len(closer)
+    return found
+
+
 def parse_mysql_xml(text: str) -> list[dict[str, str | None]]:
     stripped = text.strip()
     if not stripped:
@@ -1782,7 +1808,36 @@ class MysqlCli(Database):
             found[str(name)] = str(row.get("Type") or row.get("type") or "")
         return found
 
-    def _run(self, sql: str) -> str:
+    def script(self, sql: str) -> list[dict]:
+        """Run one content-page transaction. The script selects alphaeqt."""
+        stripped = sql.strip()
+        if not stripped.startswith("USE alphaeqt;\nSTART TRANSACTION;\n"):
+            raise RuntimeError("content script must be one alphaeqt transaction")
+        if not stripped.endswith("COMMIT;"):
+            raise RuntimeError("content script must commit")
+        try:
+            output = self._run(stripped, stdin=True)
+        except RuntimeError as exc:
+            message = str(exc)
+            if "ERROR 1062" in message or "Duplicate entry" in message:
+                if "content_pages" in message or "uq_content_pages_slug" in message:
+                    raise RouteError(
+                        409, "page_exists", "a page with this slug already exists"
+                    ) from exc
+                if "papers" in message or "uq_papers_slug" in message:
+                    raise RouteError(
+                        409, "paper_exists", "a paper with this slug already exists"
+                    ) from exc
+                raise RouteError(409, "conflict", "unique key conflict") from exc
+            if "ERROR 1452" in message:
+                raise RouteError(
+                    409, "missing_block", "a referenced block or revision is missing"
+                ) from exc
+            raise
+        resultsets = parse_mysql_xml_all(output)
+        return resultsets[-1] if resultsets else []
+
+    def _run(self, sql: str, *, stdin: bool = False) -> str:
         mysql = os.environ.get("MYSQL_BIN", "mysql")
         database = os.environ.get("MYSQL_DATABASE", "")
         if not database:
@@ -1806,8 +1861,14 @@ class MysqlCli(Database):
         defaults = os.environ.get("MYSQL_DEFAULTS_FILE")
         if defaults:
             command.append(f"--defaults-extra-file={defaults}")
-        command.extend(["-e", sql, database])
-        completed = subprocess.run(command, text=True, capture_output=True, check=False)
+        if stdin:
+            command.append(database)
+            completed = subprocess.run(
+                command, input=sql, text=True, capture_output=True, check=False
+            )
+        else:
+            command.extend(["-e", sql, database])
+            completed = subprocess.run(command, text=True, capture_output=True, check=False)
         if completed.returncode != 0:
             message = (completed.stderr or completed.stdout or "").strip()
             if (
@@ -1839,6 +1900,24 @@ def load_schema(db: MysqlCli) -> Schema:
     return Schema(tables)
 
 
+_STATUS_REASONS = {
+    200: "OK",
+    201: "Created",
+    204: "No Content",
+    400: "Bad Request",
+    404: "Not Found",
+    405: "Method Not Allowed",
+    409: "Conflict",
+    413: "Payload Too Large",
+    500: "Internal Server Error",
+    503: "Service Unavailable",
+}
+
+
+def status_line(status: int) -> str:
+    return f"{status} {_STATUS_REASONS.get(status, 'Error')}"
+
+
 def json_bytes(payload: dict) -> bytes:
     return json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
 
@@ -1846,10 +1925,49 @@ def json_bytes(payload: dict) -> bytes:
 def cors_headers() -> list[tuple[str, str]]:
     return [
         ("Access-Control-Allow-Origin", "*"),
-        ("Access-Control-Allow-Methods", "GET, OPTIONS"),
+        ("Access-Control-Allow-Methods", "GET, POST, OPTIONS"),
         ("Access-Control-Allow-Headers", "Content-Type"),
         ("Cache-Control", "no-store"),
     ]
+
+
+def read_request_body(raw_length: str | None, reader: Callable[[int], bytes] | None) -> bytes:
+    try:
+        length = int(raw_length or 0)
+    except (TypeError, ValueError):
+        length = 0
+    if length < 0:
+        length = 0
+    if length > content_pages.MAX_BODY:
+        raise RouteError(413, "body_too_large", "body exceeds 2MB")
+    if length == 0 or reader is None:
+        return b""
+    return reader(length)
+
+
+def respond(
+    method: str,
+    path: str,
+    params: dict[str, str],
+    body: bytes,
+    schema: Schema,
+    db: Database,
+) -> tuple[int, dict]:
+    """Route analyse GETs and content-page reads and writes."""
+    path = path.rstrip("/") or "/"
+    if path.startswith("/content/"):
+        try:
+            return content_pages.dispatch(method, path, body, db)
+        except content_pages.ContentError as exc:
+            return exc.status, exc.payload()
+        except MissingTable:
+            return 503, {
+                "error": "missing_table",
+                "message": "content page tables are not in this database",
+            }
+    if method != "GET":
+        raise RouteError(405, "method_not_allowed", "GET only")
+    return dispatch(path, params, schema, db)
 
 
 def build_app(schema: Schema, db: Database) -> Callable:
@@ -1859,20 +1977,26 @@ def build_app(schema: Schema, db: Database) -> Callable:
         if method == "OPTIONS":
             start_response("204 No Content", cors_headers())
             return [b""]
-        if method != "GET":
-            body = json_bytes({"error": "method_not_allowed", "message": "GET only"})
-            start_response("405 Method Not Allowed", headers)
-            return [body]
         path = environ.get("PATH_INFO") or "/"
         params = params_from_query(environ.get("QUERY_STRING") or "")
+
+        def reader(length: int, environ: dict = environ) -> bytes:
+            stream = environ.get("wsgi.input")
+            if stream is None:
+                return b""
+            return stream.read(length)
+
         try:
-            status, payload = dispatch(path, params, schema, db)
+            body = b""
+            if method not in {"GET", "HEAD", "OPTIONS"}:
+                body = read_request_body(environ.get("CONTENT_LENGTH"), reader)
+            status, payload = respond(method, path, params, body, schema, db)
         except RouteError as exc:
             status, payload = exc.status, exc.payload()
         except Exception:
             traceback.print_exc()
             status, payload = 500, {"error": "server", "message": "internal error"}
-        start_response(f"{status} {'OK' if status == 200 else 'ERROR'}", headers)
+        start_response(status_line(status), headers)
         return [json_bytes(payload)]
 
     return app
@@ -1900,13 +2024,15 @@ class _Handler(BaseHTTPRequestHandler):
         if method == "OPTIONS":
             self._send(204, b"")
             return
-        if method != "GET":
-            self._send(405, json_bytes({"error": "method_not_allowed", "message": "GET only"}))
-            return
         try:
-            status, payload = dispatch(
+            body = b""
+            if method not in {"GET", "HEAD", "OPTIONS"}:
+                body = read_request_body(self.headers.get("Content-Length"), self.rfile.read)
+            status, payload = respond(
+                method,
                 parsed.path,
                 params_from_query(parsed.query),
+                body,
                 self.schema,
                 self.database,
             )
@@ -1935,7 +2061,7 @@ def serve(host: str, port: int, schema: Schema, db: Database) -> None:
     Handler.schema = schema
     Handler.database = db
     server = ThreadingHTTPServer((host, port), Handler)
-    print(f"editorial analyse API on http://{host}:{port}", file=sys.stderr)
+    print(f"editorial API on http://{host}:{port}", file=sys.stderr)
     server.serve_forever()
 
 
